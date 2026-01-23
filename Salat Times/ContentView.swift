@@ -11,45 +11,43 @@ struct ContentView: View {
     @EnvironmentObject var manager: PrayerManager
     @Environment(\.openWindow) var openWindow
     
+    // قراءة الإعدادات
+    @AppStorage("appLanguage") private var appLanguage = "ar"
+    @AppStorage("timeFormat24") private var is24HourFormat = true
+    
     var body: some View {
         VStack(spacing: 0) {
+            
             // --- الهيدر ---
             HStack {
-                VStack(alignment: .leading) {
-                    Text("مواقيت الصلاة")
-                        .font(.headline)
-                    Text(manager.city)
-                        .font(.caption)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(appLanguage == "ar" ? "مواقيت الصلاة" : "Prayer Times")
+                        .font(.system(size: 18, weight: .bold, design: .rounded)) // كبرنا الخط
+                    
+                    Text(getCityName())
+                        .font(.system(size: 13))
                         .foregroundColor(.secondary)
                 }
                 
                 Spacer()
                 
-                // زر التحديث (Refresh)
+                // الزر المدمج (تحديث + موقع)
                 Button(action: {
-                    manager.loadSavedCity() // إعادة تحميل البيانات
+                    manager.loadSavedCity()
                 }) {
-                    Image(systemName: "arrow.clockwise")
-                        .foregroundColor(.secondary)
+                    Image(systemName: "arrow.triangle.2.circlepath") // أيقونة تحديث
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(.white)
+                        .padding(8)
+                        .background(Color.blue.opacity(0.8))
+                        .clipShape(Circle())
                 }
                 .buttonStyle(.plain)
-                .help("تحديث البيانات")
-                
-                SizedBox(width: 10) // مسافة صغيرة
-                
-                // زر الموقع (تفعيل المدينة المختارة)
-                Button(action: {
-                    manager.loadSavedCity() // يجيب المدينة من الإعدادات
-                }) {
-                    Image(systemName: "location.fill")
-                        .foregroundColor(.blue)
-                        .font(.title3)
-                }
-                .buttonStyle(.plain)
-                .help("تطبيق المدينة المختارة من الإعدادات")
+                .help(appLanguage == "ar" ? "تحديث البيانات" : "Refresh Data")
             }
-            .padding()
-            .background(Color.white.opacity(0.1))
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .background(Color.black.opacity(0.2)) // خلفية خفيفة للهيدر
             
             Divider()
             
@@ -57,7 +55,8 @@ struct ContentView: View {
             if manager.isLoading {
                 VStack {
                     Spacer()
-                    ProgressView("جاري التحميل...")
+                    ProgressView()
+                        .scaleEffect(0.8)
                     Spacer()
                 }
             } else if let error = manager.errorMessage {
@@ -68,52 +67,86 @@ struct ContentView: View {
                         .foregroundColor(.orange)
                     Text(error)
                         .font(.caption)
-                    Button("حاول مرة أخرى") {
+                    Button(appLanguage == "ar" ? "إعادة المحاولة" : "Retry") {
                         manager.loadSavedCity()
                     }
                     Spacer()
                 }
             } else {
-                VStack(spacing: 2) {
-                    PrayerRow(name: "الفجر", time: manager.timings["Fajr"] ?? "--", icon: "sunrise")
-                    PrayerRow(name: "الظهر", time: manager.timings["Dhuhr"] ?? "--", icon: "sun.max")
-                    PrayerRow(name: "العصر", time: manager.timings["Asr"] ?? "--", icon: "sun.min")
-                    PrayerRow(name: "المغرب", time: manager.timings["Maghrib"] ?? "--", icon: "sunset")
-                    PrayerRow(name: "العشاء", time: manager.timings["Isha"] ?? "--", icon: "moon.stars")
+                // قائمة الصلوات
+                VStack(spacing: 4) { // تقليل المسافات بين الأسطر
+                    PrayerRow(name: getPrayerName("Fajr"), time: formatTime(manager.timings["Fajr"]), icon: "sunrise.fill")
+                    PrayerRow(name: getPrayerName("Dhuhr"), time: formatTime(manager.timings["Dhuhr"]), icon: "sun.max.fill")
+                    PrayerRow(name: getPrayerName("Asr"), time: formatTime(manager.timings["Asr"]), icon: "sun.min.fill")
+                    PrayerRow(name: getPrayerName("Maghrib"), time: formatTime(manager.timings["Maghrib"]), icon: "sunset.fill")
+                    PrayerRow(name: getPrayerName("Isha"), time: formatTime(manager.timings["Isha"]), icon: "moon.stars.fill")
                 }
-                .padding(.vertical, 15)
+                .padding(.vertical, 12)
             }
             
-            Spacer()
+            Spacer() // لملء أي فراغ متبقي بذكاء
+            
             Divider()
             
             // --- الفوتر ---
             HStack {
-                Text("v1.0")
+                Text("v1.1")
                     .font(.caption2)
                     .foregroundColor(.secondary)
                 Spacer()
-                Button("الإعدادات") {
+                Button(appLanguage == "ar" ? "الإعدادات" : "Settings") {
                     openWindow(id: "settings")
                 }
                 .buttonStyle(.link)
-                .font(.caption)
+                .font(.system(size: 12, weight: .medium))
             }
             .padding(10)
+            .background(Color.black.opacity(0.1))
         }
-        // كبرنا الحجم هنا (عرض 320 بدل 280)
-        .frame(width: 320, height: 400)
+        // تعديل الحجم لإزالة المساحة الزرقاء (الفراغ)
+        .frame(width: 300, height: 360)
         .background(.ultraThinMaterial)
+    }
+    
+    // دالة لجلب اسم المدينة حسب اللغة
+    func getCityName() -> String {
+        if let cityEnum = City.allCases.first(where: { $0.rawValue == manager.city }) {
+            return appLanguage == "ar" ? cityEnum.arabicName : cityEnum.englishName
+        }
+        return manager.city
+    }
+    
+    // دالة لترجمة أسماء الصلوات
+    func getPrayerName(_ key: String) -> String {
+        if appLanguage == "en" { return key } // إرجاع الاسم الإنجليزي كما هو
+        switch key {
+        case "Fajr": return "الفجر"
+        case "Dhuhr": return "الظهر"
+        case "Asr": return "العصر"
+        case "Maghrib": return "المغرب"
+        case "Isha": return "العشاء"
+        default: return key
+        }
+    }
+    
+    // دالة لتنسيق الوقت (12/24)
+    func formatTime(_ time: String?) -> String {
+        guard let time = time else { return "--:--" }
+        if is24HourFormat { return time }
+        
+        // تحويل من 24 لـ 12
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm"
+        if let date = formatter.date(from: time) {
+            formatter.dateFormat = "h:mm a"
+            formatter.locale = Locale(identifier: appLanguage == "ar" ? "ar" : "en")
+            return formatter.string(from: date)
+        }
+        return time
     }
 }
 
-// عنصر مساعد للمسافات (موجود في Flutter وحبينا نجيبه هنا)
-struct SizedBox: View {
-    var width: CGFloat? = nil
-    var height: CGFloat? = nil
-    var body: some View { Spacer().frame(width: width, height: height) }
-}
-
+// تصميم الصف الواحد (محدث)
 struct PrayerRow: View {
     let name: String
     let time: String
@@ -122,17 +155,21 @@ struct PrayerRow: View {
     var body: some View {
         HStack {
             Image(systemName: icon)
-                .frame(width: 25) // كبرنا الأيقونة سنة
-                .foregroundColor(.secondary)
+                .frame(width: 24)
+                .foregroundColor(.blue.opacity(0.8)) // لون أزرق هادئ للأيقونات
+            
             Text(name)
-                .font(.system(size: 15)) // كبرنا الخط سنة
+                .font(.system(size: 16, weight: .medium)) // تكبير الخط
+            
             Spacer()
+            
             Text(time)
-                .fontWeight(.bold)
-                .monospacedDigit()
-                .font(.system(size: 15))
+                .font(.system(size: 16, weight: .bold, design: .monospaced)) // تكبير خط الوقت
         }
-        .padding(.horizontal, 20) // وسعنا الحواف
-        .padding(.vertical, 8)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 6)
+        .background(Color.white.opacity(0.05)) // خلفية خفيفة جداً لكل سطر
+        .cornerRadius(6)
+        .padding(.horizontal, 8)
     }
 }
