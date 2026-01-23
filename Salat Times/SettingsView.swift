@@ -9,12 +9,17 @@ import SwiftUI
 import CoreLocation
 
 struct SettingsView: View {
+    @EnvironmentObject var manager: PrayerManager
     @AppStorage("calculationMethod") private var method = 5
     @AppStorage("selectedCityRaw") private var selectedCityRaw = City.cairo.rawValue
     
     // إعدادات جديدة للغة والتوقيت
     @AppStorage("appLanguage") private var appLanguage = "ar" // ar or en
     @AppStorage("timeFormat24") private var is24HourFormat = true
+    
+    // حالة الصلاة التجريبية
+    @State private var testPrayerNameInput: String = ""
+    @State private var testPrayerDate: Date = Date().addingTimeInterval(60) // دقيقة واحدة من الآن
     
     var body: some View {
         ScrollView {
@@ -61,9 +66,74 @@ struct SettingsView: View {
                     .pickerStyle(.segmented) // شكل أزرار متجاورة
                 }
                 
+                // 5. الصلاة التجريبية (للاختبار)
+                GroupBox(label: Label(appLanguage == "ar" ? "صلاة تجريبية (للاختبار)" : "Test Prayer (for testing)", systemImage: "bell.badge")) {
+                    VStack(alignment: .leading, spacing: 12) {
+                        if let testTime = manager.testPrayerTime, !manager.testPrayerName.isEmpty {
+                            // عرض الصلاة التجريبية الحالية
+                            VStack(alignment: .leading, spacing: 8) {
+                                HStack {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .foregroundColor(.green)
+                                    Text(appLanguage == "ar" ? "صلاة تجريبية نشطة:" : "Active test prayer:")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                                
+                                HStack {
+                                    Text(manager.testPrayerName)
+                                        .font(.system(size: 14, weight: .semibold))
+                                    Spacer()
+                                    Text(formatTestTime(testTime))
+                                        .font(.system(size: 14, design: .monospaced))
+                                        .foregroundColor(.blue)
+                                }
+                                
+                                Button(action: {
+                                    manager.removeTestPrayer()
+                                }) {
+                                    Label(appLanguage == "ar" ? "حذف الصلاة التجريبية" : "Remove Test Prayer", systemImage: "trash")
+                                        .font(.caption)
+                                }
+                                .buttonStyle(.bordered)
+                                .controlSize(.small)
+                            }
+                            .padding(8)
+                            .background(Color.green.opacity(0.1))
+                            .cornerRadius(6)
+                        } else {
+                            // نموذج إضافة صلاة تجريبية
+                            VStack(alignment: .leading, spacing: 10) {
+                                TextField(appLanguage == "ar" ? "اسم الصلاة (مثال: اختبار)" : "Prayer name (e.g., Test)", text: $testPrayerNameInput)
+                                    .textFieldStyle(.roundedBorder)
+                                
+                                DatePicker(
+                                    appLanguage == "ar" ? "الوقت:" : "Time:",
+                                    selection: $testPrayerDate,
+                                    displayedComponents: [.date, .hourAndMinute]
+                                )
+                                .datePickerStyle(.compact)
+                                
+                                Button(action: {
+                                    if !testPrayerNameInput.isEmpty {
+                                        manager.addTestPrayer(name: testPrayerNameInput, time: testPrayerDate)
+                                        testPrayerNameInput = ""
+                                        testPrayerDate = Date().addingTimeInterval(60)
+                                    }
+                                }) {
+                                    Label(appLanguage == "ar" ? "إضافة صلاة تجريبية" : "Add Test Prayer", systemImage: "plus.circle.fill")
+                                }
+                                .buttonStyle(.borderedProminent)
+                                .controlSize(.small)
+                                .disabled(testPrayerNameInput.isEmpty)
+                            }
+                        }
+                    }
+                }
+                
                 Divider()
                 
-                // 5. الحقوق (الفوتر)
+                // 6. الحقوق (الفوتر)
                 HStack {
                     Spacer()
                     Text("Made with ♥︎ by Islam AlorabI - 2026")
@@ -76,7 +146,21 @@ struct SettingsView: View {
             }
             .padding()
         }
-        .frame(width: 400, height: 500) // كبرنا نافذة الإعدادات
+        .frame(width: 400, height: 600) // زيادة الارتفاع لاستيعاب الصلاة التجريبية
+        .environment(\.layoutDirection, appLanguage == "ar" ? .rightToLeft : .leftToRight)
+        .environment(\.locale, Locale(identifier: appLanguage == "ar" ? "ar" : "en"))
+    }
+    
+    // دالة لتنسيق وقت الصلاة التجريبية
+    func formatTestTime(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        if is24HourFormat {
+            formatter.dateFormat = "HH:mm"
+        } else {
+            formatter.dateFormat = "h:mm a"
+            formatter.locale = Locale(identifier: appLanguage == "ar" ? "ar" : "en")
+        }
+        return formatter.string(from: date)
     }
 }
 
