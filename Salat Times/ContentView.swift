@@ -21,7 +21,7 @@ struct ContentView: View {
             // --- الهيدر ---
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(appLanguage == "ar" ? "مواقيت الصلاة" : "Prayer Times")
+                    Text(appLanguage == "ar" ? "أوقات الصلاة اليوم" : "Prayer Times Today")
                         .font(.system(size: 18, weight: .bold, design: .rounded)) // كبرنا الخط
                     
                     Text(getCityName())

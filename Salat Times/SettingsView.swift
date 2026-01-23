@@ -66,7 +66,7 @@ struct SettingsView: View {
                 // 5. الحقوق (الفوتر)
                 HStack {
                     Spacer()
-                    Text("Made with ❤️ by Islam Alorabi - 2026")
+                    Text("Made with ♥︎ by Islam AlorabI - 2026")
                         .font(.system(size: 10, weight: .medium, design: .monospaced))
                         .foregroundColor(.secondary)
                         .opacity(0.8)
