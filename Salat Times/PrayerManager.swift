@@ -1,7 +1,8 @@
 //
-//  Untitled.swift
+//  PrayerManager.swift
 //  Salat Times
 //
 //  Created by Islam AlorabI on 1/23/26.
 //
 
+import Foundation

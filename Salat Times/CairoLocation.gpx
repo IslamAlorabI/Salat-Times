@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<gpx version="1.1" creator="Xcode">
+    
+    <wpt lat="24.7136" lon="46.6753">
+        <name>Riyadh</name>
+        <time>2026-01-23T12:00:00Z</time>
+    </wpt>
+
+    <wpt lat="40.7128" lon="-74.0060">
+        <name>New York</name>
+        <time>2026-01-23T12:00:00Z</time>
+    </wpt>
+
+    <wpt lat="30.0444" lon="31.2357">
+        <name>Cairo</name>
+        <time>2026-01-23T12:00:00Z</time>
+    </wpt>
+
+    <wpt lat="31.1107" lon="30.9388">
+        <name>Kafr El-Sheikh</name>
+        <time>2026-01-23T12:00:00Z</time>
+    </wpt>
+
+    <wpt lat="36.7528" lon="3.0420">
+        <name>Algiers</name>
+        <time>2026-01-23T12:00:00Z</time>
+    </wpt>
+
+</gpx>
