@@ -89,7 +89,7 @@ struct SettingsView: View {
                             .cornerRadius(6)
                         } else {
                             VStack(alignment: .leading, spacing: 10) {
-                                TextField(appLanguage == "ar" ? "اسم الصلاة (مثال: اختبار)" : "Prayer name (e.g., Test)", text: $testPrayerNameInput)
+                                TextField(appLanguage == "ar" ? "اسم الصلاة (مثال: صلاة عيد الأضحى)" : "Prayer name (e.g., Eid Al-Adha)", text: $testPrayerNameInput)
                                     .textFieldStyle(.roundedBorder)
                                 
                                 DatePicker(
