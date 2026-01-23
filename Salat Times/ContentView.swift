@@ -70,7 +70,7 @@ struct ContentView: View    {
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
-            .background(Color.black.opacity(0.2)) // خلفية خفيفة للهيدر
+            .background(.thinMaterial) // خلفية شفافة مع تأثير الضبابية
             
             Divider()
             
@@ -133,7 +133,7 @@ struct ContentView: View    {
                 .font(.system(size: 12, weight: .medium))
             }
             .padding(10)
-            .background(Color.black.opacity(0.1))
+            .background(.thinMaterial)
         }
         // تعديل الحجم لإزالة المساحة الزرقاء (الفراغ)
         .frame(width: 300)
@@ -141,6 +141,16 @@ struct ContentView: View    {
         .background(.ultraThinMaterial)
         .environment(\.layoutDirection, appLanguage == "ar" ? .rightToLeft : .leftToRight)
         .environment(\.locale, Locale(identifier: appLanguage == "ar" ? "ar" : "en"))
+        .onAppear {
+            // تفعيل الشفافية لنافذة MenuBarExtra
+            DispatchQueue.main.async {
+                if let window = NSApplication.shared.windows.first(where: { $0.contentView?.subviews.contains(where: { $0 is NSHostingView<ContentView> }) ?? false }) {
+                    window.isOpaque = false
+                    window.backgroundColor = .clear
+                    window.hasShadow = true
+                }
+            }
+        }
     }
     
     // دالة لجلب اسم المدينة حسب اللغة
@@ -274,25 +284,29 @@ struct PrayerRow: View {
         .background(
             Group {
                 if isUpcoming {
-                    // خلفية متدرجة أنيقة للصلاة القادمة
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(
-                            LinearGradient(
-                                gradient: Gradient(colors: [
-                                    highlightColor.opacity(0.12),
-                                    highlightColor.opacity(0.08)
-                                ]),
-                                startPoint: .leading,
-                                endPoint: .trailing
+                    // خلفية متدرجة أنيقة للصلاة القادمة مع الشفافية
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(.ultraThinMaterial.opacity(0.6))
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(
+                                LinearGradient(
+                                    gradient: Gradient(colors: [
+                                        highlightColor.opacity(0.15),
+                                        highlightColor.opacity(0.10)
+                                    ]),
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
                             )
-                        )
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(highlightColor.opacity(0.3), lineWidth: 1.5)
-                        )
+                    }
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(highlightColor.opacity(0.4), lineWidth: 1.5)
+                    )
                 } else {
                     RoundedRectangle(cornerRadius: 6)
-                        .fill(Color.white.opacity(0.05))
+                        .fill(.ultraThinMaterial.opacity(0.4))
                 }
             }
         )

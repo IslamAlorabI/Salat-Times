@@ -28,9 +28,16 @@ struct SalatTimesApp: App {
                 .onAppear {
                     // تفعيل التطبيق وجعل النافذة في المقدمة
                     NSApplication.shared.activate(ignoringOtherApps: true)
+                    // تفعيل الشفافية للنافذة
+                    if let window = NSApplication.shared.windows.first(where: { $0.title == "الإعدادات" || $0.title == "Settings" }) {
+                        window.isOpaque = false
+                        window.backgroundColor = .clear
+                        window.hasShadow = true
+                    }
                 }
         }
         .windowResizability(.contentSize)
         .defaultSize(width: 400, height: 600)
+        .windowStyle(.hiddenTitleBar)
     }
 }

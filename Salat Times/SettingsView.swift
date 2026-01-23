@@ -147,6 +147,7 @@ struct SettingsView: View {
             .padding()
         }
         .frame(width: 400, height: 600) // زيادة الارتفاع لاستيعاب الصلاة التجريبية
+        .background(.regularMaterial)
         .environment(\.layoutDirection, appLanguage == "ar" ? .rightToLeft : .leftToRight)
         .environment(\.locale, Locale(identifier: appLanguage == "ar" ? "ar" : "en"))
     }
