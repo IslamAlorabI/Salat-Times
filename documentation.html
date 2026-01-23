@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salat Times - Comprehensive Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --accent-color: #3b82f6;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f9fafb;
+            --bg-tertiary: #f3f4f6;
+            --border-color: #e5e7eb;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+            --code-bg: #1e293b;
+            --code-text: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: var(--bg-primary);
+            border-radius: 16px;
+            box-shadow: var(--shadow-xl);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        header .subtitle {
+            font-size: 1.25rem;
+            opacity: 0.95;
+            font-weight: 300;
+        }
+
+        header .version {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 6px 16px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            font-size: 0.9rem;
+            backdrop-filter: blur(10px);
+        }
+
+        nav {
+            background: var(--bg-secondary);
+            padding: 20px 40px;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        nav a {
+            color: var(--text-primary);
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        nav a:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        main {
+            padding: 40px;
+        }
+
+        section {
+            margin-bottom: 60px;
+            scroll-margin-top: 100px;
+        }
+
+        h2 {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        h2::before {
+            content: '';
+            width: 4px;
+            height: 30px;
+            background: var(--primary-color);
+            border-radius: 2px;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            color: var(--text-primary);
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        h4 {
+            font-size: 1.2rem;
+            color: var(--text-primary);
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        p {
+            margin-bottom: 15px;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        .card {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            border: 2px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-4px);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin: 5px 5px 5px 0;
+        }
+
+        .badge-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .badge-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .badge-warning {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .badge-info {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        code {
+            background: var(--code-bg);
+            color: var(--code-text);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', 'Consolas', monospace;
+            font-size: 0.9em;
+        }
+
+        pre {
+            background: var(--code-bg);
+            color: var(--code-text);
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: inherit;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        th {
+            background: var(--primary-color);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        tr:hover {
+            background: var(--bg-secondary);
+        }
+
+        ul, ol {
+            margin-left: 25px;
+            margin-bottom: 15px;
+            color: var(--text-secondary);
+        }
+
+        li {
+            margin-bottom: 8px;
+            line-height: 1.7;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #fef3c7 0%, #fde68a 100%);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .architecture-diagram {
+            background: var(--bg-tertiary);
+            padding: 30px;
+            border-radius: 12px;
+            margin: 30px 0;
+            border: 2px dashed var(--border-color);
+        }
+
+        .file-structure {
+            background: var(--code-bg);
+            color: var(--code-text);
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'SF Mono', monospace;
+            margin: 20px 0;
+            line-height: 1.8;
+        }
+
+        .toc {
+            background: var(--bg-secondary);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 40px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .toc h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+
+        .toc ul {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .toc li {
+            margin-bottom: 10px;
+        }
+
+        .toc a {
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .toc a:hover {
+            color: var(--primary-color);
+        }
+
+        footer {
+            background: var(--bg-secondary);
+            padding: 30px 40px;
+            text-align: center;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+            margin: 40px 0;
+        }
+
+        .info-box {
+            background: #dbeafe;
+            border-left: 4px solid var(--primary-color);
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .warning-box {
+            background: #fef3c7;
+            border-left: 4px solid var(--warning-color);
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .success-box {
+            background: #d1fae5;
+            border-left: 4px solid var(--success-color);
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+
+            main {
+                padding: 20px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            nav ul {
+                flex-direction: column;
+            }
+        }
+
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .method-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .method-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🕌 Salat Times</h1>
+            <p class="subtitle">Comprehensive Documentation - Code & Business Level</p>
+            <span class="version">Version 1.1</span>
+        </header>
+
+        <nav>
+            <ul>
+                <li><a href="#overview">Overview</a></li>
+                <li><a href="#business">Business</a></li>
+                <li><a href="#architecture">Architecture</a></li>
+                <li><a href="#components">Components</a></li>
+                <li><a href="#api">API Integration</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#technical">Technical Details</a></li>
+            </ul>
+        </nav>
+
+        <main>
+            <section id="overview">
+                <h2>📋 Overview</h2>
+                <div class="card">
+                    <p><strong>Salat Times</strong> is a native macOS menu bar application designed to provide accurate Islamic prayer times (Salat/Salah times) for Muslims worldwide. The app offers a clean, minimal interface accessible directly from the macOS menu bar, ensuring users can easily check prayer times without interrupting their workflow.</p>
+                    
+                    <p>The application is built using <strong>SwiftUI</strong> and follows modern macOS design principles, featuring bilingual support (Arabic and English), customizable calculation methods, and intelligent notification scheduling.</p>
+                </div>
+
+                <div class="toc">
+                    <h3>Quick Navigation</h3>
+                    <ul>
+                        <li><a href="#business-overview">Business Overview</a></li>
+                        <li><a href="#target-audience">Target Audience</a></li>
+                        <li><a href="#key-features">Key Features</a></li>
+                        <li><a href="#architecture-overview">Architecture Overview</a></li>
+                        <li><a href="#file-structure">File Structure</a></li>
+                        <li><a href="#core-components">Core Components</a></li>
+                        <li><a href="#api-details">API Integration</a></li>
+                        <li><a href="#notification-system">Notification System</a></li>
+                        <li><a href="#localization">Localization</a></li>
+                        <li><a href="#settings-management">Settings Management</a></li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="business">
+                <h2>💼 Business Level Documentation</h2>
+
+                <h3 id="business-overview">Business Overview</h3>
+                <div class="card">
+                    <p>Salat Times addresses a fundamental need for Muslim users on macOS: convenient access to accurate prayer times. Unlike web-based solutions or mobile apps, this native macOS application integrates seamlessly into the user's desktop environment, providing instant access without requiring a browser or mobile device.</p>
+                    
+                    <p><strong>Value Proposition:</strong></p>
+                    <ul>
+                        <li>Native macOS integration with menu bar accessibility</li>
+                        <li>Offline-first approach with cached prayer times</li>
+                        <li>Multiple calculation methods for different Islamic schools of thought</li>
+                        <li>Bilingual interface supporting Arabic and English</li>
+                        <li>Intelligent notifications that adapt to user preferences</li>
+                    </ul>
+                </div>
+
+                <h3 id="target-audience">Target Audience</h3>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <span class="feature-icon">👨‍💼</span>
+                        <h4>Muslim Professionals</h4>
+                        <p>Working professionals who need quick access to prayer times during work hours without disrupting their workflow.</p>
+                    </div>
+                    <div class="feature-card">
+                        <span class="feature-icon">🎓</span>
+                        <h4>Students & Academics</h4>
+                        <p>Students and researchers who spend significant time on their Macs and need reliable prayer time reminders.</p>
+                    </div>
+                    <div class="feature-card">
+                        <span class="feature-icon">🌍</span>
+                        <h4>Global Muslim Community</h4>
+                        <p>Muslims living in various countries who need accurate prayer times based on their location and preferred calculation method.</p>
+                    </div>
+                </div>
+
+                <h3 id="key-features">Key Features</h3>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <span class="feature-icon">📍</span>
+                        <h4>Multi-City Support</h4>
+                        <p>Pre-configured support for major cities including Cairo, Riyadh, New York, Kafr El-Sheikh, and Algiers with easy city selection.</p>
+                    </div>
+                    <div class="feature-card">
+                        <span class="feature-icon">🌐</span>
+                        <h4>Bilingual Interface</h4>
+                        <p>Full support for Arabic (RTL) and English (LTR) languages with proper text direction and locale handling.</p>
+                    </div>
+                    <div class="feature-card">
+                        <span class="feature-icon">⏰</span>
+                        <h4>Flexible Time Format</h4>
+                        <p>Support for both 24-hour (18:00) and 12-hour (6:00 PM) time formats based on user preference.</p>
+                    </div>
+                    <div class="feature-card">
+                        <span class="feature-icon">🧮</span>
+                        <h4>Multiple Calculation Methods</h4>
+                        <p>Support for various Islamic calculation methods including Egyptian General Authority, Umm Al-Qura, Muslim World League, and ISNA.</p>
+                    </div>
+                    <div class="feature-card">
+                        <span class="feature-icon">🔔</span>
+                        <h4>Smart Notifications</h4>
+                        <p>Automatic prayer time notifications with test prayer functionality for verification and debugging.</p>
+                    </div>
+                    <div class="feature-card">
+                        <span class="feature-icon">🎨</span>
+                        <h4>Modern UI Design</h4>
+                        <p>Beautiful, modern interface with visual highlighting of upcoming prayers and intuitive navigation.</p>
+                    </div>
+                </div>
+
+                <h3>Supported Cities</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>City</th>
+                            <th>Arabic Name</th>
+                            <th>Country</th>
+                            <th>Coordinates</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Cairo</strong></td>
+                            <td>القاهرة، مصر</td>
+                            <td>Egypt</td>
+                            <td>30.0444°N, 31.2357°E</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Riyadh</strong></td>
+                            <td>الرياض، السعودية</td>
+                            <td>Saudi Arabia</td>
+                            <td>24.7136°N, 46.6753°E</td>
+                        </tr>
+                        <tr>
+                            <td><strong>New York</strong></td>
+                            <td>نيويورك، أمريكا</td>
+                            <td>USA</td>
+                            <td>40.7128°N, -74.0060°W</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Kafr El-Sheikh</strong></td>
+                            <td>كفر الشيخ، مصر</td>
+                            <td>Egypt</td>
+                            <td>31.1107°N, 30.9388°E</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Algiers</strong></td>
+                            <td>الجزائر العاصمة</td>
+                            <td>Algeria</td>
+                            <td>36.7528°N, 3.0420°E</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Calculation Methods</h3>
+                <div class="method-list">
+                    <div class="method-item">
+                        <h4>Method 5: Egyptian General Authority</h4>
+                        <p>Default method used in Egypt and many Arab countries. Uses angles of 19.5° for Fajr and 17.5° for Isha.</p>
+                    </div>
+                    <div class="method-item">
+                        <h4>Method 4: Umm Al-Qura (Makkah)</h4>
+                        <p>Official method used in Saudi Arabia. Fixed times for Fajr (18:00) and Isha (19:30) during certain periods.</p>
+                    </div>
+                    <div class="method-item">
+                        <h4>Method 3: Muslim World League</h4>
+                        <p>International method using angles of 18° for Fajr and 17° for Isha, suitable for mid-latitude regions.</p>
+                    </div>
+                    <div class="method-item">
+                        <h4>Method 2: ISNA (North America)</h4>
+                        <p>Islamic Society of North America method, optimized for North American latitudes using 15° and 15° angles.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="architecture">
+                <h2>🏗️ Architecture & Code Level Documentation</h2>
+
+                <h3 id="architecture-overview">Architecture Overview</h3>
+                <div class="card">
+                    <p>Salat Times follows a <strong>Model-View-ViewModel (MVVM)</strong> architecture pattern, leveraging SwiftUI's reactive programming model and Combine framework for state management.</p>
+                    
+                    <div class="architecture-diagram">
+                        <h4>Architecture Layers:</h4>
+                        <ul>
+                            <li><strong>View Layer:</strong> SwiftUI views (ContentView, SettingsView) - handles UI presentation</li>
+                            <li><strong>ViewModel Layer:</strong> PrayerManager (ObservableObject) - manages business logic and state</li>
+                            <li><strong>Model Layer:</strong> Data structures (PrayerResponse, PrayerData, City enum) - represents data</li>
+                            <li><strong>Service Layer:</strong> API integration, Location services, Notification scheduling</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3 id="file-structure">File Structure</h3>
+                <div class="file-structure">
+Salat Times/
+├── SalatTimesApp.swift          # Main app entry point
+├── ContentView.swift             # Main menu bar view
+├── SettingsView.swift            # Settings window view
+├── PrayerManager.swift           # Core business logic & state management
+├── Salat-Times-Info.plist        # App configuration (LSUIElement)
+└── *.gpx                         # Location files for testing
+                </div>
+
+                <h3>Technology Stack</h3>
+                <div class="tech-stack">
+                    <span class="badge badge-primary">Swift 5.0</span>
+                    <span class="badge badge-primary">SwiftUI</span>
+                    <span class="badge badge-primary">AppKit</span>
+                    <span class="badge badge-primary">Combine</span>
+                    <span class="badge badge-primary">CoreLocation</span>
+                    <span class="badge badge-primary">UserNotifications</span>
+                    <span class="badge badge-primary">macOS 13.0+</span>
+                </div>
+
+                <div class="info-box">
+                    <strong>Note:</strong> The app requires macOS 13.0 or later and uses App Sandbox with outgoing network connections enabled for API calls.
+                </div>
+            </section>
+
+            <section id="components">
+                <h2>🧩 Core Components</h2>
+
+                <h3 id="core-components">1. SalatTimesApp (App Entry Point)</h3>
+                <div class="card">
+                    <p><strong>File:</strong> <code>SalatTimesApp.swift</code></p>
+                    <p><strong>Purpose:</strong> Main application structure and window management.</p>
+                    
+                    <h4>Key Responsibilities:</h4>
+                    <ul>
+                        <li>Initializes the <code>PrayerManager</code> as a <code>@StateObject</code></li>
+                        <li>Creates the menu bar extra (menu bar icon) with <code>MenuBarExtra</code></li>
+                        <li>Manages the settings window using SwiftUI's <code>Window</code> scene</li>
+                        <li>Configures window properties (size, resizability)</li>
+                    </ul>
+
+                    <h4>Key Code:</h4>
+                    <pre><code>@main
+struct SalatTimesApp: App {
+    @StateObject private var manager = PrayerManager()
+    
+    var body: some Scene {
+        MenuBarExtra("Salat Times", systemImage: "moon.stars.fill") {
+            ContentView()
+                .environmentObject(manager)
+        }
+        .menuBarExtraStyle(.window)
+        
+        Window("الإعدادات", id: "settings") {
+            SettingsView()
+                .environmentObject(manager)
+        }
+    }
+}</code></pre>
+                </div>
+
+                <h3>2. PrayerManager (Core Business Logic)</h3>
+                <div class="card">
+                    <p><strong>File:</strong> <code>PrayerManager.swift</code></p>
+                    <p><strong>Purpose:</strong> Central state management and business logic coordinator.</p>
+                    
+                    <h4>Key Responsibilities:</h4>
+                    <ul>
+                        <li>Manages prayer times data (<code>@Published var timings</code>)</li>
+                        <li>Handles API communication with Aladhan API</li>
+                        <li>Manages location services (CLLocationManager)</li>
+                        <li>Schedules and manages prayer time notifications</li>
+                        <li>Handles loading states and error messages</li>
+                        <li>Manages test prayer functionality for debugging</li>
+                    </ul>
+
+                    <h4>Published Properties:</h4>
+                    <ul>
+                        <li><code>timings: [String: String]</code> - Dictionary of prayer times</li>
+                        <li><code>isLoading: Bool</code> - Loading state indicator</li>
+                        <li><code>city: String</code> - Current selected city</li>
+                        <li><code>errorMessage: String?</code> - Error message display</li>
+                        <li><code>testPrayerTime: Date?</code> - Test prayer time for debugging</li>
+                        <li><code>testPrayerName: String</code> - Test prayer name</li>
+                    </ul>
+
+                    <h4>Key Methods:</h4>
+                    <ul>
+                        <li><code>loadSavedCity()</code> - Loads saved city from UserDefaults and fetches prayer times</li>
+                        <li><code>fetchPrayerTimes(lat:lon:)</code> - Fetches prayer times from API</li>
+                        <li><code>schedulePrayerNotifications()</code> - Schedules all prayer notifications</li>
+                        <li><code>scheduleTestPrayerNotification()</code> - Schedules a test notification</li>
+                        <li><code>requestNotificationPermission()</code> - Requests notification permissions</li>
+                    </ul>
+
+                    <div class="info-box">
+                        <strong>Architecture Pattern:</strong> PrayerManager acts as both a ViewModel (ObservableObject) and a Service layer, handling both state management and external service integration.
+                    </div>
+                </div>
+
+                <h3>3. ContentView (Main Menu Bar View)</h3>
+                <div class="card">
+                    <p><strong>File:</strong> <code>ContentView.swift</code></p>
+                    <p><strong>Purpose:</strong> Displays prayer times in the menu bar popup window.</p>
+                    
+                    <h4>Key Features:</h4>
+                    <ul>
+                        <li>Displays all six prayer times (Fajr, Sunrise, Dhuhr, Asr, Maghrib, Isha)</li>
+                        <li>Highlights the upcoming prayer with visual distinction</li>
+                        <li>Supports bilingual display (Arabic/English)</li>
+                        <li>Handles 12/24 hour time format conversion</li>
+                        <li>Shows loading states and error messages</li>
+                        <li>Provides refresh button and settings access</li>
+                    </ul>
+
+                    <h4>Key Functions:</h4>
+                    <ul>
+                        <li><code>getCityName()</code> - Returns city name in current language</li>
+                        <li><code>getPrayerName(_:)</code> - Translates prayer names</li>
+                        <li><code>formatTime(_:)</code> - Formats time based on 12/24 hour preference</li>
+                        <li><code>getUpcomingPrayer()</code> - Calculates which prayer is next</li>
+                    </ul>
+
+                    <h4>PrayerRow Component:</h4>
+                    <p>Custom SwiftUI view that displays individual prayer rows with:</p>
+                    <ul>
+                        <li>Icon representation for each prayer</li>
+                        <li>Color-coded visual indicators</li>
+                        <li>Special highlighting for upcoming prayer</li>
+                        <li>Gradient backgrounds and animations</li>
+                    </ul>
+                </div>
+
+                <h3>4. SettingsView (Settings Window)</h3>
+                <div class="card">
+                    <p><strong>File:</strong> <code>SettingsView.swift</code></p>
+                    <p><strong>Purpose:</strong> Provides user configuration interface.</p>
+                    
+                    <h4>Settings Categories:</h4>
+                    <ul>
+                        <li><strong>Language:</strong> Arabic/English selection with radio buttons</li>
+                        <li><strong>Location:</strong> City picker with dropdown menu</li>
+                        <li><strong>Calculation Method:</strong> Islamic calculation method selection</li>
+                        <li><strong>Time Format:</strong> 12/24 hour format toggle</li>
+                        <li><strong>Test Prayer:</strong> Debugging tool for notification testing</li>
+                    </ul>
+
+                    <h4>UserDefaults Keys:</h4>
+                    <ul>
+                        <li><code>appLanguage</code> - "ar" or "en"</li>
+                        <li><code>selectedCityRaw</code> - City enum raw value</li>
+                        <li><code>calculationMethod</code> - Integer (2, 3, 4, or 5)</li>
+                        <li><code>timeFormat24</code> - Boolean</li>
+                    </ul>
+                </div>
+
+                <h3>5. City Enum (Location Data)</h3>
+                <div class="card">
+                    <p><strong>File:</strong> <code>SettingsView.swift</code> (embedded enum)</p>
+                    <p><strong>Purpose:</strong> Defines supported cities with coordinates and localized names.</p>
+                    
+                    <h4>Properties:</h4>
+                    <ul>
+                        <li><code>rawValue: String</code> - English city identifier</li>
+                        <li><code>arabicName: String</code> - Arabic display name</li>
+                        <li><code>englishName: String</code> - English display name</li>
+                        <li><code>coordinates: CLLocationCoordinate2D</code> - GPS coordinates</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="api">
+                <h2>🌐 API Integration</h2>
+
+                <h3 id="api-details">Aladhan API</h3>
+                <div class="card">
+                    <p><strong>API Endpoint:</strong> <code>https://api.aladhan.com/v1/timings</code></p>
+                    <p><strong>Provider:</strong> Aladhan (Islamic Prayer Times API)</p>
+                    
+                    <h4>API Parameters:</h4>
+                    <ul>
+                        <li><code>latitude</code> - Location latitude (Double)</li>
+                        <li><code>longitude</code> - Location longitude (Double)</li>
+                        <li><code>method</code> - Calculation method (Integer: 2, 3, 4, or 5)</li>
+                    </ul>
+
+                    <h4>API Response Structure:</h4>
+                    <pre><code>struct PrayerResponse: Codable {
+    let code: Int
+    let status: String
+    let data: PrayerData
+}
+
+struct PrayerData: Codable {
+    let timings: [String: String]
+    let meta: PrayerMeta
+}
+
+struct PrayerMeta: Codable {
+    let timezone: String
+}</code></pre>
+
+                    <h4>Prayer Time Keys:</h4>
+                    <ul>
+                        <li><code>Fajr</code> - Dawn prayer</li>
+                        <li><code>Sunrise</code> - Sunrise time</li>
+                        <li><code>Dhuhr</code> - Noon prayer</li>
+                        <li><code>Asr</code> - Afternoon prayer</li>
+                        <li><code>Maghrib</code> - Sunset prayer</li>
+                        <li><code>Isha</code> - Night prayer</li>
+                    </ul>
+
+                    <h4>Implementation Details:</h4>
+                    <pre><code>func fetchPrayerTimes(lat: Double, lon: Double) {
+    let method = UserDefaults.standard.integer(forKey: "calculationMethod")
+    let actualMethod = method == 0 ? 5 : method
+    
+    let urlString = "https://api.aladhan.com/v1/timings?latitude=\(lat)&longitude=\(lon)&method=\(actualMethod)"
+    
+    URLSession.shared.dataTask(with: url) { data, _, error in
+        // Handle response and decode JSON
+    }.resume()
+}</code></pre>
+
+                    <div class="warning-box">
+                        <strong>Error Handling:</strong> The app handles network errors gracefully, displaying user-friendly error messages in Arabic or English based on language preference.
+                    </div>
+                </div>
+            </section>
+
+            <section id="notification-system">
+                <h2>🔔 Notification System</h2>
+
+                <h3>Notification Architecture</h3>
+                <div class="card">
+                    <p>The app uses <strong>UserNotifications</strong> framework to schedule prayer time reminders. Notifications are scheduled automatically when prayer times are loaded.</p>
+                    
+                    <h4>Notification Flow:</h4>
+                    <ol>
+                        <li>User grants notification permission on first launch</li>
+                        <li>Prayer times are fetched from API</li>
+                        <li><code>schedulePrayerNotifications()</code> is called</li>
+                        <li>Previous prayer notifications are cancelled</li>
+                        <li>New notifications are scheduled for each prayer</li>
+                        <li>Notifications are localized based on app language</li>
+                    </ol>
+
+                    <h4>Notification Content:</h4>
+                    <ul>
+                        <li><strong>Title:</strong> "حان وقت الصلاة" (Arabic) or "Prayer Time" (English)</li>
+                        <li><strong>Body:</strong> "حان وقت صلاة [Prayer Name]" or "It's time for [Prayer Name] prayer"</li>
+                        <li><strong>Sound:</strong> Default system sound</li>
+                        <li><strong>Badge:</strong> Badge count of 1</li>
+                    </ul>
+
+                    <h4>Test Prayer Feature:</h4>
+                    <p>The app includes a test prayer feature that allows developers and users to schedule a test notification at a specific time to verify the notification system is working correctly.</p>
+
+                    <div class="success-box">
+                        <strong>Best Practice:</strong> The app implements <code>UNUserNotificationCenterDelegate</code> to ensure notifications are displayed even when the app is in the foreground.
+                    </div>
+                </div>
+            </section>
+
+            <section id="localization">
+                <h2>🌍 Localization & Internationalization</h2>
+
+                <h3>Bilingual Support</h3>
+                <div class="card">
+                    <p>The app provides comprehensive bilingual support for Arabic and English, including proper text direction handling.</p>
+                    
+                    <h4>Implementation:</h4>
+                    <ul>
+                        <li><strong>Language Storage:</strong> Uses <code>@AppStorage("appLanguage")</code> with "ar" or "en" values</li>
+                        <li><strong>Text Direction:</strong> Uses <code>layoutDirection</code> environment variable</li>
+                        <li><strong>Locale:</strong> Sets locale based on language selection</li>
+                        <li><strong>Dynamic Translation:</strong> All UI strings are translated dynamically</li>
+                    </ul>
+
+                    <h4>Localized Elements:</h4>
+                    <ul>
+                        <li>Prayer names (Fajr → الفجر)</li>
+                        <li>City names (Cairo → القاهرة، مصر)</li>
+                        <li>UI labels and buttons</li>
+                        <li>Error messages</li>
+                        <li>Notification content</li>
+                        <li>Time format (AM/PM in English, 24-hour in Arabic by default)</li>
+                    </ul>
+
+                    <h4>RTL Support:</h4>
+                    <pre><code>.environment(\.layoutDirection, appLanguage == "ar" ? .rightToLeft : .leftToRight)
+.environment(\.locale, Locale(identifier: appLanguage == "ar" ? "ar" : "en"))</code></pre>
+                </div>
+            </section>
+
+            <section id="settings-management">
+                <h2>⚙️ Settings Management</h2>
+
+                <h3>UserDefaults Integration</h3>
+                <div class="card">
+                    <p>The app uses <code>@AppStorage</code> property wrapper for seamless UserDefaults integration, providing reactive updates when settings change.</p>
+                    
+                    <h4>Persisted Settings:</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Key</th>
+                                <th>Type</th>
+                                <th>Default Value</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>appLanguage</code></td>
+                                <td>String</td>
+                                <td>"ar"</td>
+                                <td>Application language ("ar" or "en")</td>
+                            </tr>
+                            <tr>
+                                <td><code>selectedCityRaw</code></td>
+                                <td>String</td>
+                                <td>"Cairo"</td>
+                                <td>Selected city identifier</td>
+                            </tr>
+                            <tr>
+                                <td><code>calculationMethod</code></td>
+                                <td>Int</td>
+                                <td>5</td>
+                                <td>Prayer calculation method (2, 3, 4, or 5)</td>
+                            </tr>
+                            <tr>
+                                <td><code>timeFormat24</code></td>
+                                <td>Bool</td>
+                                <td>true</td>
+                                <td>24-hour format preference</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4>Settings Persistence Flow:</h4>
+                    <ol>
+                        <li>User changes setting in SettingsView</li>
+                        <li><code>@AppStorage</code> automatically saves to UserDefaults</li>
+                        <li>Views reactively update based on new values</li>
+                        <li>PrayerManager reloads data when city or method changes</li>
+                    </ol>
+                </div>
+            </section>
+
+            <section id="features">
+                <h2>✨ Advanced Features</h2>
+
+                <h3>Upcoming Prayer Detection</h3>
+                <div class="card">
+                    <p>The app intelligently determines which prayer is next and highlights it visually.</p>
+                    
+                    <h4>Algorithm:</h4>
+                    <ol>
+                        <li>Gets current date and time</li>
+                        <li>Converts all prayer times to Date objects</li>
+                        <li>If a prayer time has passed today, adds one day</li>
+                        <li>Sorts all prayer times chronologically</li>
+                        <li>Finds the first prayer time after current time</li>
+                        <li>Highlights that prayer with special styling</li>
+                    </ol>
+
+                    <div class="info-box">
+                        <strong>Visual Highlighting:</strong> Upcoming prayers are displayed with a blue gradient background, bold text, and a directional arrow indicator.
+                    </div>
+                </div>
+
+                <h3>Menu Bar Integration</h3>
+                <div class="card">
+                    <p>The app runs as a menu bar application (LSUIElement = true), meaning it doesn't show in the Dock but appears only in the menu bar.</p>
+                    
+                    <h4>Benefits:</h4>
+                    <ul>
+                        <li>Non-intrusive presence</li>
+                        <li>Quick access via menu bar icon</li>
+                        <li>No Dock clutter</li>
+                        <li>Always accessible without window management</li>
+                    </ul>
+                </div>
+
+                <h3>Error Handling</h3>
+                <div class="card">
+                    <p>Comprehensive error handling ensures a smooth user experience even when network issues occur.</p>
+                    
+                    <h4>Error Scenarios:</h4>
+                    <ul>
+                        <li><strong>Network Failure:</strong> Displays localized error message with retry button</li>
+                        <li><strong>API Errors:</strong> Gracefully handles malformed responses</li>
+                        <li><strong>Location Errors:</strong> Falls back to default city (Cairo)</li>
+                        <li><strong>Permission Denied:</strong> Handles notification permission denial gracefully</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="technical">
+                <h2>🔧 Technical Details</h2>
+
+                <h3>Build Configuration</h3>
+                <div class="card">
+                    <h4>Minimum Requirements:</h4>
+                    <ul>
+                        <li><strong>macOS:</strong> 13.0 or later</li>
+                        <li><strong>Swift:</strong> 5.0</li>
+                        <li><strong>Xcode:</strong> 15.0+</li>
+                    </ul>
+
+                    <h4>App Sandbox Settings:</h4>
+                    <ul>
+                        <li>Outgoing network connections: <span class="badge badge-success">Enabled</span></li>
+                        <li>Incoming network connections: <span class="badge badge-warning">Disabled</span></li>
+                        <li>Location access: <span class="badge badge-success">Enabled</span></li>
+                        <li>User-selected files: <span class="badge badge-info">Read-only</span></li>
+                    </ul>
+
+                    <h4>Bundle Information:</h4>
+                    <ul>
+                        <li><strong>Bundle ID:</strong> Islam-AlorabI.Salat-Times</li>
+                        <li><strong>Category:</strong> Lifestyle</li>
+                        <li><strong>Version:</strong> 1.1</li>
+                    </ul>
+                </div>
+
+                <h3>Data Flow</h3>
+                <div class="card">
+                    <h4>Prayer Times Loading Flow:</h4>
+                    <ol>
+                        <li>App launches → PrayerManager initializes</li>
+                        <li>PrayerManager calls <code>loadSavedCity()</code></li>
+                        <li>Reads <code>selectedCityRaw</code> from UserDefaults</li>
+                        <li>Finds corresponding City enum</li>
+                        <li>Extracts coordinates from City enum</li>
+                        <li>Calls <code>fetchPrayerTimes(lat:lon:)</code></li>
+                        <li>Makes API request to Aladhan API</li>
+                        <li>Decodes JSON response into PrayerResponse</li>
+                        <li>Updates <code>@Published timings</code> property</li>
+                        <li>SwiftUI automatically updates ContentView</li>
+                        <li>Schedules notifications for all prayers</li>
+                    </ol>
+                </div>
+
+                <h3>Performance Considerations</h3>
+                <div class="card">
+                    <ul>
+                        <li><strong>API Calls:</strong> Only made when city or calculation method changes</li>
+                        <li><strong>Notifications:</strong> Scheduled once per day after data fetch</li>
+                        <li><strong>State Updates:</strong> All UI updates happen on main thread</li>
+                        <li><strong>Memory:</strong> Minimal memory footprint with efficient data structures</li>
+                        <li><strong>Network:</strong> Single API call per location change</li>
+                    </ul>
+                </div>
+
+                <h3>Future Enhancement Opportunities</h3>
+                <div class="card">
+                    <ul>
+                        <li>Add more cities to the predefined list</li>
+                        <li>Implement GPS-based automatic location detection</li>
+                        <li>Add widget support for macOS</li>
+                        <li>Implement prayer time history/calendar view</li>
+                        <li>Add Qibla direction indicator</li>
+                        <li>Support for custom notification sounds</li>
+                        <li>Add dark mode optimizations</li>
+                        <li>Implement iCloud sync for settings</li>
+                    </ul>
+                </div>
+            </section>
+
+            <div class="divider"></div>
+
+            <section>
+                <h2>📝 Summary</h2>
+                <div class="card">
+                    <p><strong>Salat Times</strong> is a well-architected, native macOS application that successfully addresses the need for convenient prayer time access on desktop platforms. The app demonstrates:</p>
+                    
+                    <ul>
+                        <li>Clean MVVM architecture with SwiftUI</li>
+                        <li>Comprehensive bilingual support</li>
+                        <li>Robust error handling and user experience</li>
+                        <li>Modern macOS design principles</li>
+                        <li>Efficient API integration</li>
+                        <li>Intelligent notification scheduling</li>
+                        <li>Flexible configuration options</li>
+                    </ul>
+
+                    <p>The codebase is maintainable, well-structured, and follows Swift best practices, making it easy to extend and enhance in the future.</p>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p><strong>Salat Times Documentation</strong></p>
+            <p>Created by Islam AlorabI - 2026</p>
+            <p>Version 1.1 | Last Updated: January 2026</p>
+        </footer>
+    </div>
+</body>
+</html>
