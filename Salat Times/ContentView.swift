@@ -114,7 +114,7 @@ struct ContentView: View    {
             
             // --- الفوتر ---
             HStack {
-                Text("v1.1")
+                Text("v1.5")
                     .font(.caption2)
                     .foregroundColor(.secondary)
                 Spacer()
