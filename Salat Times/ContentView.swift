@@ -75,11 +75,13 @@ struct ContentView: View {
             } else {
                 // قائمة الصلوات
                 VStack(spacing: 4) { // تقليل المسافات بين الأسطر
-                    PrayerRow(name: getPrayerName("Fajr"), time: formatTime(manager.timings["Fajr"]), icon: "sunrise.fill")
+                    PrayerRow(name: getPrayerName("Fajr"), time: formatTime(manager.timings["Fajr"]), icon: "sunrise")
+                    PrayerRow(name: getPrayerName("Sunrise"), time: formatTime(manager.timings["Sunrise"]), icon: "sunrise.fill")
                     PrayerRow(name: getPrayerName("Dhuhr"), time: formatTime(manager.timings["Dhuhr"]), icon: "sun.max.fill")
                     PrayerRow(name: getPrayerName("Asr"), time: formatTime(manager.timings["Asr"]), icon: "sun.min.fill")
                     PrayerRow(name: getPrayerName("Maghrib"), time: formatTime(manager.timings["Maghrib"]), icon: "sunset.fill")
                     PrayerRow(name: getPrayerName("Isha"), time: formatTime(manager.timings["Isha"]), icon: "moon.stars.fill")
+                 //   PrayerRow(name: getPrayerName("Lastthird"), time: formatTime(manager.timings["Lastthird"]), icon: "sparkles")
                 }
                 .padding(.vertical, 12)
             }
@@ -121,10 +123,12 @@ struct ContentView: View {
         if appLanguage == "en" { return key } // إرجاع الاسم الإنجليزي كما هو
         switch key {
         case "Fajr": return "الفجر"
+        case "Sunrise": return "الشروق"
         case "Dhuhr": return "الظهر"
         case "Asr": return "العصر"
         case "Maghrib": return "المغرب"
         case "Isha": return "العشاء"
+       // case "Lastthird": return "الثلث الأخير"
         default: return key
         }
     }
