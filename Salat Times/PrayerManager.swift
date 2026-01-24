@@ -6,6 +6,98 @@ import Combine
 import UserNotifications
 import AppKit
 
+// MARK: - Notification Sound Options
+enum NotificationSound: String, CaseIterable, Identifiable {
+    case defaultSound = "default"
+    case glass = "Glass"
+    case ping = "Ping"
+    case hero = "Hero"
+    case submarine = "Submarine"
+    case purr = "Purr"
+    case basso = "Basso"
+    case blow = "Blow"
+    case funk = "Funk"
+    case sosumi = "Sosumi"
+    
+    var id: String { rawValue }
+    
+    func displayName(language: String) -> String {
+        let names: [String: [String: String]] = [
+            "default": [
+                "ar": "الافتراضي", "en": "Default", "ru": "По умолчанию", "id": "Default",
+                "tr": "Varsayılan", "ur": "طے شدہ", "fa": "پیش‌فرض", "de": "Standard"
+            ],
+            "Glass": [
+                "ar": "زجاج", "en": "Glass", "ru": "Стекло", "id": "Kaca",
+                "tr": "Cam", "ur": "شیشہ", "fa": "شیشه", "de": "Glas"
+            ],
+            "Ping": [
+                "ar": "رنين", "en": "Ping", "ru": "Пинг", "id": "Ping",
+                "tr": "Ping", "ur": "پنگ", "fa": "پینگ", "de": "Ping"
+            ],
+            "Hero": [
+                "ar": "بطولي", "en": "Hero", "ru": "Герой", "id": "Pahlawan",
+                "tr": "Kahraman", "ur": "ہیرو", "fa": "قهرمان", "de": "Held"
+            ],
+            "Submarine": [
+                "ar": "غواصة", "en": "Submarine", "ru": "Подводная лодка", "id": "Kapal selam",
+                "tr": "Denizaltı", "ur": "آبدوز", "fa": "زیردریایی", "de": "U-Boot"
+            ],
+            "Purr": [
+                "ar": "خرخرة", "en": "Purr", "ru": "Мурлыканье", "id": "Dengkur",
+                "tr": "Mırıldama", "ur": "خرخراہٹ", "fa": "خرخر", "de": "Schnurren"
+            ],
+            "Basso": [
+                "ar": "جهير", "en": "Basso", "ru": "Бассо", "id": "Basso",
+                "tr": "Basso", "ur": "باسو", "fa": "باس", "de": "Basso"
+            ],
+            "Blow": [
+                "ar": "نفخة", "en": "Blow", "ru": "Дуновение", "id": "Tiup",
+                "tr": "Üfleme", "ur": "پھونک", "fa": "دم", "de": "Blasen"
+            ],
+            "Funk": [
+                "ar": "فانك", "en": "Funk", "ru": "Фанк", "id": "Funk",
+                "tr": "Funk", "ur": "فنک", "fa": "فانک", "de": "Funk"
+            ],
+            "Sosumi": [
+                "ar": "سوسومي", "en": "Sosumi", "ru": "Сосуми", "id": "Sosumi",
+                "tr": "Sosumi", "ur": "سوسومی", "fa": "سوسومی", "de": "Sosumi"
+            ]
+        ]
+        return names[self.rawValue]?[language] ?? names[self.rawValue]?["en"] ?? self.rawValue
+    }
+    
+    var notificationSound: UNNotificationSound {
+        if self == .defaultSound {
+            return .default
+        }
+        // macOS system sounds are in /System/Library/Sounds/
+        return UNNotificationSound(named: UNNotificationSoundName(rawValue: "\(rawValue).aiff"))
+    }
+}
+
+// MARK: - Prayer Notification Settings Helper
+struct PrayerNotificationSettings {
+    static let prayers = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"]
+    
+    static func isEnabled(for prayer: String) -> Bool {
+        UserDefaults.standard.object(forKey: "notification_\(prayer)_enabled") as? Bool ?? true
+    }
+    
+    static func setEnabled(_ enabled: Bool, for prayer: String) {
+        UserDefaults.standard.set(enabled, forKey: "notification_\(prayer)_enabled")
+    }
+    
+    static func sound(for prayer: String) -> NotificationSound {
+        let rawValue = UserDefaults.standard.string(forKey: "notification_\(prayer)_sound") ?? "default"
+        return NotificationSound(rawValue: rawValue) ?? .defaultSound
+    }
+    
+    static func setSound(_ sound: NotificationSound, for prayer: String) {
+        UserDefaults.standard.set(sound.rawValue, forKey: "notification_\(prayer)_sound")
+    }
+}
+
 struct PrayerResponse: Codable, Sendable {
     let code: Int
     let status: String
@@ -24,10 +116,8 @@ struct PrayerMeta: Codable, Sendable {
 class PrayerManager: NSObject, ObservableObject, CLLocationManagerDelegate, UNUserNotificationCenterDelegate {
     @Published var timings: [String: String] = [:]
     @Published var isLoading = true
-    @Published var city: String = "جاري التحميل..."
+    @Published var city: String = "Loading..."
     @Published var errorMessage: String? = nil
-    @Published var testPrayerTime: Date? = nil
-    @Published var testPrayerName: String = ""
     @Published var countdownText: String = ""
     @Published var upcomingPrayerName: String = ""
     @Published var menuBarTitle: String = "Salat Times"
@@ -86,21 +176,14 @@ class PrayerManager: NSObject, ObservableObject, CLLocationManagerDelegate, UNUs
     }
     
     func schedulePrayerNotifications() {
-        let savedTestTime = testPrayerTime
-        let savedTestName = testPrayerName
-        
         notificationCenter.getPendingNotificationRequests { [weak self] requests in
             guard let self = self else { return }
-            let prayerIdentifiers = requests.filter { $0.identifier.hasPrefix("prayer_") }.map { $0.identifier }
-            self.notificationCenter.removePendingNotificationRequests(withIdentifiers: prayerIdentifiers)
+            let prayerIds = requests.filter { $0.identifier.hasPrefix("prayer_") }.map { $0.identifier }
+            let legacyTestIds = requests.filter { $0.identifier.hasPrefix("test_prayer_") }.map { $0.identifier }
+            self.notificationCenter.removePendingNotificationRequests(withIdentifiers: prayerIds + legacyTestIds)
             
             DispatchQueue.main.async {
                 self.schedulePrayerNotificationsInternal()
-                if savedTestTime != nil, !savedTestName.isEmpty {
-                    self.testPrayerTime = savedTestTime
-                    self.testPrayerName = savedTestName
-                    self.scheduleTestPrayerNotification()
-                }
             }
         }
     }
@@ -109,21 +192,16 @@ class PrayerManager: NSObject, ObservableObject, CLLocationManagerDelegate, UNUs
         let calendar = Calendar.current
         let today = Date()
         
-        let prayerNames: [String: (ar: String, en: String)] = [
-            "Fajr": ("الفجر", "Fajr"),
-            "Dhuhr": ("الظهر", "Dhuhr"),
-            "Asr": ("العصر", "Asr"),
-            "Maghrib": ("المغرب", "Maghrib"),
-            "Isha": ("العشاء", "Isha")
-        ]
-        
         let appLanguage = UserDefaults.standard.string(forKey: "appLanguage") ?? "ar"
         
         for (key, timeString) in timings {
-            guard let prayerInfo = prayerNames[key] else { continue }
+            guard ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"].contains(key) else { continue }
             
-            let formatter = DateFormatter()
-            formatter.dateFormat = "HH:mm"
+            // Check if notification is enabled for this prayer
+            guard PrayerNotificationSettings.isEnabled(for: key) else {
+                print("⏭️ Notification disabled for \(key), skipping")
+                continue
+            }
             
             let timeComponents = timeString.split(separator: ":").compactMap({ Int($0) })
             guard timeComponents.count == 2 else { continue }
@@ -143,10 +221,16 @@ class PrayerManager: NSObject, ObservableObject, CLLocationManagerDelegate, UNUs
             }
             
             let content = UNMutableNotificationContent()
-            let prayerName = appLanguage == "ar" ? prayerInfo.ar : prayerInfo.en
-            content.title = appLanguage == "ar" ? "حان وقت الصلاة" : "Prayer Time"
-            content.body = appLanguage == "ar" ? "حان وقت صلاة \(prayerName)" : "It's time for \(prayerName) prayer"
-            content.sound = .default
+            let prayerTranslationKey = "prayer_\(key.lowercased())"
+            let prayerName = Translations.string(prayerTranslationKey, language: appLanguage)
+            let title = Translations.string("prayer_time", language: appLanguage)
+            let bodyFormat = Translations.string("prayer_time_body", language: appLanguage)
+            content.title = title
+            content.body = String(format: bodyFormat, prayerName)
+            
+            // Use custom sound for this prayer
+            let soundSetting = PrayerNotificationSettings.sound(for: key)
+            content.sound = soundSetting.notificationSound
             content.badge = 1
             
             let triggerDate = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: prayerDate)
@@ -159,52 +243,9 @@ class PrayerManager: NSObject, ObservableObject, CLLocationManagerDelegate, UNUs
                 if let error = error {
                     print("❌ Error scheduling notification for \(key): \(error.localizedDescription)")
                 } else {
-                    print("✅ Scheduled notification for \(prayerName) at \(timeString)")
+                    print("✅ Scheduled notification for \(prayerName) at \(timeString) with sound: \(soundSetting.rawValue)")
                 }
             }
-        }
-    }
-    
-    func scheduleTestPrayerNotification() {
-        guard let testTime = testPrayerTime, !testPrayerName.isEmpty else { return }
-        
-        let appLanguage = UserDefaults.standard.string(forKey: "appLanguage") ?? "ar"
-        
-        let content = UNMutableNotificationContent()
-        content.title = appLanguage == "ar" ? "اختبار: حان وقت الصلاة" : "Test: Prayer Time"
-        content.body = appLanguage == "ar" ? "اختبار: حان وقت صلاة \(testPrayerName)" : "Test: It's time for \(testPrayerName) prayer"
-        content.sound = .default
-        content.badge = 1
-        
-        let calendar = Calendar.current
-        let triggerDate = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: testTime)
-        let trigger = UNCalendarNotificationTrigger(dateMatching: triggerDate, repeats: false)
-        
-        let identifier = "test_prayer_\(testTime.timeIntervalSince1970)"
-        let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
-        
-        notificationCenter.add(request) { [weak self] error in
-            guard let self = self else { return }
-            if let error = error {
-                print("❌ Error scheduling test prayer notification: \(error.localizedDescription)")
-            } else {
-                print("✅ Scheduled test prayer notification for \(self.testPrayerName) at \(testTime)")
-            }
-        }
-    }
-    
-    func addTestPrayer(name: String, time: Date) {
-        testPrayerName = name
-        testPrayerTime = time
-        scheduleTestPrayerNotification()
-    }
-    
-    func removeTestPrayer() {
-        testPrayerName = ""
-        testPrayerTime = nil
-        notificationCenter.getPendingNotificationRequests { requests in
-            let testIdentifiers = requests.filter { $0.identifier.hasPrefix("test_prayer_") }.map { $0.identifier }
-            self.notificationCenter.removePendingNotificationRequests(withIdentifiers: testIdentifiers)
         }
     }
     
@@ -221,7 +262,7 @@ class PrayerManager: NSObject, ObservableObject, CLLocationManagerDelegate, UNUs
         if let cityEnum = City.allCases.first(where: { $0.rawValue == savedCityRaw }) {
             self.city = cityEnum.rawValue
             let coords = cityEnum.coordinates
-            print("🌍 تحميل بيانات المدينة اليدوية: \(cityEnum.rawValue)")
+            print("🌍 Loading manual city data: \(cityEnum.rawValue)")
             fetchPrayerTimes(lat: coords.latitude, lon: coords.longitude)
         } else {
             locationManager.requestWhenInUseAuthorization()
@@ -250,7 +291,8 @@ class PrayerManager: NSObject, ObservableObject, CLLocationManagerDelegate, UNUs
         URLSession.shared.dataTask(with: url) { data, _, error in
             if error != nil {
                 DispatchQueue.main.async {
-                    self.errorMessage = "تأكد من الاتصال بالإنترنت"
+                    let appLanguage = UserDefaults.standard.string(forKey: "appLanguage") ?? "ar"
+                    self.errorMessage = Translations.string("check_internet", language: appLanguage)
                     self.isLoading = false
                 }
                 return
@@ -286,15 +328,6 @@ class PrayerManager: NSObject, ObservableObject, CLLocationManagerDelegate, UNUs
         let now = Date()
         let prayerOrder = ["Fajr", "Sunrise", "Dhuhr", "Asr", "Maghrib", "Isha"]
         var prayerDates: [(key: String, date: Date)] = []
-        
-        let prayerNames: [String: (ar: String, en: String)] = [
-            "Fajr": ("الفجر", "Fajr"),
-            "Sunrise": ("الشروق", "Sunrise"),
-            "Dhuhr": ("الظهر", "Dhuhr"),
-            "Asr": ("العصر", "Asr"),
-            "Maghrib": ("المغرب", "Maghrib"),
-            "Isha": ("العشاء", "Isha")
-        ]
         
         let appLanguage = UserDefaults.standard.string(forKey: "appLanguage") ?? "ar"
         
@@ -334,13 +367,40 @@ class PrayerManager: NSObject, ObservableObject, CLLocationManagerDelegate, UNUs
         let hours = Int(timeRemaining) / 3600
         let minutes = (Int(timeRemaining) % 3600) / 60
         
-        let prayerInfo = prayerNames[upcoming.key] ?? ("", "")
-        let prayerName = appLanguage == "ar" ? prayerInfo.ar : prayerInfo.en
+        let prayerTranslationKey = "prayer_\(upcoming.key.lowercased())"
+        let prayerName = Translations.string(prayerTranslationKey, language: appLanguage)
         
+        // Format countdown text based on language
         if hours > 0 {
-            countdownText = appLanguage == "ar" ? "\(hours)س \(minutes)د" : "\(hours)h \(minutes)m"
+            switch appLanguage {
+            case "ar", "ur", "fa":
+                countdownText = "\(hours)س \(minutes)د"
+            case "ru":
+                countdownText = "\(hours)ч \(minutes)м"
+            case "id":
+                countdownText = "\(hours)j \(minutes)m"
+            case "tr":
+                countdownText = "\(hours)s \(minutes)d"
+            case "de":
+                countdownText = "\(hours)h \(minutes)m"
+            default:
+                countdownText = "\(hours)h \(minutes)m"
+            }
         } else {
-            countdownText = appLanguage == "ar" ? "\(minutes)د" : "\(minutes)m"
+            switch appLanguage {
+            case "ar", "ur", "fa":
+                countdownText = "\(minutes)د"
+            case "ru":
+                countdownText = "\(minutes)м"
+            case "id":
+                countdownText = "\(minutes)m"
+            case "tr":
+                countdownText = "\(minutes)d"
+            case "de":
+                countdownText = "\(minutes)m"
+            default:
+                countdownText = "\(minutes)m"
+            }
         }
         
         upcomingPrayerName = prayerName

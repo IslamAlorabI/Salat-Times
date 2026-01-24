@@ -13,7 +13,7 @@ struct ContentView: View    {
         VStack(spacing: 0) {
             
             HStack {
-                if appLanguage == "ar" {
+                if Translations.isRTL(appLanguage) {
                     Button(action: {
                         manager.loadSavedCity()
                     }) {
@@ -25,23 +25,23 @@ struct ContentView: View    {
                             .clipShape(Circle())
                     }
                     .buttonStyle(.plain)
-                    .help(appLanguage == "ar" ? "تحديث البيانات" : "Refresh Data")
+                    .help(Translations.string("refresh_data", language: appLanguage))
                     
                     Spacer()
                 }
                 
-                VStack(alignment: appLanguage == "ar" ? .trailing : .leading, spacing: 4) {
-                    Text(appLanguage == "ar" ? "أوقات الصلاة اليوم" : "Prayer Times Today")
+                VStack(alignment: Translations.isRTL(appLanguage) ? .trailing : .leading, spacing: 4) {
+                    Text(Translations.string("prayer_times_today", language: appLanguage))
                         .font(.system(size: 18, weight: .bold, design: .rounded))
-                        .multilineTextAlignment(appLanguage == "ar" ? .trailing : .leading)
+                        .multilineTextAlignment(Translations.isRTL(appLanguage) ? .trailing : .leading)
                     
                     Text(getCityName())
                         .font(.system(size: 13))
                         .foregroundColor(.secondary)
-                        .multilineTextAlignment(appLanguage == "ar" ? .trailing : .leading)
+                        .multilineTextAlignment(Translations.isRTL(appLanguage) ? .trailing : .leading)
                 }
                 
-                if appLanguage != "ar" {
+                if !Translations.isRTL(appLanguage) {
                     Spacer()
                     
                     Button(action: {
@@ -55,7 +55,7 @@ struct ContentView: View    {
                             .clipShape(Circle())
                     }
                     .buttonStyle(.plain)
-                    .help(appLanguage == "ar" ? "تحديث البيانات" : "Refresh Data")
+                    .help(Translations.string("refresh_data", language: appLanguage))
                 }
             }
             .padding(.horizontal, 16)
@@ -79,7 +79,7 @@ struct ContentView: View    {
                         .foregroundColor(.orange)
                     Text(error)
                         .font(.caption)
-                    Button(appLanguage == "ar" ? "إعادة المحاولة" : "Retry") {
+                    Button(Translations.string("retry", language: appLanguage)) {
                         manager.loadSavedCity()
                     }
                     Spacer()
@@ -105,24 +105,11 @@ struct ContentView: View    {
                     .foregroundColor(.secondary)
                 Spacer()
                 
-                Button(action: {
-                    NSApplication.shared.terminate(nil)
-                }) {
-                    HStack(spacing: 4) {
-                        Image(systemName: "power")
-                        Text(appLanguage == "ar" ? "إغلاق" : "Quit")
-                    }
-                    .font(.system(size: 12, weight: .medium))
-                }
-                .buttonStyle(.link)
-                
-                Spacer()
-                
                 Button {
                     openWindow(id: "settings")
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                         NSApplication.shared.activate(ignoringOtherApps: true)
-                        if let window = NSApplication.shared.windows.first(where: { $0.title == "الإعدادات" || $0.title == "Settings" }) {
+                        if let window = NSApplication.shared.windows.first(where: { $0.title == Translations.string("settings", language: appLanguage) }) {
                             window.makeKeyAndOrderFront(nil)
                             window.orderFrontRegardless()
                         }
@@ -130,7 +117,20 @@ struct ContentView: View    {
                 } label: {
                     HStack(spacing: 4) {
                         Image(systemName: "gearshape")
-                        Text(appLanguage == "ar" ? "الإعدادات" : "Settings")
+                        Text(Translations.string("settings", language: appLanguage))
+                    }
+                    .font(.system(size: 12, weight: .medium))
+                }
+                .buttonStyle(.link)
+                
+                Spacer()
+                
+                Button(action: {
+                    NSApplication.shared.terminate(nil)
+                }) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "power")
+                        Text(Translations.string("quit", language: appLanguage))
                     }
                     .font(.system(size: 12, weight: .medium))
                 }
@@ -142,8 +142,8 @@ struct ContentView: View    {
         .frame(width: 300)
         .fixedSize(horizontal: true, vertical: true)
         .background(.ultraThinMaterial)
-        .environment(\.layoutDirection, appLanguage == "ar" ? .rightToLeft : .leftToRight)
-        .environment(\.locale, Locale(identifier: appLanguage == "ar" ? "ar" : "en"))
+        .environment(\.layoutDirection, Translations.isRTL(appLanguage) ? .rightToLeft : .leftToRight)
+        .environment(\.locale, Locale(identifier: Translations.locale(appLanguage)))
         .onAppear {
             DispatchQueue.main.async {
                 if let window = NSApplication.shared.windows.first(where: { $0.contentView?.subviews.contains(where: { $0 is NSHostingView<ContentView> }) ?? false }) {
@@ -157,20 +157,19 @@ struct ContentView: View    {
     
     func getCityName() -> String {
         if let cityEnum = City.allCases.first(where: { $0.rawValue == manager.city }) {
-            return appLanguage == "ar" ? cityEnum.arabicName : cityEnum.englishName
+            return cityEnum.getName(language: appLanguage)
         }
         return manager.city
     }
     
     func getPrayerName(_ key: String) -> String {
-        if appLanguage == "en" { return key }
         switch key {
-        case "Fajr": return "الفجر"
-        case "Sunrise": return "الشروق"
-        case "Dhuhr": return "الظهر"
-        case "Asr": return "العصر"
-        case "Maghrib": return "المغرب"
-        case "Isha": return "العشاء"
+        case "Fajr": return Translations.string("prayer_fajr", language: appLanguage)
+        case "Sunrise": return Translations.string("prayer_sunrise", language: appLanguage)
+        case "Dhuhr": return Translations.string("prayer_dhuhr", language: appLanguage)
+        case "Asr": return Translations.string("prayer_asr", language: appLanguage)
+        case "Maghrib": return Translations.string("prayer_maghrib", language: appLanguage)
+        case "Isha": return Translations.string("prayer_isha", language: appLanguage)
         default: return key
         }
     }
@@ -183,7 +182,7 @@ struct ContentView: View    {
         formatter.dateFormat = "HH:mm"
         if let date = formatter.date(from: time) {
             formatter.dateFormat = "h:mm a"
-            formatter.locale = Locale(identifier: appLanguage == "ar" ? "ar" : "en")
+            formatter.locale = Locale(identifier: Translations.locale(appLanguage))
             return formatter.string(from: date)
         }
         return time
@@ -292,6 +291,10 @@ struct PrayerRow: View {
                 } else {
                     RoundedRectangle(cornerRadius: 6)
                         .fill(.ultraThinMaterial.opacity(0.4))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 6)
+                                .stroke(Color.primary.opacity(0.15), lineWidth: 1)
+                        )
                 }
             }
         )
