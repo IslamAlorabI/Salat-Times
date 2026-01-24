@@ -104,7 +104,21 @@ struct ContentView: View    {
                     .font(.caption2)
                     .foregroundColor(.secondary)
                 Spacer()
-                Button(appLanguage == "ar" ? "الإعدادات" : "Settings") {
+                
+                Button(action: {
+                    NSApplication.shared.terminate(nil)
+                }) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "power")
+                        Text(appLanguage == "ar" ? "إغلاق" : "Quit")
+                    }
+                    .font(.system(size: 12, weight: .medium))
+                }
+                .buttonStyle(.link)
+                
+                Spacer()
+                
+                Button {
                     openWindow(id: "settings")
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                         NSApplication.shared.activate(ignoringOtherApps: true)
@@ -113,9 +127,14 @@ struct ContentView: View    {
                             window.orderFrontRegardless()
                         }
                     }
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: "gearshape")
+                        Text(appLanguage == "ar" ? "الإعدادات" : "Settings")
+                    }
+                    .font(.system(size: 12, weight: .medium))
                 }
                 .buttonStyle(.link)
-                .font(.system(size: 12, weight: .medium))
             }
             .padding(10)
             .background(.thinMaterial)

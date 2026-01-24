@@ -7,9 +7,16 @@ struct SalatTimesApp: App {
     @StateObject private var manager = PrayerManager()
     
     var body: some Scene {
-        MenuBarExtra("Salat Times", systemImage: "moon.stars.fill") {
+        MenuBarExtra {
             ContentView()
                 .environmentObject(manager)
+        } label: {
+            HStack(spacing: 6) {
+                Image(systemName: "moon.stars.fill")
+                    .imageScale(.small)
+                Text(manager.menuBarTitle)
+                    .font(.system(size: 11))
+            }
         }
         .menuBarExtraStyle(.window)
         

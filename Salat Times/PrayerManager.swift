@@ -4,6 +4,7 @@ import CoreLocation
 import SwiftUI
 import Combine
 import UserNotifications
+import AppKit
 
 struct PrayerResponse: Codable, Sendable {
     let code: Int
@@ -27,17 +28,51 @@ class PrayerManager: NSObject, ObservableObject, CLLocationManagerDelegate, UNUs
     @Published var errorMessage: String? = nil
     @Published var testPrayerTime: Date? = nil
     @Published var testPrayerName: String = ""
+    @Published var countdownText: String = ""
+    @Published var upcomingPrayerName: String = ""
+    @Published var menuBarTitle: String = "Salat Times"
     
     private let locationManager = CLLocationManager()
     private let notificationCenter = UNUserNotificationCenter.current()
+    private var countdownTimer: Timer?
+    private var languageObserver: NSObjectProtocol?
+    private var lastLanguage: String = ""
     
     override init() {
         super.init()
         locationManager.delegate = self
         notificationCenter.delegate = self
         
+        lastLanguage = UserDefaults.standard.string(forKey: "appLanguage") ?? "ar"
+        
         loadSavedCity()
         requestNotificationPermission()
+        startCountdownTimer()
+        observeLanguageChanges()
+    }
+    
+    deinit {
+        countdownTimer?.invalidate()
+        if let observer = languageObserver {
+            NotificationCenter.default.removeObserver(observer)
+        }
+    }
+    
+    func observeLanguageChanges() {
+        // Observe UserDefaults changes
+        languageObserver = NotificationCenter.default.addObserver(
+            forName: UserDefaults.didChangeNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            guard let self = self else { return }
+            let currentLanguage = UserDefaults.standard.string(forKey: "appLanguage") ?? "ar"
+            // Only update if language actually changed
+            if currentLanguage != self.lastLanguage {
+                self.lastLanguage = currentLanguage
+                self.updateCountdown()
+            }
+        }
     }
     
     func requestNotificationPermission() {
@@ -228,9 +263,93 @@ class PrayerManager: NSObject, ObservableObject, CLLocationManagerDelegate, UNUs
                         self.timings = decoded.data.timings
                         self.isLoading = false
                         self.schedulePrayerNotifications()
+                        self.updateCountdown()
                     }
                 }
             }
         }.resume()
+    }
+    
+    func startCountdownTimer() {
+        countdownTimer = Timer.scheduledTimer(withTimeInterval: 60.0, repeats: true) { [weak self] _ in
+            DispatchQueue.main.async {
+                self?.updateCountdown()
+            }
+        }
+        DispatchQueue.main.async {
+            self.updateCountdown()
+        }
+    }
+    
+    func updateCountdown() {
+        let calendar = Calendar.current
+        let now = Date()
+        let prayerOrder = ["Fajr", "Sunrise", "Dhuhr", "Asr", "Maghrib", "Isha"]
+        var prayerDates: [(key: String, date: Date)] = []
+        
+        let prayerNames: [String: (ar: String, en: String)] = [
+            "Fajr": ("الفجر", "Fajr"),
+            "Sunrise": ("الشروق", "Sunrise"),
+            "Dhuhr": ("الظهر", "Dhuhr"),
+            "Asr": ("العصر", "Asr"),
+            "Maghrib": ("المغرب", "Maghrib"),
+            "Isha": ("العشاء", "Isha")
+        ]
+        
+        let appLanguage = UserDefaults.standard.string(forKey: "appLanguage") ?? "ar"
+        
+        for prayerKey in prayerOrder {
+            guard let timeString = timings[prayerKey] else { continue }
+            
+            let timeComponents = timeString.split(separator: ":").compactMap({ Int($0) })
+            guard timeComponents.count == 2 else { continue }
+            
+            let hour = timeComponents[0]
+            let minute = timeComponents[1]
+            
+            var components = calendar.dateComponents([.year, .month, .day], from: now)
+            components.hour = hour
+            components.minute = minute
+            components.second = 0
+            
+            guard var prayerDate = calendar.date(from: components) else { continue }
+            
+            if prayerDate < now {
+                prayerDate = calendar.date(byAdding: .day, value: 1, to: prayerDate) ?? prayerDate
+            }
+            
+            prayerDates.append((key: prayerKey, date: prayerDate))
+        }
+        
+        prayerDates.sort { $0.date < $1.date }
+        
+        guard let upcoming = prayerDates.first(where: { $0.date > now }) ?? prayerDates.first else {
+            countdownText = ""
+            upcomingPrayerName = ""
+            menuBarTitle = "Salat Times"
+            return
+        }
+        
+        let timeRemaining = upcoming.date.timeIntervalSince(now)
+        let hours = Int(timeRemaining) / 3600
+        let minutes = (Int(timeRemaining) % 3600) / 60
+        
+        let prayerInfo = prayerNames[upcoming.key] ?? ("", "")
+        let prayerName = appLanguage == "ar" ? prayerInfo.ar : prayerInfo.en
+        
+        if hours > 0 {
+            countdownText = appLanguage == "ar" ? "\(hours)س \(minutes)د" : "\(hours)h \(minutes)m"
+        } else {
+            countdownText = appLanguage == "ar" ? "\(minutes)د" : "\(minutes)m"
+        }
+        
+        upcomingPrayerName = prayerName
+        
+        // Update menu bar title
+        if countdownText.isEmpty {
+            menuBarTitle = "Salat Times"
+        } else {
+            menuBarTitle = "\(prayerName) -\(countdownText)"
+        }
     }
 }
