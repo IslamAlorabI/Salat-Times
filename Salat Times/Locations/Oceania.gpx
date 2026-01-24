@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+<gpx version="1.1" creator="Xcode">
+    <!-- Australia -->
+    <wpt lat="-35.2809" lon="149.1300"><name>Australia - Canberra</name></wpt>
+    <wpt lat="-33.8688" lon="151.2093"><name>Australia - Sydney</name></wpt>
+    <wpt lat="-37.8136" lon="144.9631"><name>Australia - Melbourne</name></wpt>
+    <wpt lat="-27.4698" lon="153.0251"><name>Australia - Brisbane</name></wpt>
+    <wpt lat="-31.9505" lon="115.8605"><name>Australia - Perth</name></wpt>
+
+    <!-- Fiji -->
+    <wpt lat="-18.1416" lon="178.4419"><name>Fiji - Suva</name></wpt>
+    <wpt lat="-17.7765" lon="177.9885"><name>Fiji - Nadi</name></wpt>
+    <wpt lat="-17.6667" lon="177.9333"><name>Fiji - Lautoka</name></wpt>
+    <wpt lat="-17.6167" lon="177.4667"><name>Fiji - Ba</name></wpt>
+    <wpt lat="-16.4667" lon="179.3667"><name>Fiji - Labasa</name></wpt>
+
+    <!-- Kiribati -->
+    <wpt lat="1.3382" lon="173.0176"><name>Kiribati - South Tarawa</name></wpt>
+    <wpt lat="1.9167" lon="-157.4833"><name>Kiribati - Kiritimati</name></wpt>
+    <wpt lat="0.9000" lon="169.5333"><name>Kiribati - Butaritari</name></wpt>
+    <wpt lat="3.1333" lon="172.9833"><name>Kiribati - Tabuaeran</name></wpt>
+    <wpt lat="-1.3500" lon="176.8500"><name>Kiribati - Beru</name></wpt>
+
+    <!-- Marshall Islands -->
+    <wpt lat="7.0897" lon="171.3803"><name>Marshall Islands - Majuro</name></wpt>
+    <wpt lat="9.0833" lon="167.3333"><name>Marshall Islands - Ebeye</name></wpt>
+    <wpt lat="11.0500" lon="166.9333"><name>Marshall Islands - Kwajalein</name></wpt>
+    <wpt lat="7.7333" lon="168.8667"><name>Marshall Islands - Arno</name></wpt>
+    <wpt lat="8.7167" lon="167.7333"><name>Marshall Islands - Jaluit</name></wpt>
+
+    <!-- Micronesia -->
+    <wpt lat="6.9248" lon="158.1610"><name>Micronesia - Palikir</name></wpt>
+    <wpt lat="6.9667" lon="158.2000"><name>Micronesia - Kolonia</name></wpt>
+    <wpt lat="7.4500" lon="151.8500"><name>Micronesia - Weno</name></wpt>
+    <wpt lat="9.5167" lon="138.1333"><name>Micronesia - Yap</name></wpt>
+    <wpt lat="5.3167" lon="163.0167"><name>Micronesia - Kosrae</name></wpt>
+
+    <!-- Nauru -->
+    <wpt lat="-0.5477" lon="166.9209"><name>Nauru - Yaren</name></wpt>
+    <wpt lat="-0.5167" lon="166.9167"><name>Nauru - Aiwo</name></wpt>
+    <wpt lat="-0.4833" lon="166.9333"><name>Nauru - Buada</name></wpt>
+    <wpt lat="-0.5333" lon="166.9167"><name>Nauru - Denigomodu</name></wpt>
+    <wpt lat="-0.5000" lon="166.9000"><name>Nauru - Baiti</name></wpt>
+
+    <!-- New Zealand -->
+    <wpt lat="-41.2865" lon="174.7762"><name>New Zealand - Wellington</name></wpt>
+    <wpt lat="-36.8485" lon="174.7633"><name>New Zealand - Auckland</name></wpt>
+    <wpt lat="-43.5321" lon="172.6362"><name>New Zealand - Christchurch</name></wpt>
+    <wpt lat="-37.7870" lon="175.2793"><name>New Zealand - Hamilton</name></wpt>
+    <wpt lat="-45.8788" lon="170.5028"><name>New Zealand - Dunedin</name></wpt>
+
+    <!-- Palau -->
+    <wpt lat="7.5006" lon="134.6242"><name>Palau - Ngerulmud</name></wpt>
+    <wpt lat="7.3383" lon="134.4719"><name>Palau - Koror</name></wpt>
+    <wpt lat="7.3667" lon="134.5167"><name>Palau - Meyuns</name></wpt>
+    <wpt lat="7.5000" lon="134.6333"><name>Palau - Melekeok</name></wpt>
+    <wpt lat="7.4833" lon="134.5667"><name>Palau - Ngermid</name></wpt>
+
+    <!-- Papua New Guinea -->
+    <wpt lat="-9.4438" lon="147.1803"><name>Papua New Guinea - Port Moresby</name></wpt>
+    <wpt lat="-5.2133" lon="145.7867"><name>Papua New Guinea - Lae</name></wpt>
+    <wpt lat="-5.0833" lon="145.8000"><name>Papua New Guinea - Mount Hagen</name></wpt>
+    <wpt lat="-5.5500" lon="148.1500"><name>Papua New Guinea - Madang</name></wpt>
+    <wpt lat="-4.0833" lon="144.0500"><name>Papua New Guinea - Wewak</name></wpt>
+
+    <!-- Samoa -->
+    <wpt lat="-13.8333" lon="-171.7500"><name>Samoa - Apia</name></wpt>
+    <wpt lat="-13.8500" lon="-171.7500"><name>Samoa - Vaitele</name></wpt>
+    <wpt lat="-13.8000" lon="-171.8000"><name>Samoa - Faleula</name></wpt>
+    <wpt lat="-13.9167" lon="-171.4833"><name>Samoa - Siumu</name></wpt>
+    <wpt lat="-13.8000" lon="-171.7667"><name>Samoa - Afega</name></wpt>
+
+    <!-- Solomon Islands -->
+    <wpt lat="-9.4333" lon="160.0000"><name>Solomon Islands - Honiara</name></wpt>
+    <wpt lat="-9.4333" lon="160.0500"><name>Solomon Islands - Auki</name></wpt>
+    <wpt lat="-8.1000" lon="157.2000"><name>Solomon Islands - Gizo</name></wpt>
+    <wpt lat="-10.7167" lon="162.3667"><name>Solomon Islands - Kirakira</name></wpt>
+    <wpt lat="-9.4500" lon="160.0000"><name>Solomon Islands - Tulagi</name></wpt>
+
+    <!-- Tonga -->
+    <wpt lat="-21.2114" lon="-175.1506"><name>Tonga - Nukualofa</name></wpt>
+    <wpt lat="-18.6500" lon="-173.9833"><name>Tonga - Neiafu</name></wpt>
+    <wpt lat="-21.2667" lon="-175.1667"><name>Tonga - Mua</name></wpt>
+    <wpt lat="-19.8167" lon="-174.3500"><name>Tonga - Pangai</name></wpt>
+    <wpt lat="-21.1333" lon="-175.2000"><name>Tonga - Vaini</name></wpt>
+
+    <!-- Tuvalu -->
+    <wpt lat="-8.5167" lon="179.2167"><name>Tuvalu - Funafuti</name></wpt>
+    <wpt lat="-6.2000" lon="176.3333"><name>Tuvalu - Nanumea</name></wpt>
+    <wpt lat="-8.6667" lon="179.0833"><name>Tuvalu - Nukufetau</name></wpt>
+    <wpt lat="-7.5000" lon="178.7000"><name>Tuvalu - Vaitupu</name></wpt>
+    <wpt lat="-7.1167" lon="177.1333"><name>Tuvalu - Nui</name></wpt>
+
+    <!-- Vanuatu -->
+    <wpt lat="-17.7333" lon="168.3167"><name>Vanuatu - Port Vila</name></wpt>
+    <wpt lat="-15.5167" lon="167.1667"><name>Vanuatu - Luganville</name></wpt>
+    <wpt lat="-16.2333" lon="167.4500"><name>Vanuatu - Isangel</name></wpt>
+    <wpt lat="-17.6833" lon="168.3000"><name>Vanuatu - Norsup</name></wpt>
+    <wpt lat="-19.5333" lon="169.2667"><name>Vanuatu - Lenakel</name></wpt>
+</gpx>

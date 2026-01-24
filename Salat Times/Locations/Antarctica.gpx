@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<gpx version="1.1" creator="Xcode">
+    <!-- Research Stations -->
+    <wpt lat="-77.8500" lon="166.6667"><name>Antarctica - McMurdo Station (USA)</name></wpt>
+    <wpt lat="-90.0000" lon="0.0000"><name>Antarctica - Amundsen-Scott South Pole Station (USA)</name></wpt>
+    <wpt lat="-75.1000" lon="-123.3500"><name>Antarctica - Palmer Station (USA)</name></wpt>
+    <wpt lat="-66.2833" lon="110.5333"><name>Antarctica - Casey Station (Australia)</name></wpt>
+    <wpt lat="-68.5767" lon="77.9672"><name>Antarctica - Davis Station (Australia)</name></wpt>
+    <wpt lat="-67.6000" lon="-68.1333"><name>Antarctica - Rothera Station (UK)</name></wpt>
+    <wpt lat="-69.3733" lon="76.3833"><name>Antarctica - Maitri Station (India)</name></wpt>
+</gpx>

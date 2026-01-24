@@ -1,0 +1,317 @@
+<?xml version="1.0"?>
+<gpx version="1.1" creator="Xcode">
+    <!-- Albania -->
+    <wpt lat="41.3275" lon="19.8187"><name>Albania - Tirana</name></wpt>
+    <wpt lat="40.4606" lon="19.4900"><name>Albania - Vlore</name></wpt>
+    <wpt lat="41.3111" lon="19.4469"><name>Albania - Durres</name></wpt>
+    <wpt lat="40.8667" lon="19.8500"><name>Albania - Fier</name></wpt>
+    <wpt lat="40.0667" lon="19.9500"><name>Albania - Sarande</name></wpt>
+
+    <!-- Andorra -->
+    <wpt lat="42.5063" lon="1.5218"><name>Andorra - Andorra la Vella</name></wpt>
+    <wpt lat="42.5078" lon="1.5301"><name>Andorra - Escaldes-Engordany</name></wpt>
+    <wpt lat="42.5356" lon="1.5694"><name>Andorra - Encamp</name></wpt>
+    <wpt lat="42.4667" lon="1.5000"><name>Andorra - Sant Julia de Loria</name></wpt>
+    <wpt lat="42.4833" lon="1.4333"><name>Andorra - La Massana</name></wpt>
+
+    <!-- Austria -->
+    <wpt lat="48.2082" lon="16.3738"><name>Austria - Vienna</name></wpt>
+    <wpt lat="47.2692" lon="11.4041"><name>Austria - Innsbruck</name></wpt>
+    <wpt lat="47.8095" lon="13.0550"><name>Austria - Salzburg</name></wpt>
+    <wpt lat="47.0707" lon="15.4395"><name>Austria - Graz</name></wpt>
+    <wpt lat="48.3064" lon="14.2858"><name>Austria - Linz</name></wpt>
+
+    <!-- Belarus -->
+    <wpt lat="53.9006" lon="27.5590"><name>Belarus - Minsk</name></wpt>
+    <wpt lat="53.6884" lon="23.8258"><name>Belarus - Grodno</name></wpt>
+    <wpt lat="52.0975" lon="23.7341"><name>Belarus - Brest</name></wpt>
+    <wpt lat="53.9045" lon="30.3449"><name>Belarus - Mogilev</name></wpt>
+    <wpt lat="55.1904" lon="30.2049"><name>Belarus - Vitebsk</name></wpt>
+
+    <!-- Belgium -->
+    <wpt lat="50.8503" lon="4.3517"><name>Belgium - Brussels</name></wpt>
+    <wpt lat="51.2194" lon="4.4025"><name>Belgium - Antwerp</name></wpt>
+    <wpt lat="51.0543" lon="3.7174"><name>Belgium - Ghent</name></wpt>
+    <wpt lat="50.8476" lon="4.3572"><name>Belgium - Charleroi</name></wpt>
+    <wpt lat="50.6292" lon="5.5797"><name>Belgium - Liege</name></wpt>
+
+    <!-- Bosnia and Herzegovina -->
+    <wpt lat="43.8563" lon="18.4131"><name>Bosnia and Herzegovina - Sarajevo</name></wpt>
+    <wpt lat="44.7731" lon="17.1909"><name>Bosnia and Herzegovina - Banja Luka</name></wpt>
+    <wpt lat="44.5333" lon="18.6833"><name>Bosnia and Herzegovina - Tuzla</name></wpt>
+    <wpt lat="44.2056" lon="17.9072"><name>Bosnia and Herzegovina - Zenica</name></wpt>
+    <wpt lat="43.3433" lon="17.8081"><name>Bosnia and Herzegovina - Mostar</name></wpt>
+
+    <!-- Bulgaria -->
+    <wpt lat="42.6977" lon="23.3219"><name>Bulgaria - Sofia</name></wpt>
+    <wpt lat="42.1500" lon="24.7500"><name>Bulgaria - Plovdiv</name></wpt>
+    <wpt lat="42.4333" lon="27.7000"><name>Bulgaria - Burgas</name></wpt>
+    <wpt lat="43.2141" lon="27.9147"><name>Bulgaria - Varna</name></wpt>
+    <wpt lat="43.8564" lon="25.9711"><name>Bulgaria - Ruse</name></wpt>
+
+    <!-- Croatia -->
+    <wpt lat="45.8150" lon="15.9819"><name>Croatia - Zagreb</name></wpt>
+    <wpt lat="43.5147" lon="16.4435"><name>Croatia - Split</name></wpt>
+    <wpt lat="45.3271" lon="14.4422"><name>Croatia - Rijeka</name></wpt>
+    <wpt lat="45.8000" lon="16.0167"><name>Croatia - Osijek</name></wpt>
+    <wpt lat="42.6507" lon="18.0944"><name>Croatia - Dubrovnik</name></wpt>
+
+    <!-- Czech Republic -->
+    <wpt lat="50.0755" lon="14.4378"><name>Czech Republic - Prague</name></wpt>
+    <wpt lat="49.1951" lon="16.6068"><name>Czech Republic - Brno</name></wpt>
+    <wpt lat="49.8209" lon="18.2625"><name>Czech Republic - Ostrava</name></wpt>
+    <wpt lat="49.7384" lon="13.3736"><name>Czech Republic - Plzen</name></wpt>
+    <wpt lat="50.6833" lon="14.0500"><name>Czech Republic - Liberec</name></wpt>
+
+    <!-- Denmark -->
+    <wpt lat="55.6761" lon="12.5683"><name>Denmark - Copenhagen</name></wpt>
+    <wpt lat="56.1629" lon="10.2039"><name>Denmark - Aarhus</name></wpt>
+    <wpt lat="55.4038" lon="10.4024"><name>Denmark - Odense</name></wpt>
+    <wpt lat="57.0488" lon="9.9217"><name>Denmark - Aalborg</name></wpt>
+    <wpt lat="55.7333" lon="9.1167"><name>Denmark - Fredericia</name></wpt>
+
+    <!-- Estonia -->
+    <wpt lat="59.4370" lon="24.7536"><name>Estonia - Tallinn</name></wpt>
+    <wpt lat="58.3780" lon="26.7290"><name>Estonia - Tartu</name></wpt>
+    <wpt lat="59.3667" lon="28.2000"><name>Estonia - Narva</name></wpt>
+    <wpt lat="58.3833" lon="24.5000"><name>Estonia - Parnu</name></wpt>
+    <wpt lat="59.3333" lon="27.4167"><name>Estonia - Kohtla-Jarve</name></wpt>
+
+    <!-- Finland -->
+    <wpt lat="60.1699" lon="24.9384"><name>Finland - Helsinki</name></wpt>
+    <wpt lat="61.4978" lon="23.7610"><name>Finland - Tampere</name></wpt>
+    <wpt lat="60.4518" lon="22.2666"><name>Finland - Turku</name></wpt>
+    <wpt lat="65.0121" lon="25.4651"><name>Finland - Oulu</name></wpt>
+    <wpt lat="60.2941" lon="25.0408"><name>Finland - Vantaa</name></wpt>
+
+    <!-- France -->
+    <wpt lat="48.8566" lon="2.3522"><name>France - Paris</name></wpt>
+    <wpt lat="43.2965" lon="5.3698"><name>France - Marseille</name></wpt>
+    <wpt lat="45.7640" lon="4.8357"><name>France - Lyon</name></wpt>
+    <wpt lat="43.6047" lon="1.4442"><name>France - Toulouse</name></wpt>
+    <wpt lat="43.7102" lon="7.2620"><name>France - Nice</name></wpt>
+
+    <!-- Germany -->
+    <wpt lat="52.5200" lon="13.4050"><name>Germany - Berlin</name></wpt>
+    <wpt lat="48.1351" lon="11.5820"><name>Germany - Munich</name></wpt>
+    <wpt lat="50.1109" lon="8.6821"><name>Germany - Frankfurt</name></wpt>
+    <wpt lat="53.5511" lon="9.9937"><name>Germany - Hamburg</name></wpt>
+    <wpt lat="50.9375" lon="6.9603"><name>Germany - Cologne</name></wpt>
+
+    <!-- Greece -->
+    <wpt lat="37.9838" lon="23.7275"><name>Greece - Athens</name></wpt>
+    <wpt lat="40.6401" lon="22.9444"><name>Greece - Thessaloniki</name></wpt>
+    <wpt lat="38.2444" lon="21.7344"><name>Greece - Patras</name></wpt>
+    <wpt lat="35.3387" lon="25.1442"><name>Greece - Heraklion</name></wpt>
+    <wpt lat="39.6243" lon="19.9217"><name>Greece - Corfu</name></wpt>
+
+    <!-- Hungary -->
+    <wpt lat="47.4979" lon="19.0402"><name>Hungary - Budapest</name></wpt>
+    <wpt lat="47.5316" lon="21.6273"><name>Hungary - Debrecen</name></wpt>
+    <wpt lat="46.2530" lon="20.1414"><name>Hungary - Szeged</name></wpt>
+    <wpt lat="47.0997" lon="17.9109"><name>Hungary - Gyor</name></wpt>
+    <wpt lat="46.0727" lon="18.2323"><name>Hungary - Pecs</name></wpt>
+
+    <!-- Iceland -->
+    <wpt lat="64.1466" lon="-21.9426"><name>Iceland - Reykjavik</name></wpt>
+    <wpt lat="64.1265" lon="-21.8174"><name>Iceland - Kopavogur</name></wpt>
+    <wpt lat="64.0833" lon="-21.9500"><name>Iceland - Hafnarfjordur</name></wpt>
+    <wpt lat="65.6833" lon="-18.1000"><name>Iceland - Akureyri</name></wpt>
+    <wpt lat="64.0500" lon="-22.0000"><name>Iceland - Gardabaer</name></wpt>
+
+    <!-- Ireland -->
+    <wpt lat="53.3498" lon="-6.2603"><name>Ireland - Dublin</name></wpt>
+    <wpt lat="51.8969" lon="-8.4863"><name>Ireland - Cork</name></wpt>
+    <wpt lat="53.2707" lon="-9.0568"><name>Ireland - Galway</name></wpt>
+    <wpt lat="52.6680" lon="-8.6305"><name>Ireland - Limerick</name></wpt>
+    <wpt lat="52.2593" lon="-7.1101"><name>Ireland - Waterford</name></wpt>
+
+    <!-- Italy -->
+    <wpt lat="41.9028" lon="12.4964"><name>Italy - Rome</name></wpt>
+    <wpt lat="45.4642" lon="9.1900"><name>Italy - Milan</name></wpt>
+    <wpt lat="40.8518" lon="14.2681"><name>Italy - Naples</name></wpt>
+    <wpt lat="45.0703" lon="7.6869"><name>Italy - Turin</name></wpt>
+    <wpt lat="43.7696" lon="11.2558"><name>Italy - Florence</name></wpt>
+
+    <!-- Kosovo -->
+    <wpt lat="42.6629" lon="21.1655"><name>Kosovo - Pristina</name></wpt>
+    <wpt lat="42.6667" lon="20.2833"><name>Kosovo - Peja</name></wpt>
+    <wpt lat="42.2167" lon="20.7333"><name>Kosovo - Prizren</name></wpt>
+    <wpt lat="42.5667" lon="20.5167"><name>Kosovo - Gjakova</name></wpt>
+    <wpt lat="42.8833" lon="21.1667"><name>Kosovo - Mitrovica</name></wpt>
+
+    <!-- Latvia -->
+    <wpt lat="56.9496" lon="24.1052"><name>Latvia - Riga</name></wpt>
+    <wpt lat="55.8714" lon="26.5161"><name>Latvia - Daugavpils</name></wpt>
+    <wpt lat="56.5047" lon="21.0108"><name>Latvia - Liepaja</name></wpt>
+    <wpt lat="56.9500" lon="25.0667"><name>Latvia - Jekabpils</name></wpt>
+    <wpt lat="57.3833" lon="22.9167"><name>Latvia - Tukums</name></wpt>
+
+    <!-- Liechtenstein -->
+    <wpt lat="47.1410" lon="9.5209"><name>Liechtenstein - Vaduz</name></wpt>
+    <wpt lat="47.1667" lon="9.5083"><name>Liechtenstein - Schaan</name></wpt>
+    <wpt lat="47.0833" lon="9.5167"><name>Liechtenstein - Triesen</name></wpt>
+    <wpt lat="47.2000" lon="9.5167"><name>Liechtenstein - Eschen</name></wpt>
+    <wpt lat="47.2167" lon="9.5500"><name>Liechtenstein - Mauren</name></wpt>
+
+    <!-- Lithuania -->
+    <wpt lat="54.6872" lon="25.2797"><name>Lithuania - Vilnius</name></wpt>
+    <wpt lat="54.8972" lon="23.8861"><name>Lithuania - Kaunas</name></wpt>
+    <wpt lat="55.7033" lon="21.1443"><name>Lithuania - Klaipeda</name></wpt>
+    <wpt lat="55.9333" lon="23.3167"><name>Lithuania - Siauliai</name></wpt>
+    <wpt lat="55.7333" lon="24.3500"><name>Lithuania - Panevezys</name></wpt>
+
+    <!-- Luxembourg -->
+    <wpt lat="49.6116" lon="6.1319"><name>Luxembourg - Luxembourg City</name></wpt>
+    <wpt lat="49.5000" lon="5.9833"><name>Luxembourg - Esch-sur-Alzette</name></wpt>
+    <wpt lat="49.5000" lon="6.4000"><name>Luxembourg - Differdange</name></wpt>
+    <wpt lat="49.4667" lon="6.0500"><name>Luxembourg - Dudelange</name></wpt>
+    <wpt lat="49.6833" lon="6.1167"><name>Luxembourg - Ettelbruck</name></wpt>
+
+    <!-- Malta -->
+    <wpt lat="35.8989" lon="14.5146"><name>Malta - Valletta</name></wpt>
+    <wpt lat="35.8833" lon="14.4167"><name>Malta - Birkirkara</name></wpt>
+    <wpt lat="35.8833" lon="14.4833"><name>Malta - Qormi</name></wpt>
+    <wpt lat="35.8667" lon="14.5000"><name>Malta - Zebbug</name></wpt>
+    <wpt lat="35.8786" lon="14.4886"><name>Malta - Zabbar</name></wpt>
+
+    <!-- Moldova -->
+    <wpt lat="47.0105" lon="28.8638"><name>Moldova - Chisinau</name></wpt>
+    <wpt lat="46.8333" lon="29.4833"><name>Moldova - Tiraspol</name></wpt>
+    <wpt lat="47.7500" lon="27.9167"><name>Moldova - Balti</name></wpt>
+    <wpt lat="46.9167" lon="29.2500"><name>Moldova - Bender</name></wpt>
+    <wpt lat="47.0000" lon="28.8500"><name>Moldova - Riscani</name></wpt>
+
+    <!-- Monaco -->
+    <wpt lat="43.7384" lon="7.4246"><name>Monaco - Monaco</name></wpt>
+    <wpt lat="43.7333" lon="7.4167"><name>Monaco - Monte Carlo</name></wpt>
+    <wpt lat="43.7333" lon="7.4167"><name>Monaco - La Condamine</name></wpt>
+    <wpt lat="43.7275" lon="7.4197"><name>Monaco - Fontvieille</name></wpt>
+    <wpt lat="43.7450" lon="7.4100"><name>Monaco - Moneghetti</name></wpt>
+
+    <!-- Montenegro -->
+    <wpt lat="42.4304" lon="19.2594"><name>Montenegro - Podgorica</name></wpt>
+    <wpt lat="42.4269" lon="18.7711"><name>Montenegro - Kotor</name></wpt>
+    <wpt lat="42.2900" lon="18.8400"><name>Montenegro - Budva</name></wpt>
+    <wpt lat="42.7833" lon="18.9500"><name>Montenegro - Niksic</name></wpt>
+    <wpt lat="42.0858" lon="19.1003"><name>Montenegro - Bar</name></wpt>
+
+    <!-- Netherlands -->
+    <wpt lat="52.3676" lon="4.9041"><name>Netherlands - Amsterdam</name></wpt>
+    <wpt lat="51.9244" lon="4.4777"><name>Netherlands - Rotterdam</name></wpt>
+    <wpt lat="52.0705" lon="4.3007"><name>Netherlands - The Hague</name></wpt>
+    <wpt lat="52.0907" lon="5.1214"><name>Netherlands - Utrecht</name></wpt>
+    <wpt lat="51.4416" lon="5.4697"><name>Netherlands - Eindhoven</name></wpt>
+
+    <!-- North Macedonia -->
+    <wpt lat="41.9981" lon="21.4254"><name>North Macedonia - Skopje</name></wpt>
+    <wpt lat="41.0317" lon="21.3347"><name>North Macedonia - Bitola</name></wpt>
+    <wpt lat="42.0000" lon="20.9667"><name>North Macedonia - Kumanovo</name></wpt>
+    <wpt lat="41.1122" lon="20.8019"><name>North Macedonia - Ohrid</name></wpt>
+    <wpt lat="41.5167" lon="21.5500"><name>North Macedonia - Veles</name></wpt>
+
+    <!-- Norway -->
+    <wpt lat="59.9139" lon="10.7522"><name>Norway - Oslo</name></wpt>
+    <wpt lat="60.3913" lon="5.3221"><name>Norway - Bergen</name></wpt>
+    <wpt lat="63.4305" lon="10.3951"><name>Norway - Trondheim</name></wpt>
+    <wpt lat="58.9700" lon="5.7331"><name>Norway - Stavanger</name></wpt>
+    <wpt lat="69.6492" lon="18.9553"><name>Norway - Tromso</name></wpt>
+
+    <!-- Poland -->
+    <wpt lat="52.2297" lon="21.0122"><name>Poland - Warsaw</name></wpt>
+    <wpt lat="50.0647" lon="19.9450"><name>Poland - Krakow</name></wpt>
+    <wpt lat="51.7592" lon="19.4550"><name>Poland - Lodz</name></wpt>
+    <wpt lat="51.1079" lon="17.0385"><name>Poland - Wroclaw</name></wpt>
+    <wpt lat="52.4064" lon="16.9252"><name>Poland - Poznan</name></wpt>
+
+    <!-- Portugal -->
+    <wpt lat="38.7223" lon="-9.1393"><name>Portugal - Lisbon</name></wpt>
+    <wpt lat="41.1579" lon="-8.6291"><name>Portugal - Porto</name></wpt>
+    <wpt lat="38.7167" lon="-9.1500"><name>Portugal - Vila Nova de Gaia</name></wpt>
+    <wpt lat="38.5667" lon="-7.9000"><name>Portugal - Evora</name></wpt>
+    <wpt lat="37.0194" lon="-7.9304"><name>Portugal - Faro</name></wpt>
+
+    <!-- Romania -->
+    <wpt lat="44.4268" lon="26.1025"><name>Romania - Bucharest</name></wpt>
+    <wpt lat="46.7712" lon="23.6236"><name>Romania - Cluj-Napoca</name></wpt>
+    <wpt lat="45.7489" lon="21.2087"><name>Romania - Timisoara</name></wpt>
+    <wpt lat="47.1585" lon="27.6014"><name>Romania - Iasi</name></wpt>
+    <wpt lat="44.9599" lon="25.9920"><name>Romania - Ploiesti</name></wpt>
+
+    <!-- Russia (European part) -->
+    <wpt lat="55.7558" lon="37.6173"><name>Russia - Moscow</name></wpt>
+    <wpt lat="59.9343" lon="30.3351"><name>Russia - Saint Petersburg</name></wpt>
+    <wpt lat="56.3269" lon="44.0059"><name>Russia - Nizhny Novgorod</name></wpt>
+    <wpt lat="55.7879" lon="49.1233"><name>Russia - Kazan</name></wpt>
+    <wpt lat="53.2001" lon="50.1500"><name>Russia - Samara</name></wpt>
+
+    <!-- San Marino -->
+    <wpt lat="43.9356" lon="12.4473"><name>San Marino - San Marino</name></wpt>
+    <wpt lat="43.9500" lon="12.5000"><name>San Marino - Serravalle</name></wpt>
+    <wpt lat="43.9167" lon="12.4500"><name>San Marino - Borgo Maggiore</name></wpt>
+    <wpt lat="43.9500" lon="12.4333"><name>San Marino - Domagnano</name></wpt>
+    <wpt lat="43.9000" lon="12.4500"><name>San Marino - Fiorentino</name></wpt>
+
+    <!-- Serbia -->
+    <wpt lat="44.7866" lon="20.4489"><name>Serbia - Belgrade</name></wpt>
+    <wpt lat="45.2500" lon="19.8333"><name>Serbia - Novi Sad</name></wpt>
+    <wpt lat="43.3209" lon="21.8958"><name>Serbia - Nis</name></wpt>
+    <wpt lat="44.0161" lon="21.0056"><name>Serbia - Kragujevac</name></wpt>
+    <wpt lat="45.7833" lon="19.1167"><name>Serbia - Subotica</name></wpt>
+
+    <!-- Slovakia -->
+    <wpt lat="48.1486" lon="17.1077"><name>Slovakia - Bratislava</name></wpt>
+    <wpt lat="48.7164" lon="21.2611"><name>Slovakia - Kosice</name></wpt>
+    <wpt lat="49.2167" lon="18.7500"><name>Slovakia - Zilina</name></wpt>
+    <wpt lat="49.0500" lon="18.9167"><name>Slovakia - Martin</name></wpt>
+    <wpt lat="48.3833" lon="17.5833"><name>Slovakia - Trnava</name></wpt>
+
+    <!-- Slovenia -->
+    <wpt lat="46.0569" lon="14.5058"><name>Slovenia - Ljubljana</name></wpt>
+    <wpt lat="46.5547" lon="15.6459"><name>Slovenia - Maribor</name></wpt>
+    <wpt lat="46.2333" lon="14.3333"><name>Slovenia - Kranj</name></wpt>
+    <wpt lat="46.4000" lon="15.8667"><name>Slovenia - Celje</name></wpt>
+    <wpt lat="45.5333" lon="13.7333"><name>Slovenia - Koper</name></wpt>
+
+    <!-- Spain -->
+    <wpt lat="40.4168" lon="-3.7038"><name>Spain - Madrid</name></wpt>
+    <wpt lat="41.3851" lon="2.1734"><name>Spain - Barcelona</name></wpt>
+    <wpt lat="39.4699" lon="-0.3763"><name>Spain - Valencia</name></wpt>
+    <wpt lat="37.3891" lon="-5.9845"><name>Spain - Seville</name></wpt>
+    <wpt lat="36.7213" lon="-4.4214"><name>Spain - Malaga</name></wpt>
+
+    <!-- Sweden -->
+    <wpt lat="59.3293" lon="18.0686"><name>Sweden - Stockholm</name></wpt>
+    <wpt lat="57.7089" lon="11.9746"><name>Sweden - Gothenburg</name></wpt>
+    <wpt lat="55.6050" lon="13.0038"><name>Sweden - Malmo</name></wpt>
+    <wpt lat="59.8586" lon="17.6389"><name>Sweden - Uppsala</name></wpt>
+    <wpt lat="59.3750" lon="16.5167"><name>Sweden - Vasteras</name></wpt>
+
+    <!-- Switzerland -->
+    <wpt lat="46.9480" lon="7.4474"><name>Switzerland - Bern</name></wpt>
+    <wpt lat="47.3769" lon="8.5417"><name>Switzerland - Zurich</name></wpt>
+    <wpt lat="46.2044" lon="6.1432"><name>Switzerland - Geneva</name></wpt>
+    <wpt lat="47.5596" lon="7.5886"><name>Switzerland - Basel</name></wpt>
+    <wpt lat="46.5197" lon="6.6323"><name>Switzerland - Lausanne</name></wpt>
+
+    <!-- Ukraine -->
+    <wpt lat="50.4501" lon="30.5234"><name>Ukraine - Kyiv</name></wpt>
+    <wpt lat="49.8397" lon="24.0297"><name>Ukraine - Lviv</name></wpt>
+    <wpt lat="49.9935" lon="36.2304"><name>Ukraine - Kharkiv</name></wpt>
+    <wpt lat="46.4825" lon="30.7233"><name>Ukraine - Odesa</name></wpt>
+    <wpt lat="48.4647" lon="35.0462"><name>Ukraine - Dnipro</name></wpt>
+
+    <!-- United Kingdom -->
+    <wpt lat="51.5074" lon="-0.1278"><name>United Kingdom - London</name></wpt>
+    <wpt lat="52.4862" lon="-1.8904"><name>United Kingdom - Birmingham</name></wpt>
+    <wpt lat="53.4808" lon="-2.2426"><name>United Kingdom - Manchester</name></wpt>
+    <wpt lat="55.9533" lon="-3.1883"><name>United Kingdom - Edinburgh</name></wpt>
+    <wpt lat="55.8642" lon="-4.2518"><name>United Kingdom - Glasgow</name></wpt>
+
+    <!-- Vatican City -->
+    <wpt lat="41.9029" lon="12.4534"><name>Vatican City - Vatican City</name></wpt>
+    <wpt lat="41.9022" lon="12.4539"><name>Vatican City - St. Peters Basilica</name></wpt>
+    <wpt lat="41.9065" lon="12.4536"><name>Vatican City - Vatican Museums</name></wpt>
+    <wpt lat="41.9022" lon="12.4587"><name>Vatican City - Sistine Chapel</name></wpt>
+    <wpt lat="41.9024" lon="12.4573"><name>Vatican City - Apostolic Palace</name></wpt>
+</gpx>

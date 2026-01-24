@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+<gpx version="1.1" creator="Xcode">
+    <!-- Argentina -->
+    <wpt lat="-34.6037" lon="-58.3816"><name>Argentina - Buenos Aires</name></wpt>
+    <wpt lat="-34.9215" lon="-57.9545"><name>Argentina - La Plata</name></wpt>
+    <wpt lat="-31.4201" lon="-64.1888"><name>Argentina - Cordoba</name></wpt>
+    <wpt lat="-32.8895" lon="-68.8458"><name>Argentina - Mendoza</name></wpt>
+    <wpt lat="-32.9587" lon="-60.6930"><name>Argentina - Rosario</name></wpt>
+
+    <!-- Bolivia -->
+    <wpt lat="-19.0196" lon="-65.2619"><name>Bolivia - Sucre</name></wpt>
+    <wpt lat="-16.5000" lon="-68.1500"><name>Bolivia - La Paz</name></wpt>
+    <wpt lat="-17.7833" lon="-63.1822"><name>Bolivia - Santa Cruz</name></wpt>
+    <wpt lat="-17.3895" lon="-66.1568"><name>Bolivia - Cochabamba</name></wpt>
+    <wpt lat="-19.5833" lon="-65.7500"><name>Bolivia - Potosi</name></wpt>
+
+    <!-- Brazil -->
+    <wpt lat="-15.7975" lon="-47.8919"><name>Brazil - Brasilia</name></wpt>
+    <wpt lat="-23.5505" lon="-46.6333"><name>Brazil - Sao Paulo</name></wpt>
+    <wpt lat="-22.9068" lon="-43.1729"><name>Brazil - Rio de Janeiro</name></wpt>
+    <wpt lat="-12.9714" lon="-38.5014"><name>Brazil - Salvador</name></wpt>
+    <wpt lat="-3.1190" lon="-60.0217"><name>Brazil - Manaus</name></wpt>
+
+    <!-- Chile -->
+    <wpt lat="-33.4489" lon="-70.6693"><name>Chile - Santiago</name></wpt>
+    <wpt lat="-33.0458" lon="-71.6197"><name>Chile - Valparaiso</name></wpt>
+    <wpt lat="-36.8270" lon="-73.0503"><name>Chile - Concepcion</name></wpt>
+    <wpt lat="-23.6500" lon="-70.4000"><name>Chile - Antofagasta</name></wpt>
+    <wpt lat="-53.1500" lon="-70.9167"><name>Chile - Punta Arenas</name></wpt>
+
+    <!-- Colombia -->
+    <wpt lat="4.7110" lon="-74.0721"><name>Colombia - Bogota</name></wpt>
+    <wpt lat="6.2518" lon="-75.5636"><name>Colombia - Medellin</name></wpt>
+    <wpt lat="3.4516" lon="-76.5320"><name>Colombia - Cali</name></wpt>
+    <wpt lat="10.9639" lon="-74.7964"><name>Colombia - Barranquilla</name></wpt>
+    <wpt lat="10.3910" lon="-75.4794"><name>Colombia - Cartagena</name></wpt>
+
+    <!-- Ecuador -->
+    <wpt lat="-0.1807" lon="-78.4678"><name>Ecuador - Quito</name></wpt>
+    <wpt lat="-2.1710" lon="-79.9224"><name>Ecuador - Guayaquil</name></wpt>
+    <wpt lat="-2.9001" lon="-79.0059"><name>Ecuador - Cuenca</name></wpt>
+    <wpt lat="-0.9500" lon="-80.7333"><name>Ecuador - Manta</name></wpt>
+    <wpt lat="-0.2333" lon="-79.1667"><name>Ecuador - Santo Domingo</name></wpt>
+
+    <!-- Guyana -->
+    <wpt lat="6.8013" lon="-58.1551"><name>Guyana - Georgetown</name></wpt>
+    <wpt lat="6.2500" lon="-57.5167"><name>Guyana - Linden</name></wpt>
+    <wpt lat="6.8000" lon="-58.1333"><name>Guyana - New Amsterdam</name></wpt>
+    <wpt lat="5.8833" lon="-57.1833"><name>Guyana - Bartica</name></wpt>
+    <wpt lat="6.4833" lon="-58.1833"><name>Guyana - Vreed en Hoop</name></wpt>
+
+    <!-- Paraguay -->
+    <wpt lat="-25.2637" lon="-57.5759"><name>Paraguay - Asuncion</name></wpt>
+    <wpt lat="-25.5167" lon="-54.6167"><name>Paraguay - Ciudad del Este</name></wpt>
+    <wpt lat="-26.8833" lon="-55.0500"><name>Paraguay - Encarnacion</name></wpt>
+    <wpt lat="-25.2667" lon="-57.5167"><name>Paraguay - San Lorenzo</name></wpt>
+    <wpt lat="-23.4000" lon="-57.4333"><name>Paraguay - Pedro Juan Caballero</name></wpt>
+
+    <!-- Peru -->
+    <wpt lat="-12.0464" lon="-77.0428"><name>Peru - Lima</name></wpt>
+    <wpt lat="-13.5226" lon="-71.9673"><name>Peru - Cusco</name></wpt>
+    <wpt lat="-16.4090" lon="-71.5375"><name>Peru - Arequipa</name></wpt>
+    <wpt lat="-8.1116" lon="-79.0288"><name>Peru - Trujillo</name></wpt>
+    <wpt lat="-6.7714" lon="-79.8409"><name>Peru - Chiclayo</name></wpt>
+
+    <!-- Suriname -->
+    <wpt lat="5.8520" lon="-55.2038"><name>Suriname - Paramaribo</name></wpt>
+    <wpt lat="5.7500" lon="-55.0333"><name>Suriname - Lelydorp</name></wpt>
+    <wpt lat="5.8833" lon="-54.4833"><name>Suriname - Nieuw Nickerie</name></wpt>
+    <wpt lat="5.9167" lon="-55.2500"><name>Suriname - Nieuw Amsterdam</name></wpt>
+    <wpt lat="5.4333" lon="-55.2000"><name>Suriname - Brokopondo</name></wpt>
+
+    <!-- Uruguay -->
+    <wpt lat="-34.9011" lon="-56.1645"><name>Uruguay - Montevideo</name></wpt>
+    <wpt lat="-34.4667" lon="-57.8500"><name>Uruguay - Colonia del Sacramento</name></wpt>
+    <wpt lat="-34.9333" lon="-54.9500"><name>Uruguay - Punta del Este</name></wpt>
+    <wpt lat="-31.3833" lon="-57.9667"><name>Uruguay - Salto</name></wpt>
+    <wpt lat="-33.1333" lon="-58.3000"><name>Uruguay - Paysandu</name></wpt>
+
+    <!-- Venezuela -->
+    <wpt lat="10.4806" lon="-66.9036"><name>Venezuela - Caracas</name></wpt>
+    <wpt lat="10.0678" lon="-69.3467"><name>Venezuela - Barquisimeto</name></wpt>
+    <wpt lat="10.5000" lon="-66.9167"><name>Venezuela - Maracaibo</name></wpt>
+    <wpt lat="10.1833" lon="-67.9833"><name>Venezuela - Valencia</name></wpt>
+    <wpt lat="8.3500" lon="-62.6333"><name>Venezuela - Ciudad Guayana</name></wpt>
+</gpx>

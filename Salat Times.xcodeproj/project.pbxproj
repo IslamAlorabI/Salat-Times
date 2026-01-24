@@ -14,14 +14,9 @@
 		05D235A62F23C2C6007299AA /* Exceptions for "Salat Times" folder in "Salat Times" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				AlgiersLocation.gpx,
 				Assets.xcassets,
-				CairoLocation.gpx,
 				ContentView.swift,
-				KafrElshiekhLocation.gpx,
-				NewYorkLocation.gpx,
 				PrayerManager.swift,
-				RiyadhLocation.gpx,
 				SalatTimesApp.swift,
 				SettingsView.swift,
 				Translations.swift,

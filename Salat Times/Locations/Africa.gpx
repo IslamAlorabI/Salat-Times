@@ -1,0 +1,380 @@
+<?xml version="1.0"?>
+<gpx version="1.1" creator="Xcode">
+    <!-- Algeria -->
+    <wpt lat="36.7528" lon="3.0420"><name>Algeria - Algiers</name></wpt>
+    <wpt lat="35.6969" lon="-0.6331"><name>Algeria - Oran</name></wpt>
+    <wpt lat="36.3650" lon="6.6147"><name>Algeria - Constantine</name></wpt>
+    <wpt lat="36.9000" lon="7.7667"><name>Algeria - Annaba</name></wpt>
+    <wpt lat="36.4700" lon="2.8300"><name>Algeria - Blida</name></wpt>
+
+    <!-- Angola -->
+    <wpt lat="-8.8390" lon="13.2894"><name>Angola - Luanda</name></wpt>
+    <wpt lat="-12.3456" lon="16.9389"><name>Angola - Huambo</name></wpt>
+    <wpt lat="-12.5763" lon="13.4055"><name>Angola - Lobito</name></wpt>
+    <wpt lat="-12.3500" lon="13.5500"><name>Angola - Benguela</name></wpt>
+    <wpt lat="-7.6133" lon="15.0596"><name>Angola - Lucapa</name></wpt>
+
+    <!-- Benin -->
+    <wpt lat="6.4969" lon="2.6289"><name>Benin - Cotonou</name></wpt>
+    <wpt lat="6.3703" lon="2.3912"><name>Benin - Porto-Novo</name></wpt>
+    <wpt lat="9.3372" lon="2.6303"><name>Benin - Parakou</name></wpt>
+    <wpt lat="6.3500" lon="2.4333"><name>Benin - Abomey-Calavi</name></wpt>
+    <wpt lat="7.1833" lon="1.9833"><name>Benin - Bohicon</name></wpt>
+
+    <!-- Botswana -->
+    <wpt lat="-24.6282" lon="25.9231"><name>Botswana - Gaborone</name></wpt>
+    <wpt lat="-21.1667" lon="27.5000"><name>Botswana - Francistown</name></wpt>
+    <wpt lat="-22.3285" lon="27.1251"><name>Botswana - Selebi-Phikwe</name></wpt>
+    <wpt lat="-19.9833" lon="25.2667"><name>Botswana - Maun</name></wpt>
+    <wpt lat="-24.4500" lon="25.5667"><name>Botswana - Molepolole</name></wpt>
+
+    <!-- Burkina Faso -->
+    <wpt lat="12.3714" lon="-1.5197"><name>Burkina Faso - Ouagadougou</name></wpt>
+    <wpt lat="11.1771" lon="-4.2979"><name>Burkina Faso - Bobo-Dioulasso</name></wpt>
+    <wpt lat="12.2500" lon="-2.3667"><name>Burkina Faso - Koudougou</name></wpt>
+    <wpt lat="13.5833" lon="-2.4167"><name>Burkina Faso - Ouahigouya</name></wpt>
+    <wpt lat="11.0167" lon="-0.8500"><name>Burkina Faso - Tenkodogo</name></wpt>
+
+    <!-- Burundi -->
+    <wpt lat="-3.3761" lon="29.3599"><name>Burundi - Bujumbura</name></wpt>
+    <wpt lat="-3.4264" lon="29.9306"><name>Burundi - Gitega</name></wpt>
+    <wpt lat="-2.9167" lon="29.3833"><name>Burundi - Ngozi</name></wpt>
+    <wpt lat="-3.2639" lon="30.0500"><name>Burundi - Ruyigi</name></wpt>
+    <wpt lat="-4.0833" lon="29.6333"><name>Burundi - Rumonge</name></wpt>
+
+    <!-- Cabo Verde -->
+    <wpt lat="14.9315" lon="-23.5087"><name>Cabo Verde - Praia</name></wpt>
+    <wpt lat="16.8900" lon="-24.9800"><name>Cabo Verde - Mindelo</name></wpt>
+    <wpt lat="15.1000" lon="-23.6000"><name>Cabo Verde - Assomada</name></wpt>
+    <wpt lat="16.5167" lon="-24.0333"><name>Cabo Verde - Espargos</name></wpt>
+    <wpt lat="14.8833" lon="-24.4000"><name>Cabo Verde - Pedra Badejo</name></wpt>
+
+    <!-- Cameroon -->
+    <wpt lat="3.8480" lon="11.5021"><name>Cameroon - Yaounde</name></wpt>
+    <wpt lat="4.0511" lon="9.7679"><name>Cameroon - Douala</name></wpt>
+    <wpt lat="5.9631" lon="10.1591"><name>Cameroon - Bamenda</name></wpt>
+    <wpt lat="10.5833" lon="14.2500"><name>Cameroon - Maroua</name></wpt>
+    <wpt lat="6.0333" lon="10.6667"><name>Cameroon - Bafoussam</name></wpt>
+
+    <!-- Central African Republic -->
+    <wpt lat="4.3947" lon="18.5582"><name>Central African Republic - Bangui</name></wpt>
+    <wpt lat="4.9333" lon="18.2500"><name>Central African Republic - Bimbo</name></wpt>
+    <wpt lat="6.4833" lon="18.4167"><name>Central African Republic - Bossangoa</name></wpt>
+    <wpt lat="4.2500" lon="15.8000"><name>Central African Republic - Berbérati</name></wpt>
+    <wpt lat="5.4000" lon="16.0333"><name>Central African Republic - Carnot</name></wpt>
+
+    <!-- Chad -->
+    <wpt lat="12.1348" lon="15.0557"><name>Chad - N'Djamena</name></wpt>
+    <wpt lat="8.5500" lon="16.0667"><name>Chad - Moundou</name></wpt>
+    <wpt lat="13.4500" lon="14.7333"><name>Chad - Bol</name></wpt>
+    <wpt lat="9.1500" lon="18.3833"><name>Chad - Sarh</name></wpt>
+    <wpt lat="11.0500" lon="15.0667"><name>Chad - Bongor</name></wpt>
+
+    <!-- Comoros -->
+    <wpt lat="-11.7022" lon="43.2551"><name>Comoros - Moroni</name></wpt>
+    <wpt lat="-12.1700" lon="44.3969"><name>Comoros - Mutsamudu</name></wpt>
+    <wpt lat="-11.3833" lon="43.2833"><name>Comoros - Fomboni</name></wpt>
+    <wpt lat="-11.8667" lon="43.3833"><name>Comoros - Domoni</name></wpt>
+    <wpt lat="-11.7167" lon="43.3667"><name>Comoros - Mitsamiouli</name></wpt>
+
+    <!-- Democratic Republic of the Congo -->
+    <wpt lat="-4.4419" lon="15.2663"><name>DR Congo - Kinshasa</name></wpt>
+    <wpt lat="-11.6600" lon="27.4800"><name>DR Congo - Lubumbashi</name></wpt>
+    <wpt lat="-1.6833" lon="29.2333"><name>DR Congo - Goma</name></wpt>
+    <wpt lat="0.5167" lon="25.2000"><name>DR Congo - Kisangani</name></wpt>
+    <wpt lat="-6.1333" lon="23.6000"><name>DR Congo - Mbuji-Mayi</name></wpt>
+
+    <!-- Republic of the Congo -->
+    <wpt lat="-4.2634" lon="15.2429"><name>Congo - Brazzaville</name></wpt>
+    <wpt lat="-4.7692" lon="11.8664"><name>Congo - Pointe-Noire</name></wpt>
+    <wpt lat="-4.2000" lon="13.9333"><name>Congo - Dolisie</name></wpt>
+    <wpt lat="-2.8833" lon="16.1833"><name>Congo - Nkayi</name></wpt>
+    <wpt lat="-1.6167" lon="18.0500"><name>Congo - Ouesso</name></wpt>
+
+    <!-- Cote d'Ivoire -->
+    <wpt lat="6.8276" lon="-5.2893"><name>Cote d'Ivoire - Yamoussoukro</name></wpt>
+    <wpt lat="5.3600" lon="-4.0083"><name>Cote d'Ivoire - Abidjan</name></wpt>
+    <wpt lat="7.6833" lon="-5.0333"><name>Cote d'Ivoire - Bouake</name></wpt>
+    <wpt lat="4.7500" lon="-6.6367"><name>Cote d'Ivoire - San-Pedro</name></wpt>
+    <wpt lat="6.8833" lon="-6.4500"><name>Cote d'Ivoire - Daloa</name></wpt>
+
+    <!-- Djibouti -->
+    <wpt lat="11.5886" lon="43.1456"><name>Djibouti - Djibouti City</name></wpt>
+    <wpt lat="11.1667" lon="42.7167"><name>Djibouti - Ali Sabieh</name></wpt>
+    <wpt lat="11.7833" lon="42.8833"><name>Djibouti - Tadjoura</name></wpt>
+    <wpt lat="11.5000" lon="42.1000"><name>Djibouti - Dikhil</name></wpt>
+    <wpt lat="11.1500" lon="42.3833"><name>Djibouti - Arta</name></wpt>
+
+    <!-- Egypt -->
+    <wpt lat="30.0444" lon="31.2357"><name>Egypt - Cairo</name></wpt>
+    <wpt lat="31.2001" lon="29.9187"><name>Egypt - Alexandria</name></wpt>
+    <wpt lat="31.1107" lon="30.9388"><name>Egypt - Kafr El-Sheikh</name></wpt>
+    <wpt lat="30.0131" lon="31.2089"><name>Egypt - Giza</name></wpt>
+    <wpt lat="31.0409" lon="31.3785"><name>Egypt - Mansoura</name></wpt>
+
+    <!-- Equatorial Guinea -->
+    <wpt lat="3.7500" lon="8.7833"><name>Equatorial Guinea - Malabo</name></wpt>
+    <wpt lat="1.8667" lon="9.7667"><name>Equatorial Guinea - Bata</name></wpt>
+    <wpt lat="1.5167" lon="10.0833"><name>Equatorial Guinea - Ebebiyin</name></wpt>
+    <wpt lat="1.1333" lon="9.8167"><name>Equatorial Guinea - Mongomo</name></wpt>
+    <wpt lat="2.0833" lon="9.7667"><name>Equatorial Guinea - Luba</name></wpt>
+
+    <!-- Eritrea -->
+    <wpt lat="15.3229" lon="38.9251"><name>Eritrea - Asmara</name></wpt>
+    <wpt lat="15.6167" lon="39.4500"><name>Eritrea - Keren</name></wpt>
+    <wpt lat="15.7833" lon="39.0167"><name>Eritrea - Massawa</name></wpt>
+    <wpt lat="14.8833" lon="38.7833"><name>Eritrea - Mendefera</name></wpt>
+    <wpt lat="15.0500" lon="39.7333"><name>Eritrea - Assab</name></wpt>
+
+    <!-- Eswatini -->
+    <wpt lat="-26.3054" lon="31.1367"><name>Eswatini - Mbabane</name></wpt>
+    <wpt lat="-26.4833" lon="31.3167"><name>Eswatini - Manzini</name></wpt>
+    <wpt lat="-27.1167" lon="31.9500"><name>Eswatini - Big Bend</name></wpt>
+    <wpt lat="-26.5167" lon="31.1333"><name>Eswatini - Lobamba</name></wpt>
+    <wpt lat="-26.8667" lon="31.9000"><name>Eswatini - Siteki</name></wpt>
+
+    <!-- Ethiopia -->
+    <wpt lat="9.0320" lon="38.7469"><name>Ethiopia - Addis Ababa</name></wpt>
+    <wpt lat="9.3000" lon="42.1167"><name>Ethiopia - Dire Dawa</name></wpt>
+    <wpt lat="11.5936" lon="37.3908"><name>Ethiopia - Gondar</name></wpt>
+    <wpt lat="7.0500" lon="38.4667"><name>Ethiopia - Hawassa</name></wpt>
+    <wpt lat="13.4967" lon="39.4753"><name>Ethiopia - Mekelle</name></wpt>
+
+    <!-- Gabon -->
+    <wpt lat="0.3924" lon="9.4536"><name>Gabon - Libreville</name></wpt>
+    <wpt lat="-0.7167" lon="8.7833"><name>Gabon - Port-Gentil</name></wpt>
+    <wpt lat="0.3833" lon="9.4500"><name>Gabon - Owendo</name></wpt>
+    <wpt lat="-1.6000" lon="13.5833"><name>Gabon - Franceville</name></wpt>
+    <wpt lat="1.0167" lon="11.5000"><name>Gabon - Oyem</name></wpt>
+
+    <!-- Gambia -->
+    <wpt lat="13.4549" lon="-16.5790"><name>Gambia - Banjul</name></wpt>
+    <wpt lat="13.4333" lon="-16.6833"><name>Gambia - Serekunda</name></wpt>
+    <wpt lat="13.4833" lon="-16.5833"><name>Gambia - Brikama</name></wpt>
+    <wpt lat="13.5333" lon="-15.4167"><name>Gambia - Basse Santa Su</name></wpt>
+    <wpt lat="13.5333" lon="-16.2667"><name>Gambia - Farafenni</name></wpt>
+
+    <!-- Ghana -->
+    <wpt lat="5.6037" lon="-0.1870"><name>Ghana - Accra</name></wpt>
+    <wpt lat="6.6885" lon="-1.6244"><name>Ghana - Kumasi</name></wpt>
+    <wpt lat="5.1315" lon="-1.2795"><name>Ghana - Sekondi-Takoradi</name></wpt>
+    <wpt lat="9.4034" lon="-0.8424"><name>Ghana - Tamale</name></wpt>
+    <wpt lat="5.1167" lon="-1.2833"><name>Ghana - Cape Coast</name></wpt>
+
+    <!-- Guinea -->
+    <wpt lat="9.5092" lon="-13.7122"><name>Guinea - Conakry</name></wpt>
+    <wpt lat="10.3833" lon="-9.3167"><name>Guinea - Kankan</name></wpt>
+    <wpt lat="10.6667" lon="-12.1000"><name>Guinea - Kindia</name></wpt>
+    <wpt lat="11.3167" lon="-12.2833"><name>Guinea - Labe</name></wpt>
+    <wpt lat="7.7500" lon="-8.8167"><name>Guinea - Nzerekore</name></wpt>
+
+    <!-- Guinea-Bissau -->
+    <wpt lat="11.8636" lon="-15.5977"><name>Guinea-Bissau - Bissau</name></wpt>
+    <wpt lat="11.8833" lon="-15.5167"><name>Guinea-Bissau - Bafata</name></wpt>
+    <wpt lat="12.2000" lon="-14.9500"><name>Guinea-Bissau - Gabu</name></wpt>
+    <wpt lat="11.7667" lon="-15.1833"><name>Guinea-Bissau - Bambadinca</name></wpt>
+    <wpt lat="11.2833" lon="-15.1833"><name>Guinea-Bissau - Catio</name></wpt>
+
+    <!-- Kenya -->
+    <wpt lat="-1.2921" lon="36.8219"><name>Kenya - Nairobi</name></wpt>
+    <wpt lat="-4.0435" lon="39.6682"><name>Kenya - Mombasa</name></wpt>
+    <wpt lat="0.0167" lon="37.0833"><name>Kenya - Nakuru</name></wpt>
+    <wpt lat="-0.2833" lon="34.7500"><name>Kenya - Kisumu</name></wpt>
+    <wpt lat="0.5167" lon="35.2833"><name>Kenya - Eldoret</name></wpt>
+
+    <!-- Lesotho -->
+    <wpt lat="-29.3167" lon="27.4833"><name>Lesotho - Maseru</name></wpt>
+    <wpt lat="-29.1500" lon="27.6833"><name>Lesotho - Teyateyaneng</name></wpt>
+    <wpt lat="-28.8833" lon="27.9333"><name>Lesotho - Hlotse</name></wpt>
+    <wpt lat="-29.5167" lon="27.2333"><name>Lesotho - Mafeteng</name></wpt>
+    <wpt lat="-29.7500" lon="27.2333"><name>Lesotho - Mohale's Hoek</name></wpt>
+
+    <!-- Liberia -->
+    <wpt lat="6.3004" lon="-10.7969"><name>Liberia - Monrovia</name></wpt>
+    <wpt lat="6.4290" lon="-9.4295"><name>Liberia - Ganta</name></wpt>
+    <wpt lat="5.0000" lon="-9.0167"><name>Liberia - Buchanan</name></wpt>
+    <wpt lat="4.3833" lon="-7.8833"><name>Liberia - Harper</name></wpt>
+    <wpt lat="6.1333" lon="-10.0500"><name>Liberia - Kakata</name></wpt>
+
+    <!-- Libya -->
+    <wpt lat="32.8872" lon="13.1913"><name>Libya - Tripoli</name></wpt>
+    <wpt lat="32.1167" lon="20.0667"><name>Libya - Benghazi</name></wpt>
+    <wpt lat="32.3742" lon="15.0925"><name>Libya - Misrata</name></wpt>
+    <wpt lat="32.7667" lon="12.7333"><name>Libya - Zawiya</name></wpt>
+    <wpt lat="27.0333" lon="14.4167"><name>Libya - Sabha</name></wpt>
+
+    <!-- Madagascar -->
+    <wpt lat="-18.8792" lon="47.5079"><name>Madagascar - Antananarivo</name></wpt>
+    <wpt lat="-18.1500" lon="49.4167"><name>Madagascar - Toamasina</name></wpt>
+    <wpt lat="-19.8333" lon="47.0333"><name>Madagascar - Antsirabe</name></wpt>
+    <wpt lat="-21.4333" lon="47.0833"><name>Madagascar - Fianarantsoa</name></wpt>
+    <wpt lat="-15.7167" lon="46.3167"><name>Madagascar - Mahajanga</name></wpt>
+
+    <!-- Malawi -->
+    <wpt lat="-13.9626" lon="33.7741"><name>Malawi - Lilongwe</name></wpt>
+    <wpt lat="-15.7833" lon="35.0000"><name>Malawi - Blantyre</name></wpt>
+    <wpt lat="-11.4631" lon="34.0161"><name>Malawi - Mzuzu</name></wpt>
+    <wpt lat="-14.4667" lon="35.2500"><name>Malawi - Zomba</name></wpt>
+    <wpt lat="-13.7833" lon="33.7833"><name>Malawi - Kasungu</name></wpt>
+
+    <!-- Mali -->
+    <wpt lat="12.6392" lon="-8.0029"><name>Mali - Bamako</name></wpt>
+    <wpt lat="13.4500" lon="-6.2667"><name>Mali - Segou</name></wpt>
+    <wpt lat="12.6500" lon="-7.9833"><name>Mali - Sikasso</name></wpt>
+    <wpt lat="14.0833" lon="-5.0500"><name>Mali - Mopti</name></wpt>
+    <wpt lat="11.3167" lon="-5.6833"><name>Mali - Koutiala</name></wpt>
+
+    <!-- Mauritania -->
+    <wpt lat="18.0858" lon="-15.9785"><name>Mauritania - Nouakchott</name></wpt>
+    <wpt lat="20.5167" lon="-13.0500"><name>Mauritania - Nouadhibou</name></wpt>
+    <wpt lat="16.5167" lon="-16.0167"><name>Mauritania - Rosso</name></wpt>
+    <wpt lat="17.0333" lon="-12.3500"><name>Mauritania - Kaedi</name></wpt>
+    <wpt lat="22.6833" lon="-12.4833"><name>Mauritania - Zouerate</name></wpt>
+
+    <!-- Mauritius -->
+    <wpt lat="-20.1609" lon="57.5012"><name>Mauritius - Port Louis</name></wpt>
+    <wpt lat="-20.2333" lon="57.4833"><name>Mauritius - Beau Bassin-Rose Hill</name></wpt>
+    <wpt lat="-20.2500" lon="57.5000"><name>Mauritius - Vacoas-Phoenix</name></wpt>
+    <wpt lat="-20.3000" lon="57.5000"><name>Mauritius - Curepipe</name></wpt>
+    <wpt lat="-20.2667" lon="57.5500"><name>Mauritius - Quatre Bornes</name></wpt>
+
+    <!-- Morocco -->
+    <wpt lat="34.0209" lon="-6.8416"><name>Morocco - Rabat</name></wpt>
+    <wpt lat="33.5731" lon="-7.5898"><name>Morocco - Casablanca</name></wpt>
+    <wpt lat="34.0333" lon="-5.0000"><name>Morocco - Fes</name></wpt>
+    <wpt lat="31.6295" lon="-7.9811"><name>Morocco - Marrakech</name></wpt>
+    <wpt lat="35.7722" lon="-5.8099"><name>Morocco - Tangier</name></wpt>
+
+    <!-- Mozambique -->
+    <wpt lat="-25.9692" lon="32.5732"><name>Mozambique - Maputo</name></wpt>
+    <wpt lat="-25.9667" lon="32.5833"><name>Mozambique - Matola</name></wpt>
+    <wpt lat="-19.8333" lon="34.8500"><name>Mozambique - Beira</name></wpt>
+    <wpt lat="-13.3167" lon="35.2333"><name>Mozambique - Nampula</name></wpt>
+    <wpt lat="-23.8500" lon="35.3833"><name>Mozambique - Inhambane</name></wpt>
+
+    <!-- Namibia -->
+    <wpt lat="-22.5609" lon="17.0658"><name>Namibia - Windhoek</name></wpt>
+    <wpt lat="-22.9500" lon="14.5000"><name>Namibia - Swakopmund</name></wpt>
+    <wpt lat="-22.6333" lon="14.5333"><name>Namibia - Walvis Bay</name></wpt>
+    <wpt lat="-19.2333" lon="17.6000"><name>Namibia - Rundu</name></wpt>
+    <wpt lat="-17.9167" lon="19.7667"><name>Namibia - Katima Mulilo</name></wpt>
+
+    <!-- Niger -->
+    <wpt lat="13.5116" lon="2.1254"><name>Niger - Niamey</name></wpt>
+    <wpt lat="13.8000" lon="8.9833"><name>Niger - Zinder</name></wpt>
+    <wpt lat="13.0500" lon="5.2500"><name>Niger - Tahoua</name></wpt>
+    <wpt lat="13.7000" lon="7.9833"><name>Niger - Maradi</name></wpt>
+    <wpt lat="16.9667" lon="8.0000"><name>Niger - Agadez</name></wpt>
+
+    <!-- Nigeria -->
+    <wpt lat="9.0579" lon="7.4951"><name>Nigeria - Abuja</name></wpt>
+    <wpt lat="6.5244" lon="3.3792"><name>Nigeria - Lagos</name></wpt>
+    <wpt lat="12.0022" lon="8.5920"><name>Nigeria - Kano</name></wpt>
+    <wpt lat="7.3775" lon="3.9470"><name>Nigeria - Ibadan</name></wpt>
+    <wpt lat="5.0333" lon="7.9333"><name>Nigeria - Port Harcourt</name></wpt>
+
+    <!-- Rwanda -->
+    <wpt lat="-1.9403" lon="29.8739"><name>Rwanda - Kigali</name></wpt>
+    <wpt lat="-2.3500" lon="28.8500"><name>Rwanda - Gisenyi</name></wpt>
+    <wpt lat="-2.6167" lon="29.7500"><name>Rwanda - Butare</name></wpt>
+    <wpt lat="-1.5000" lon="29.6333"><name>Rwanda - Ruhengeri</name></wpt>
+    <wpt lat="-2.0833" lon="29.6333"><name>Rwanda - Gitarama</name></wpt>
+
+    <!-- Sao Tome and Principe -->
+    <wpt lat="0.3365" lon="6.7273"><name>Sao Tome and Principe - Sao Tome</name></wpt>
+    <wpt lat="1.6167" lon="7.4167"><name>Sao Tome and Principe - Santo Antonio</name></wpt>
+    <wpt lat="0.3833" lon="6.7333"><name>Sao Tome and Principe - Trindade</name></wpt>
+    <wpt lat="0.2333" lon="6.5167"><name>Sao Tome and Principe - Santana</name></wpt>
+    <wpt lat="0.2333" lon="6.7333"><name>Sao Tome and Principe - Neves</name></wpt>
+
+    <!-- Senegal -->
+    <wpt lat="14.6928" lon="-17.4467"><name>Senegal - Dakar</name></wpt>
+    <wpt lat="14.7500" lon="-17.4333"><name>Senegal - Pikine</name></wpt>
+    <wpt lat="14.7667" lon="-16.9500"><name>Senegal - Touba</name></wpt>
+    <wpt lat="14.7667" lon="-16.5333"><name>Senegal - Thies</name></wpt>
+    <wpt lat="16.0167" lon="-16.4833"><name>Senegal - Saint-Louis</name></wpt>
+
+    <!-- Seychelles -->
+    <wpt lat="-4.6167" lon="55.4500"><name>Seychelles - Victoria</name></wpt>
+    <wpt lat="-4.6500" lon="55.4667"><name>Seychelles - Anse Boileau</name></wpt>
+    <wpt lat="-4.7500" lon="55.5167"><name>Seychelles - Anse Royale</name></wpt>
+    <wpt lat="-4.7333" lon="55.4333"><name>Seychelles - Takamaka</name></wpt>
+    <wpt lat="-4.6333" lon="55.4833"><name>Seychelles - Beau Vallon</name></wpt>
+
+    <!-- Sierra Leone -->
+    <wpt lat="8.4657" lon="-13.2317"><name>Sierra Leone - Freetown</name></wpt>
+    <wpt lat="7.9667" lon="-11.7333"><name>Sierra Leone - Bo</name></wpt>
+    <wpt lat="7.8833" lon="-11.1833"><name>Sierra Leone - Kenema</name></wpt>
+    <wpt lat="8.8667" lon="-12.0500"><name>Sierra Leone - Makeni</name></wpt>
+    <wpt lat="8.4833" lon="-13.0333"><name>Sierra Leone - Waterloo</name></wpt>
+
+    <!-- Somalia -->
+    <wpt lat="2.0469" lon="45.3182"><name>Somalia - Mogadishu</name></wpt>
+    <wpt lat="9.5600" lon="44.0650"><name>Somalia - Hargeisa</name></wpt>
+    <wpt lat="0.3556" lon="42.5428"><name>Somalia - Kismayo</name></wpt>
+    <wpt lat="2.7833" lon="45.5000"><name>Somalia - Beledweyne</name></wpt>
+    <wpt lat="11.2833" lon="49.1833"><name>Somalia - Bosaso</name></wpt>
+
+    <!-- South Africa -->
+    <wpt lat="-25.7479" lon="28.2293"><name>South Africa - Pretoria</name></wpt>
+    <wpt lat="-26.2041" lon="28.0473"><name>South Africa - Johannesburg</name></wpt>
+    <wpt lat="-33.9249" lon="18.4241"><name>South Africa - Cape Town</name></wpt>
+    <wpt lat="-29.8587" lon="31.0218"><name>South Africa - Durban</name></wpt>
+    <wpt lat="-33.9608" lon="25.6022"><name>South Africa - Port Elizabeth</name></wpt>
+
+    <!-- South Sudan -->
+    <wpt lat="4.8594" lon="31.5713"><name>South Sudan - Juba</name></wpt>
+    <wpt lat="9.8833" lon="32.7167"><name>South Sudan - Malakal</name></wpt>
+    <wpt lat="7.7833" lon="27.9833"><name>South Sudan - Wau</name></wpt>
+    <wpt lat="8.7500" lon="29.7000"><name>South Sudan - Aweil</name></wpt>
+    <wpt lat="6.2000" lon="31.6167"><name>South Sudan - Bor</name></wpt>
+
+    <!-- Sudan -->
+    <wpt lat="15.5007" lon="32.5599"><name>Sudan - Khartoum</name></wpt>
+    <wpt lat="15.6500" lon="32.5500"><name>Sudan - Omdurman</name></wpt>
+    <wpt lat="19.6167" lon="37.2167"><name>Sudan - Port Sudan</name></wpt>
+    <wpt lat="13.6333" lon="25.3500"><name>Sudan - Nyala</name></wpt>
+    <wpt lat="11.8667" lon="34.3833"><name>Sudan - Kassala</name></wpt>
+
+    <!-- Tanzania -->
+    <wpt lat="-6.1630" lon="35.7516"><name>Tanzania - Dodoma</name></wpt>
+    <wpt lat="-6.7924" lon="39.2083"><name>Tanzania - Dar es Salaam</name></wpt>
+    <wpt lat="-2.5167" lon="32.9000"><name>Tanzania - Mwanza</name></wpt>
+    <wpt lat="-3.3667" lon="36.6833"><name>Tanzania - Arusha</name></wpt>
+    <wpt lat="-8.9000" lon="33.4500"><name>Tanzania - Mbeya</name></wpt>
+
+    <!-- Togo -->
+    <wpt lat="6.1256" lon="1.2254"><name>Togo - Lome</name></wpt>
+    <wpt lat="9.2500" lon="1.1500"><name>Togo - Sokode</name></wpt>
+    <wpt lat="10.8833" lon="0.2167"><name>Togo - Dapaong</name></wpt>
+    <wpt lat="6.9667" lon="1.1500"><name>Togo - Kpalime</name></wpt>
+    <wpt lat="6.4500" lon="1.5167"><name>Togo - Aneho</name></wpt>
+
+    <!-- Tunisia -->
+    <wpt lat="36.8065" lon="10.1815"><name>Tunisia - Tunis</name></wpt>
+    <wpt lat="34.7406" lon="10.7603"><name>Tunisia - Sfax</name></wpt>
+    <wpt lat="35.8333" lon="10.6000"><name>Tunisia - Sousse</name></wpt>
+    <wpt lat="33.8833" lon="10.1167"><name>Tunisia - Gabes</name></wpt>
+    <wpt lat="36.4500" lon="10.7333"><name>Tunisia - Kairouan</name></wpt>
+
+    <!-- Uganda -->
+    <wpt lat="0.3476" lon="32.5825"><name>Uganda - Kampala</name></wpt>
+    <wpt lat="0.4500" lon="33.2000"><name>Uganda - Jinja</name></wpt>
+    <wpt lat="-0.6167" lon="30.6667"><name>Uganda - Mbarara</name></wpt>
+    <wpt lat="2.7667" lon="32.3000"><name>Uganda - Gulu</name></wpt>
+    <wpt lat="0.6000" lon="34.1833"><name>Uganda - Mbale</name></wpt>
+
+    <!-- Zambia -->
+    <wpt lat="-15.3875" lon="28.3228"><name>Zambia - Lusaka</name></wpt>
+    <wpt lat="-12.8167" lon="28.2667"><name>Zambia - Ndola</name></wpt>
+    <wpt lat="-12.8000" lon="28.2333"><name>Zambia - Kitwe</name></wpt>
+    <wpt lat="-15.4167" lon="28.2833"><name>Zambia - Kabwe</name></wpt>
+    <wpt lat="-13.5333" lon="28.6500"><name>Zambia - Mufulira</name></wpt>
+
+    <!-- Zimbabwe -->
+    <wpt lat="-17.8292" lon="31.0522"><name>Zimbabwe - Harare</name></wpt>
+    <wpt lat="-20.1500" lon="28.5833"><name>Zimbabwe - Bulawayo</name></wpt>
+    <wpt lat="-18.9707" lon="32.6709"><name>Zimbabwe - Mutare</name></wpt>
+    <wpt lat="-19.4667" lon="29.8000"><name>Zimbabwe - Gweru</name></wpt>
+    <wpt lat="-17.9167" lon="25.8500"><name>Zimbabwe - Victoria Falls</name></wpt>
+</gpx>

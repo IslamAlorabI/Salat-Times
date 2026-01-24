@@ -1,0 +1,163 @@
+<?xml version="1.0"?>
+<gpx version="1.1" creator="Xcode">
+    <!-- Antigua and Barbuda -->
+    <wpt lat="17.1175" lon="-61.8456"><name>Antigua and Barbuda - St. Johns</name></wpt>
+    <wpt lat="17.0747" lon="-61.8494"><name>Antigua and Barbuda - All Saints</name></wpt>
+    <wpt lat="17.1500" lon="-61.8167"><name>Antigua and Barbuda - Parham</name></wpt>
+    <wpt lat="17.0500" lon="-61.7833"><name>Antigua and Barbuda - English Harbour</name></wpt>
+    <wpt lat="17.6333" lon="-61.8333"><name>Antigua and Barbuda - Codrington</name></wpt>
+
+    <!-- Bahamas -->
+    <wpt lat="25.0480" lon="-77.3554"><name>Bahamas - Nassau</name></wpt>
+    <wpt lat="26.5333" lon="-78.6333"><name>Bahamas - Freeport</name></wpt>
+    <wpt lat="25.0833" lon="-77.3333"><name>Bahamas - Marsh Harbour</name></wpt>
+    <wpt lat="24.2500" lon="-76.1333"><name>Bahamas - George Town</name></wpt>
+    <wpt lat="26.6500" lon="-77.0500"><name>Bahamas - West End</name></wpt>
+
+    <!-- Barbados -->
+    <wpt lat="13.1132" lon="-59.5988"><name>Barbados - Bridgetown</name></wpt>
+    <wpt lat="13.1667" lon="-59.6333"><name>Barbados - Speightstown</name></wpt>
+    <wpt lat="13.1000" lon="-59.6167"><name>Barbados - Holetown</name></wpt>
+    <wpt lat="13.2000" lon="-59.5833"><name>Barbados - Bathsheba</name></wpt>
+    <wpt lat="13.0667" lon="-59.5333"><name>Barbados - Oistins</name></wpt>
+
+    <!-- Belize -->
+    <wpt lat="17.2510" lon="-88.7590"><name>Belize - Belmopan</name></wpt>
+    <wpt lat="17.4986" lon="-88.1886"><name>Belize - Belize City</name></wpt>
+    <wpt lat="18.4833" lon="-88.3833"><name>Belize - Corozal</name></wpt>
+    <wpt lat="17.1500" lon="-88.7667"><name>Belize - San Ignacio</name></wpt>
+    <wpt lat="18.0333" lon="-88.5333"><name>Belize - Orange Walk</name></wpt>
+
+    <!-- Canada -->
+    <wpt lat="45.4215" lon="-75.6972"><name>Canada - Ottawa</name></wpt>
+    <wpt lat="43.6532" lon="-79.3832"><name>Canada - Toronto</name></wpt>
+    <wpt lat="45.5017" lon="-73.5673"><name>Canada - Montreal</name></wpt>
+    <wpt lat="49.2827" lon="-123.1207"><name>Canada - Vancouver</name></wpt>
+    <wpt lat="51.0447" lon="-114.0719"><name>Canada - Calgary</name></wpt>
+
+    <!-- Costa Rica -->
+    <wpt lat="9.9281" lon="-84.0907"><name>Costa Rica - San Jose</name></wpt>
+    <wpt lat="9.8667" lon="-83.9167"><name>Costa Rica - Cartago</name></wpt>
+    <wpt lat="10.0000" lon="-84.1167"><name>Costa Rica - Heredia</name></wpt>
+    <wpt lat="10.2341" lon="-83.6346"><name>Costa Rica - Puerto Limon</name></wpt>
+    <wpt lat="10.4667" lon="-84.0167"><name>Costa Rica - Alajuela</name></wpt>
+
+    <!-- Cuba -->
+    <wpt lat="23.1136" lon="-82.3666"><name>Cuba - Havana</name></wpt>
+    <wpt lat="20.0217" lon="-75.8265"><name>Cuba - Santiago de Cuba</name></wpt>
+    <wpt lat="22.4058" lon="-79.9532"><name>Cuba - Santa Clara</name></wpt>
+    <wpt lat="21.3833" lon="-77.9167"><name>Cuba - Camaguey</name></wpt>
+    <wpt lat="21.7500" lon="-79.9667"><name>Cuba - Cienfuegos</name></wpt>
+
+    <!-- Dominica -->
+    <wpt lat="15.3010" lon="-61.3881"><name>Dominica - Roseau</name></wpt>
+    <wpt lat="15.5833" lon="-61.4500"><name>Dominica - Portsmouth</name></wpt>
+    <wpt lat="15.3333" lon="-61.3833"><name>Dominica - Canefield</name></wpt>
+    <wpt lat="15.4833" lon="-61.4667"><name>Dominica - Marigot</name></wpt>
+    <wpt lat="15.5167" lon="-61.2833"><name>Dominica - La Plaine</name></wpt>
+
+    <!-- Dominican Republic -->
+    <wpt lat="18.4861" lon="-69.9312"><name>Dominican Republic - Santo Domingo</name></wpt>
+    <wpt lat="19.4500" lon="-70.6833"><name>Dominican Republic - Santiago</name></wpt>
+    <wpt lat="19.7833" lon="-70.6833"><name>Dominican Republic - Puerto Plata</name></wpt>
+    <wpt lat="18.4833" lon="-69.9167"><name>Dominican Republic - San Pedro de Macoris</name></wpt>
+    <wpt lat="18.4167" lon="-68.9667"><name>Dominican Republic - La Romana</name></wpt>
+
+    <!-- El Salvador -->
+    <wpt lat="13.6929" lon="-89.2182"><name>El Salvador - San Salvador</name></wpt>
+    <wpt lat="13.6833" lon="-89.2833"><name>El Salvador - Santa Ana</name></wpt>
+    <wpt lat="13.4833" lon="-88.1833"><name>El Salvador - San Miguel</name></wpt>
+    <wpt lat="13.7667" lon="-89.3333"><name>El Salvador - Apopa</name></wpt>
+    <wpt lat="13.6833" lon="-89.0500"><name>El Salvador - Soyapango</name></wpt>
+
+    <!-- Grenada -->
+    <wpt lat="12.0540" lon="-61.7486"><name>Grenada - St. Georges</name></wpt>
+    <wpt lat="12.0833" lon="-61.7500"><name>Grenada - Gouyave</name></wpt>
+    <wpt lat="12.1167" lon="-61.7167"><name>Grenada - Grenville</name></wpt>
+    <wpt lat="12.0000" lon="-61.7667"><name>Grenada - St. Davids</name></wpt>
+    <wpt lat="12.0500" lon="-61.7833"><name>Grenada - Victoria</name></wpt>
+
+    <!-- Guatemala -->
+    <wpt lat="14.6349" lon="-90.5069"><name>Guatemala - Guatemala City</name></wpt>
+    <wpt lat="14.6333" lon="-90.5167"><name>Guatemala - Mixco</name></wpt>
+    <wpt lat="14.5500" lon="-90.7333"><name>Guatemala - Antigua Guatemala</name></wpt>
+    <wpt lat="14.8333" lon="-91.5167"><name>Guatemala - Quetzaltenango</name></wpt>
+    <wpt lat="14.6333" lon="-90.5833"><name>Guatemala - Villa Nueva</name></wpt>
+
+    <!-- Haiti -->
+    <wpt lat="18.5944" lon="-72.3074"><name>Haiti - Port-au-Prince</name></wpt>
+    <wpt lat="19.7597" lon="-72.2056"><name>Haiti - Cap-Haitien</name></wpt>
+    <wpt lat="18.5000" lon="-72.3333"><name>Haiti - Carrefour</name></wpt>
+    <wpt lat="18.5000" lon="-72.8667"><name>Haiti - Leogane</name></wpt>
+    <wpt lat="18.5500" lon="-72.4000"><name>Haiti - Petionville</name></wpt>
+
+    <!-- Honduras -->
+    <wpt lat="14.0818" lon="-87.2068"><name>Honduras - Tegucigalpa</name></wpt>
+    <wpt lat="15.5000" lon="-88.0333"><name>Honduras - San Pedro Sula</name></wpt>
+    <wpt lat="15.7792" lon="-86.7978"><name>Honduras - La Ceiba</name></wpt>
+    <wpt lat="14.0833" lon="-87.1667"><name>Honduras - Choloma</name></wpt>
+    <wpt lat="14.3000" lon="-87.6167"><name>Honduras - Comayagua</name></wpt>
+
+    <!-- Jamaica -->
+    <wpt lat="17.9714" lon="-76.7936"><name>Jamaica - Kingston</name></wpt>
+    <wpt lat="18.4667" lon="-77.9167"><name>Jamaica - Montego Bay</name></wpt>
+    <wpt lat="17.9833" lon="-76.8000"><name>Jamaica - Spanish Town</name></wpt>
+    <wpt lat="18.4667" lon="-77.3000"><name>Jamaica - Ocho Rios</name></wpt>
+    <wpt lat="18.4500" lon="-77.6333"><name>Jamaica - Falmouth</name></wpt>
+
+    <!-- Mexico -->
+    <wpt lat="19.4326" lon="-99.1332"><name>Mexico - Mexico City</name></wpt>
+    <wpt lat="20.6597" lon="-103.3496"><name>Mexico - Guadalajara</name></wpt>
+    <wpt lat="25.6866" lon="-100.3161"><name>Mexico - Monterrey</name></wpt>
+    <wpt lat="21.1619" lon="-86.8515"><name>Mexico - Cancun</name></wpt>
+    <wpt lat="32.5149" lon="-117.0382"><name>Mexico - Tijuana</name></wpt>
+
+    <!-- Nicaragua -->
+    <wpt lat="12.1150" lon="-86.2362"><name>Nicaragua - Managua</name></wpt>
+    <wpt lat="12.4333" lon="-86.8833"><name>Nicaragua - Leon</name></wpt>
+    <wpt lat="11.9333" lon="-86.0833"><name>Nicaragua - Masaya</name></wpt>
+    <wpt lat="12.1333" lon="-86.3500"><name>Nicaragua - Tipitapa</name></wpt>
+    <wpt lat="11.9667" lon="-86.2500"><name>Nicaragua - Granada</name></wpt>
+
+    <!-- Panama -->
+    <wpt lat="8.9824" lon="-79.5199"><name>Panama - Panama City</name></wpt>
+    <wpt lat="9.3591" lon="-79.9019"><name>Panama - Colon</name></wpt>
+    <wpt lat="8.4333" lon="-82.4333"><name>Panama - David</name></wpt>
+    <wpt lat="7.9167" lon="-80.4333"><name>Panama - Santiago</name></wpt>
+    <wpt lat="8.9500" lon="-79.5500"><name>Panama - San Miguelito</name></wpt>
+
+    <!-- Saint Kitts and Nevis -->
+    <wpt lat="17.3026" lon="-62.7177"><name>Saint Kitts and Nevis - Basseterre</name></wpt>
+    <wpt lat="17.1500" lon="-62.5833"><name>Saint Kitts and Nevis - Charlestown</name></wpt>
+    <wpt lat="17.3833" lon="-62.7667"><name>Saint Kitts and Nevis - Sandy Point Town</name></wpt>
+    <wpt lat="17.4000" lon="-62.8167"><name>Saint Kitts and Nevis - Dieppe Bay Town</name></wpt>
+    <wpt lat="17.3500" lon="-62.7833"><name>Saint Kitts and Nevis - Old Road Town</name></wpt>
+
+    <!-- Saint Lucia -->
+    <wpt lat="14.0101" lon="-60.9875"><name>Saint Lucia - Castries</name></wpt>
+    <wpt lat="13.8333" lon="-61.0500"><name>Saint Lucia - Soufriere</name></wpt>
+    <wpt lat="14.0500" lon="-60.9167"><name>Saint Lucia - Gros Islet</name></wpt>
+    <wpt lat="13.8333" lon="-60.9000"><name>Saint Lucia - Vieux Fort</name></wpt>
+    <wpt lat="13.9500" lon="-61.0333"><name>Saint Lucia - Micoud</name></wpt>
+
+    <!-- Saint Vincent and the Grenadines -->
+    <wpt lat="13.1561" lon="-61.2274"><name>Saint Vincent and the Grenadines - Kingstown</name></wpt>
+    <wpt lat="13.2333" lon="-61.2500"><name>Saint Vincent and the Grenadines - Georgetown</name></wpt>
+    <wpt lat="13.1333" lon="-61.2333"><name>Saint Vincent and the Grenadines - Calliaqua</name></wpt>
+    <wpt lat="13.2667" lon="-61.2000"><name>Saint Vincent and the Grenadines - Barrouallie</name></wpt>
+    <wpt lat="12.6000" lon="-61.2000"><name>Saint Vincent and the Grenadines - Port Elizabeth</name></wpt>
+
+    <!-- Trinidad and Tobago -->
+    <wpt lat="10.6596" lon="-61.5086"><name>Trinidad and Tobago - Port of Spain</name></wpt>
+    <wpt lat="10.5167" lon="-61.3167"><name>Trinidad and Tobago - San Fernando</name></wpt>
+    <wpt lat="10.5333" lon="-61.4500"><name>Trinidad and Tobago - Chaguanas</name></wpt>
+    <wpt lat="11.1833" lon="-60.7333"><name>Trinidad and Tobago - Scarborough</name></wpt>
+    <wpt lat="10.6333" lon="-61.2833"><name>Trinidad and Tobago - Arima</name></wpt>
+
+    <!-- United States -->
+    <wpt lat="38.9072" lon="-77.0369"><name>United States - Washington DC</name></wpt>
+    <wpt lat="40.7128" lon="-74.0060"><name>United States - New York</name></wpt>
+    <wpt lat="34.0522" lon="-118.2437"><name>United States - Los Angeles</name></wpt>
+    <wpt lat="41.8781" lon="-87.6298"><name>United States - Chicago</name></wpt>
+    <wpt lat="29.7604" lon="-95.3698"><name>United States - Houston</name></wpt>
+</gpx>
