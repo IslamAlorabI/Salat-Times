@@ -21,7 +21,7 @@ struct ContentView: View    {
                             .font(.system(size: 16, weight: .semibold))
                             .foregroundColor(.white)
                             .padding(8)
-                            .background(Color.blue.opacity(0.8))
+                            .background(Color.accentColor.opacity(0.8))
                             .clipShape(Circle())
                     }
                     .buttonStyle(.plain)
@@ -51,7 +51,7 @@ struct ContentView: View    {
                             .font(.system(size: 16, weight: .semibold))
                             .foregroundColor(.white)
                             .padding(8)
-                            .background(Color.blue.opacity(0.8))
+                            .background(Color.accentColor.opacity(0.8))
                             .clipShape(Circle())
                     }
                     .buttonStyle(.plain)
@@ -120,6 +120,7 @@ struct ContentView: View    {
                         Text(Translations.string("settings", language: appLanguage))
                     }
                     .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(.accentColor)
                 }
                 .buttonStyle(.link)
                 
@@ -133,6 +134,7 @@ struct ContentView: View    {
                         Text(Translations.string("quit", language: appLanguage))
                     }
                     .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(.accentColor)
                 }
                 .buttonStyle(.link)
             }
@@ -234,7 +236,7 @@ struct PrayerRow: View {
     @Environment(\.layoutDirection) var layoutDirection
     
     private var highlightColor: Color {
-        Color(red: 0.2, green: 0.6, blue: 1.0)
+        Color.accentColor
     }
     
     var body: some View {
