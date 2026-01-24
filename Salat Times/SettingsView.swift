@@ -12,12 +12,14 @@ struct SettingsView: View {
     
     // Notification settings per prayer
     @AppStorage("notification_Fajr_enabled") private var fajrEnabled = true
+    @AppStorage("notification_Sunrise_enabled") private var sunriseEnabled = true
     @AppStorage("notification_Dhuhr_enabled") private var dhuhrEnabled = true
     @AppStorage("notification_Asr_enabled") private var asrEnabled = true
     @AppStorage("notification_Maghrib_enabled") private var maghribEnabled = true
     @AppStorage("notification_Isha_enabled") private var ishaEnabled = true
     
     @AppStorage("notification_Fajr_sound") private var fajrSound = "default"
+    @AppStorage("notification_Sunrise_sound") private var sunriseSound = "default"
     @AppStorage("notification_Dhuhr_sound") private var dhuhrSound = "default"
     @AppStorage("notification_Asr_sound") private var asrSound = "default"
     @AppStorage("notification_Maghrib_sound") private var maghribSound = "default"
@@ -120,6 +122,16 @@ struct SettingsView: View {
                         Divider()
                         
                         PrayerNotificationRow(
+                            prayerName: Translations.string("prayer_sunrise", language: appLanguage),
+                            icon: "sunrise.fill",
+                            isEnabled: $sunriseEnabled,
+                            soundRawValue: $sunriseSound,
+                            appLanguage: appLanguage
+                        )
+                        
+                        Divider()
+                        
+                        PrayerNotificationRow(
                             prayerName: Translations.string("prayer_dhuhr", language: appLanguage),
                             icon: "sun.max.fill",
                             isEnabled: $dhuhrEnabled,
@@ -185,11 +197,13 @@ struct SettingsView: View {
         .onChange(of: method) { _ in manager.loadSavedCity() }
         // Reschedule notifications when any notification setting changes
         .onChange(of: fajrEnabled) { _ in manager.schedulePrayerNotifications() }
+        .onChange(of: sunriseEnabled) { _ in manager.schedulePrayerNotifications() }
         .onChange(of: dhuhrEnabled) { _ in manager.schedulePrayerNotifications() }
         .onChange(of: asrEnabled) { _ in manager.schedulePrayerNotifications() }
         .onChange(of: maghribEnabled) { _ in manager.schedulePrayerNotifications() }
         .onChange(of: ishaEnabled) { _ in manager.schedulePrayerNotifications() }
         .onChange(of: fajrSound) { _ in manager.schedulePrayerNotifications() }
+        .onChange(of: sunriseSound) { _ in manager.schedulePrayerNotifications() }
         .onChange(of: dhuhrSound) { _ in manager.schedulePrayerNotifications() }
         .onChange(of: asrSound) { _ in manager.schedulePrayerNotifications() }
         .onChange(of: maghribSound) { _ in manager.schedulePrayerNotifications() }

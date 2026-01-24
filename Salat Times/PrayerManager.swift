@@ -78,7 +78,7 @@ enum NotificationSound: String, CaseIterable, Identifiable {
 
 // MARK: - Prayer Notification Settings Helper
 struct PrayerNotificationSettings {
-    static let prayers = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"]
+    static let prayers = ["Fajr", "Sunrise", "Dhuhr", "Asr", "Maghrib", "Isha"]
     
     static func isEnabled(for prayer: String) -> Bool {
         UserDefaults.standard.object(forKey: "notification_\(prayer)_enabled") as? Bool ?? true
@@ -195,7 +195,7 @@ class PrayerManager: NSObject, ObservableObject, CLLocationManagerDelegate, UNUs
         let appLanguage = UserDefaults.standard.string(forKey: "appLanguage") ?? "ar"
         
         for (key, timeString) in timings {
-            guard ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"].contains(key) else { continue }
+            guard ["Fajr", "Sunrise", "Dhuhr", "Asr", "Maghrib", "Isha"].contains(key) else { continue }
             
             // Check if notification is enabled for this prayer
             guard PrayerNotificationSettings.isEnabled(for: key) else {
