@@ -100,7 +100,7 @@ struct ContentView: View    {
             Divider()
             
             HStack {
-                Text("v1.5")
+                Text("v3.0")
                     .font(.caption2)
                     .foregroundColor(.secondary)
                 Spacer()
