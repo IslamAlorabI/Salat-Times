@@ -6,16 +6,28 @@ A beautiful macOS menu bar application that displays Islamic prayer times with s
 
 - 🌙 **Menu Bar Integration** - Quick access to prayer times from your menu bar
 - 🌍 **Multiple Cities** - Support for Cairo, Riyadh, New York, Kafr El-Sheikh, and Algiers
-- 🌐 **Bilingual Support** - Full Arabic and English language support with RTL layout
+- 🌐 **Multi-Language Support** - Full support for 8 languages:
+  - Arabic (العربية) with RTL layout
+  - English
+  - Russian (Русский)
+  - Indonesian (Indonesia)
+  - Turkish (Türkçe)
+  - Urdu (اردو) with RTL layout
+  - Persian (فارسی) with RTL layout
+  - German (Deutsch)
 - ⏰ **Flexible Time Format** - Choose between 12-hour and 24-hour time formats
 - 📐 **Multiple Calculation Methods**:
   - Egyptian General Authority
   - Umm Al-Qura (Makkah)
   - Muslim World League
   - North America (ISNA)
-- 🔔 **Prayer Notifications** - Get notified when it's time for prayer
-- 🧪 **Test Prayer Feature** - Test notifications with custom prayer times
+- 🔔 **Prayer Notifications** - Customizable notifications for each prayer with:
+  - Individual enable/disable toggles per prayer
+  - Custom notification sounds (Basso, Blow, Bottle, Frog, Funk, Glass, Hero, Morse, Ping, Pop, Purr, Sosumi, Submarine, Tink)
+  - Sound preview functionality
+  - Default system sound option
 - ✨ **Beautiful UI** - Modern, translucent design with visual highlights for upcoming prayers
+- 🎨 **Custom App Icons** - Multiple icon variants (Default, Dark, Tinted Light)
 
 ## Requirements
 
@@ -48,13 +60,16 @@ open "Salat Times.xcodeproj"
 
 ### Settings
 
-Click the "Settings" button (or "الإعدادات" in Arabic) to access:
+Click the "Settings" button to access:
 
-- **Language**: Switch between Arabic and English
+- **Language**: Choose from 8 supported languages (Arabic, English, Russian, Indonesian, Turkish, Urdu, Persian, German)
 - **Location**: Select your city from the available options
 - **Calculation Method**: Choose your preferred prayer time calculation method
 - **Time Format**: Toggle between 12-hour and 24-hour formats
-- **Test Prayer**: Add a test prayer notification to verify notifications are working
+- **Prayer Notifications**: Customize notifications for each prayer:
+  - Enable/disable notifications per prayer (Fajr, Dhuhr, Asr, Maghrib, Isha)
+  - Select custom notification sounds for each prayer
+  - Preview sounds before applying
 
 ### Prayer Times Displayed
 
@@ -75,18 +90,22 @@ This app uses the [Aladhan API](https://aladhan.com/prayer-times-api) to fetch a
 Salat Times/
 ├── SalatTimesApp.swift      # Main app entry point
 ├── ContentView.swift        # Main menu bar view
-├── SettingsView.swift       # Settings window
+├── SettingsView.swift       # Settings window with modular components
 ├── PrayerManager.swift      # Core logic for prayer times and notifications
+├── Translations.swift       # Multi-language translation system
+├── Assets.xcassets/         # App icons and assets
 └── *.gpx                    # Location files for testing
 ```
 
 ## Configuration
 
 The app stores user preferences using `UserDefaults`:
-- `appLanguage`: "ar" or "en"
+- `appLanguage`: Language code ("ar", "en", "ru", "id", "tr", "ur", "fa", "de")
 - `selectedCityRaw`: Selected city identifier
 - `calculationMethod`: Prayer calculation method (2, 3, 4, or 5)
 - `timeFormat24`: Boolean for 24-hour format preference
+- `fajrNotificationEnabled`, `dhuhrNotificationEnabled`, etc.: Per-prayer notification toggles
+- `fajrNotificationSound`, `dhuhrNotificationSound`, etc.: Custom sound selections per prayer
 
 ## Permissions
 
@@ -112,7 +131,7 @@ The app requires:
 
 ## Version
 
-Current version: **1.5**
+Current version: **2.0**
 
 ## Author
 
