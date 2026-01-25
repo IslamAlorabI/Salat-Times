@@ -280,6 +280,58 @@ struct Translations {
                 "de": "Lädt..."
             ],
             
+            // Welcome Screen
+            "app_description": [
+                "ar": "تطبيق بسيط وأنيق لمواقيت الصلاة في شريط القائمة.",
+                "en": "A simple and elegant prayer times app in your menu bar.",
+                "ru": "Простое и элегантное приложение времени молитвы.",
+                "id": "Aplikasi waktu sholat yang sederhana dan elegan.",
+                "tr": "Menü çubuğunuzda basit ve şık bir namaz vakitleri uygulaması.",
+                "ur": "آپ کے مینو بار میں ایک سادہ اور خوبصورت نماز کے اوقات کی ایپ۔",
+                "fa": "یک برنامه ساده و زیبا برای اوقات شرعی در نوار منو.",
+                "de": "Eine einfache und elegante Gebetszeiten-App in Ihrer Menüleiste."
+            ],
+            "welcome_title": [
+                "ar": "مرحباً بك في أوقات الصلاة",
+                "en": "Welcome to Salat Times",
+                "ru": "Добро пожаловать в Salat Times",
+                "id": "Selamat datang di Salat Times",
+                "tr": "Salat Times'a Hoş Geldiniz",
+                "ur": "نماز کے اوقات میں خوش آمدید",
+                "fa": "به اوقات صلاة خوش آمدید",
+                "de": "Willkommen bei Salat Times"
+            ],
+            "get_started": [
+                "ar": "ابدأ الآن",
+                "en": "Get Started",
+                "ru": "Начать",
+                "id": "Mulai",
+                "tr": "Başla",
+                "ur": "شروع کریں",
+                "fa": "شروع کنید",
+                "de": "Loslegen"
+            ],
+            "finish_setup": [
+                "ar": "إنهاء الإعداد",
+                "en": "Finish Setup",
+                "ru": "Завершить настройку",
+                "id": "Selesai",
+                "tr": "Kurulumu Tamamla",
+                "ur": "سیٹ اپ مکمل کریں",
+                "fa": "پایان تنظیمات",
+                "de": "Einrichtung abschließen"
+            ],
+            "welcome_settings_header": [
+                "ar": "دعنا نضبط إعداداتك",
+                "en": "Let's set up your preferences",
+                "ru": "Давайте настроим ваши предпочтения",
+                "id": "Mari atur preferensi Anda",
+                "tr": "Tercihlerinizi ayarlayalım",
+                "ur": "آئیے اپنی ترجیحات ترتیب دیں",
+                "fa": "بیایید ترجیحات شما را تنظیم کنیم",
+                "de": "Lassen Sie uns Ihre Einstellungen einrichten"
+            ],
+            
             // Calculation methods
             "method_karachi": [
                 "ar": "جامعة كراتشي",

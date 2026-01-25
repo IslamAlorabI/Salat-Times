@@ -20,6 +20,7 @@
 				SalatTimesApp.swift,
 				SettingsView.swift,
 				Translations.swift,
+				WelcomeView.swift,
 			);
 			target = 05D2357B2F23AA63007299AA /* Salat Times */;
 		};

@@ -5,11 +5,18 @@ import AppKit
 @main
 struct SalatTimesApp: App {
     @StateObject private var manager = PrayerManager()
+    @AppStorage("hasShownWelcome") private var hasShownWelcome = false
+    @Environment(\.openWindow) var openWindow
     
     var body: some Scene {
         MenuBarExtra {
             ContentView()
                 .environmentObject(manager)
+                .onAppear {
+                    if !hasShownWelcome {
+                        openWindow(id: "welcome")
+                    }
+                }
         } label: {
             HStack(spacing: 6) {
                 Image(systemName: "moon.stars.fill")
@@ -36,6 +43,25 @@ struct SalatTimesApp: App {
         }
         .windowResizability(.contentSize)
         .defaultSize(width: 400, height: 600)
+        .windowStyle(.hiddenTitleBar)
+        
+        Window("Welcome", id: "welcome") {
+            WelcomeView()
+                .environmentObject(manager)
+                .onAppear {
+                    NSApplication.shared.activate(ignoringOtherApps: true)
+                    if let window = NSApplication.shared.windows.first(where: { $0.contentView?.subviews.contains(where: { $0 is NSHostingView<WelcomeView> }) ?? false }) {
+                        window.isOpaque = false
+                        window.backgroundColor = .clear
+                        window.hasShadow = true
+                        window.titleVisibility = .hidden
+                        window.titlebarAppearsTransparent = true
+                        window.styleMask.insert(.fullSizeContentView)
+                    }
+                }
+        }
+        .windowResizability(.contentSize)
+        .defaultSize(width: 600, height: 500)
         .windowStyle(.hiddenTitleBar)
     }
 }
