@@ -4,6 +4,12 @@ Salat Times is a native macOS menu bar application designed to display accurate 
 
 ## Features
 
+- **Onboarding Experience**: First-launch Welcome Screen that guides users through initial setup:
+  - App introduction with icon and description
+  - Language selection
+  - Location and calculation method configuration
+  - Time format and notification preferences
+  - Launch at login option
 - **Menu Bar Integration**: Persistent access to prayer times directly from the macOS menu bar, featuring a dynamic countdown to the next prayer.
 - **Global Location Support**: Comprehensive coverage for 78 major cities across Africa, Asia, Australia, Europe, the Middle East, North America, and South America.
 - **Precise Calculations**: Includes 21 distinct calculation methods to ensure accuracy according to local conventions (e.g., ISNA, Muslim World League, Umm Al-Qura).
@@ -63,6 +69,7 @@ The application persists user preferences using `UserDefaults`. Key configuratio
 - `selectedCityRaw`: Identifier for the currently selected city.
 - `calculationMethod`: Integer representing the selected calculation method.
 - `timeFormat24`: Boolean flag for time format preference.
+- `hasShownWelcome`: Boolean flag tracking first-launch onboarding completion.
 - `notification_*_enabled`: Boolean flags for individual prayer notifications.
 - `notification_*_sound`: String identifiers for selected notification sounds.
 
