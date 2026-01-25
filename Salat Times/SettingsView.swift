@@ -114,11 +114,16 @@ struct SettingsView: View {
                         TimeFormatRadioButton(title: "24H (18:00)", isSelected: is24HourFormat) {
                             is24HourFormat = true
                         }
-                        .frame(maxWidth: .infinity)
+                        
+                        Rectangle()
+                            .fill(Color.gray.opacity(0.3))
+                            .frame(height: 1)
+                            .frame(maxWidth: .infinity)
+                            .padding(.horizontal, 12)
+                        
                         TimeFormatRadioButton(title: "12H (6:00 PM)", isSelected: !is24HourFormat) {
                             is24HourFormat = false
                         }
-                        .frame(maxWidth: .infinity)
                     }
                     .padding(.vertical, 4)
                 }
