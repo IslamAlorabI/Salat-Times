@@ -174,10 +174,13 @@ struct SettingsView: View {
                 
                 HStack {
                     Spacer()
-                    Text("Made with ♥︎ by Islam AlorabI - 2026")
-                        .font(.system(size: 12, weight: .medium, design: .monospaced))
-                        .foregroundColor(.secondary)
-                        .opacity(0.7)
+                    Link(destination: URL(string: "https://github.com/IslamAlorabI")!) {
+                        Text("Made with ♥︎ by Islam AlorabI - 2026")
+                            .font(.system(size: 12, weight: .medium, design: .monospaced))
+                            .foregroundColor(.secondary)
+                            .opacity(0.7)
+                    }
+                    .buttonStyle(.plain)
                     Spacer()
                 }
                 .padding(.vertical, 8)
