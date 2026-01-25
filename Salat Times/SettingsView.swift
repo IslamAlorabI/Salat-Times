@@ -74,39 +74,7 @@ struct SettingsView: View {
                 }
                 
                 GroupBox(label: Label(Translations.string("calculation_method", language: appLanguage), systemImage: "function")) {
-                    HStack {
-                        Text(getMethodName(for: method))
-                            .font(.system(size: 13, weight: .medium))
-                        Spacer()
-                        Menu {
-                            Button(Translations.string("method_karachi", language: appLanguage)) { method = 1 }
-                            Button(Translations.string("method_isna", language: appLanguage)) { method = 2 }
-                            Button(Translations.string("method_mwl", language: appLanguage)) { method = 3 }
-                            Button(Translations.string("method_umm_al_qura", language: appLanguage)) { method = 4 }
-                            Button(Translations.string("method_egyptian", language: appLanguage)) { method = 5 }
-                            Button(Translations.string("method_tehran", language: appLanguage)) { method = 7 }
-                            Button(Translations.string("method_gulf", language: appLanguage)) { method = 8 }
-                            Button(Translations.string("method_kuwait", language: appLanguage)) { method = 9 }
-                            Button(Translations.string("method_qatar", language: appLanguage)) { method = 10 }
-                            Button(Translations.string("method_singapore", language: appLanguage)) { method = 11 }
-                            Button(Translations.string("method_france", language: appLanguage)) { method = 12 }
-                            Button(Translations.string("method_turkey", language: appLanguage)) { method = 13 }
-                            Button(Translations.string("method_russia", language: appLanguage)) { method = 14 }
-                            Button(Translations.string("method_moonsighting", language: appLanguage)) { method = 15 }
-                            Button(Translations.string("method_dubai", language: appLanguage)) { method = 16 }
-                            Button(Translations.string("method_malaysia", language: appLanguage)) { method = 17 }
-                            Button(Translations.string("method_tunisia", language: appLanguage)) { method = 18 }
-                            Button(Translations.string("method_algeria", language: appLanguage)) { method = 19 }
-                            Button(Translations.string("method_indonesia", language: appLanguage)) { method = 20 }
-                            Button(Translations.string("method_morocco", language: appLanguage)) { method = 21 }
-                            Button(Translations.string("method_portugal", language: appLanguage)) { method = 22 }
-                            Button(Translations.string("method_jordan", language: appLanguage)) { method = 23 }
-                        } label: {
-                            Text(Translations.string("change", language: appLanguage))
-                                .font(.system(size: 12))
-                        }
-                    }
-                    .padding(.vertical, 4)
+                    CalculationMethodPicker(selectedMethod: $method, appLanguage: appLanguage)
                 }
                 
                 GroupBox(label: Label(Translations.string("time_format", language: appLanguage), systemImage: "clock")) {
@@ -231,37 +199,6 @@ struct SettingsView: View {
         .onChange(of: maghribSound) { _ in manager.schedulePrayerNotifications() }
         .onChange(of: ishaSound) { _ in manager.schedulePrayerNotifications() }
     }
-    
-    func getMethodName(for method: Int) -> String {
-        let methodKeys: [Int: String] = [
-            1: "method_karachi",
-            2: "method_isna",
-            3: "method_mwl",
-            4: "method_umm_al_qura",
-            5: "method_egyptian",
-            7: "method_tehran",
-            8: "method_gulf",
-            9: "method_kuwait",
-            10: "method_qatar",
-            11: "method_singapore",
-            12: "method_france",
-            13: "method_turkey",
-            14: "method_russia",
-            15: "method_moonsighting",
-            16: "method_dubai",
-            17: "method_malaysia",
-            18: "method_tunisia",
-            19: "method_algeria",
-            20: "method_indonesia",
-            21: "method_morocco",
-            22: "method_portugal",
-            23: "method_jordan"
-        ]
-        if let key = methodKeys[method] {
-            return Translations.string(key, language: appLanguage)
-        }
-        return "Unknown"
-    }
 }
 
 // MARK: - City Search Picker Component
@@ -354,6 +291,86 @@ struct CitySearchPicker: View {
                     }
                     .listStyle(.sidebar)
                 }
+                .frame(width: 280, height: 350)
+            }
+        }
+    .padding(.vertical, 4)
+    }
+}
+
+// MARK: - Calculation Method Picker Component
+struct CalculationMethodPicker: View {
+    @Binding var selectedMethod: Int
+    let appLanguage: String
+    @State private var isShowingPopover = false
+    
+    private let methods: [(id: Int, key: String)] = [
+        (1, "method_karachi"),
+        (2, "method_isna"),
+        (3, "method_mwl"),
+        (4, "method_umm_al_qura"),
+        (5, "method_egyptian"),
+        (7, "method_tehran"),
+        (8, "method_gulf"),
+        (9, "method_kuwait"),
+        (10, "method_qatar"),
+        (11, "method_singapore"),
+        (12, "method_france"),
+        (13, "method_turkey"),
+        (14, "method_russia"),
+        (15, "method_moonsighting"),
+        (16, "method_dubai"),
+        (17, "method_malaysia"),
+        (18, "method_tunisia"),
+        (19, "method_algeria"),
+        (20, "method_indonesia"),
+        (21, "method_morocco"),
+        (22, "method_portugal"),
+        (23, "method_jordan")
+    ]
+    
+    private func getMethodName(for id: Int) -> String {
+        if let method = methods.first(where: { $0.id == id }) {
+            return Translations.string(method.key, language: appLanguage)
+        }
+        return "Unknown"
+    }
+    
+    var body: some View {
+        HStack {
+            Text(getMethodName(for: selectedMethod))
+                .font(.system(size: 13, weight: .medium))
+            
+            Spacer()
+            
+            Button {
+                isShowingPopover.toggle()
+            } label: {
+                Text(Translations.string("change", language: appLanguage))
+                    .font(.system(size: 12))
+            }
+            .popover(isPresented: $isShowingPopover, arrowEdge: .bottom) {
+                List {
+                    ForEach(methods, id: \.id) { method in
+                        Button {
+                            selectedMethod = method.id
+                            isShowingPopover = false
+                        } label: {
+                            HStack {
+                                Text(Translations.string(method.key, language: appLanguage))
+                                    .foregroundColor(.primary)
+                                Spacer()
+                                if method.id == selectedMethod {
+                                    Image(systemName: "checkmark")
+                                        .foregroundColor(.accentColor)
+                                        .font(.system(size: 12, weight: .semibold))
+                                }
+                            }
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .listStyle(.sidebar)
                 .frame(width: 280, height: 350)
             }
         }
