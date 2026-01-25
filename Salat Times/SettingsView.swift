@@ -27,7 +27,7 @@ struct SettingsView: View {
     
     @State private var launchAtLogin = SMAppService.mainApp.status == .enabled
     var body: some View {
-        ScrollView {
+        ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 25) {
                 
                 GroupBox(label: Label(Translations.string("general", language: appLanguage), systemImage: "gearshape")) {
