@@ -135,9 +135,12 @@ class PrayerManager: NSObject, ObservableObject, CLLocationManagerDelegate, UNUs
         
         lastLanguage = UserDefaults.standard.string(forKey: "appLanguage") ?? "ar"
         
-        loadSavedCity()
+        if UserDefaults.standard.bool(forKey: "hasShownWelcome") {
+            loadSavedCity()
+            startCountdownTimer()
+        }
+        
         requestNotificationPermission()
-        startCountdownTimer()
         observeLanguageChanges()
     }
     

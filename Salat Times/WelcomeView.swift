@@ -186,6 +186,12 @@ struct WelcomeView: View {
                 }
                 .padding(.horizontal, 40)
                 .padding(.bottom, 20)
+
+            }
+            .onChange(of: selectedCityRaw) { newValue in
+                if let city = City(rawValue: newValue) {
+                    method = city.recommendedMethod
+                }
             }
             
             // Footer Action
@@ -201,14 +207,20 @@ struct WelcomeView: View {
                     Spacer()
                     
                     Button {
-                        hasShownWelcome = true
-                        // Close window logic handled by parent or window controller
-                        if let window = NSApplication.shared.windows.first(where: { $0.contentView?.subviews.contains(where: { $0 is NSHostingView<WelcomeView> }) ?? false }) {
+                        // 1. Close window first to avoid visual glitches
+                         if let window = NSApplication.shared.windows.first(where: { $0.title == "Welcome" || ($0.contentView?.subviews.contains(where: { $0 is NSHostingView<WelcomeView> }) ?? false) }) {
                             window.close()
                         }
-                        // Ensure manager updates
-                        manager.loadSavedCity()
-                        manager.schedulePrayerNotifications()
+                        
+                        // 2. Set flag
+                        hasShownWelcome = true
+                        
+                        // 3. Trigger app loading
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            manager.loadSavedCity()
+                            manager.startCountdownTimer()
+                            manager.schedulePrayerNotifications()
+                        }
                     } label: {
                         Text(Translations.string("finish_setup", language: appLanguage))
                             .font(.headline)
