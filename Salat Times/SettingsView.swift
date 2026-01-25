@@ -74,39 +74,52 @@ struct SettingsView: View {
                 }
                 
                 GroupBox(label: Label(Translations.string("calculation_method", language: appLanguage), systemImage: "function")) {
-                    Picker("", selection: $method) {
-                        Text(Translations.string("method_karachi", language: appLanguage)).tag(1)
-                        Text(Translations.string("method_isna", language: appLanguage)).tag(2)
-                        Text(Translations.string("method_mwl", language: appLanguage)).tag(3)
-                        Text(Translations.string("method_umm_al_qura", language: appLanguage)).tag(4)
-                        Text(Translations.string("method_egyptian", language: appLanguage)).tag(5)
-                        Text(Translations.string("method_tehran", language: appLanguage)).tag(7)
-                        Text(Translations.string("method_gulf", language: appLanguage)).tag(8)
-                        Text(Translations.string("method_kuwait", language: appLanguage)).tag(9)
-                        Text(Translations.string("method_qatar", language: appLanguage)).tag(10)
-                        Text(Translations.string("method_singapore", language: appLanguage)).tag(11)
-                        Text(Translations.string("method_france", language: appLanguage)).tag(12)
-                        Text(Translations.string("method_turkey", language: appLanguage)).tag(13)
-                        Text(Translations.string("method_russia", language: appLanguage)).tag(14)
-                        Text(Translations.string("method_moonsighting", language: appLanguage)).tag(15)
-                        Text(Translations.string("method_dubai", language: appLanguage)).tag(16)
-                        Text(Translations.string("method_malaysia", language: appLanguage)).tag(17)
-                        Text(Translations.string("method_tunisia", language: appLanguage)).tag(18)
-                        Text(Translations.string("method_algeria", language: appLanguage)).tag(19)
-                        Text(Translations.string("method_indonesia", language: appLanguage)).tag(20)
-                        Text(Translations.string("method_morocco", language: appLanguage)).tag(21)
-                        Text(Translations.string("method_portugal", language: appLanguage)).tag(22)
-                        Text(Translations.string("method_jordan", language: appLanguage)).tag(23)
+                    HStack {
+                        Text(getMethodName(for: method))
+                            .font(.system(size: 13, weight: .medium))
+                        Spacer()
+                        Menu {
+                            Button(Translations.string("method_karachi", language: appLanguage)) { method = 1 }
+                            Button(Translations.string("method_isna", language: appLanguage)) { method = 2 }
+                            Button(Translations.string("method_mwl", language: appLanguage)) { method = 3 }
+                            Button(Translations.string("method_umm_al_qura", language: appLanguage)) { method = 4 }
+                            Button(Translations.string("method_egyptian", language: appLanguage)) { method = 5 }
+                            Button(Translations.string("method_tehran", language: appLanguage)) { method = 7 }
+                            Button(Translations.string("method_gulf", language: appLanguage)) { method = 8 }
+                            Button(Translations.string("method_kuwait", language: appLanguage)) { method = 9 }
+                            Button(Translations.string("method_qatar", language: appLanguage)) { method = 10 }
+                            Button(Translations.string("method_singapore", language: appLanguage)) { method = 11 }
+                            Button(Translations.string("method_france", language: appLanguage)) { method = 12 }
+                            Button(Translations.string("method_turkey", language: appLanguage)) { method = 13 }
+                            Button(Translations.string("method_russia", language: appLanguage)) { method = 14 }
+                            Button(Translations.string("method_moonsighting", language: appLanguage)) { method = 15 }
+                            Button(Translations.string("method_dubai", language: appLanguage)) { method = 16 }
+                            Button(Translations.string("method_malaysia", language: appLanguage)) { method = 17 }
+                            Button(Translations.string("method_tunisia", language: appLanguage)) { method = 18 }
+                            Button(Translations.string("method_algeria", language: appLanguage)) { method = 19 }
+                            Button(Translations.string("method_indonesia", language: appLanguage)) { method = 20 }
+                            Button(Translations.string("method_morocco", language: appLanguage)) { method = 21 }
+                            Button(Translations.string("method_portugal", language: appLanguage)) { method = 22 }
+                            Button(Translations.string("method_jordan", language: appLanguage)) { method = 23 }
+                        } label: {
+                            Text(Translations.string("change", language: appLanguage))
+                                .font(.system(size: 12))
+                        }
                     }
-                    .pickerStyle(.menu)
+                    .padding(.vertical, 4)
                 }
                 
                 GroupBox(label: Label(Translations.string("time_format", language: appLanguage), systemImage: "clock")) {
-                    Picker("", selection: $is24HourFormat) {
-                        Text("24H (18:00)").tag(true)
-                        Text("12H (6:00 PM)").tag(false)
+                    HStack(spacing: 16) {
+                        TimeFormatRadioButton(title: "24H (18:00)", isSelected: is24HourFormat) {
+                            is24HourFormat = true
+                        }
+                        TimeFormatRadioButton(title: "12H (6:00 PM)", isSelected: !is24HourFormat) {
+                            is24HourFormat = false
+                        }
+                        Spacer()
                     }
-                    .pickerStyle(.segmented)
+                    .padding(.vertical, 4)
                 }
                 
                 GroupBox(label: Label(Translations.string("prayer_notifications", language: appLanguage), systemImage: "bell.badge")) {
@@ -211,6 +224,37 @@ struct SettingsView: View {
         .onChange(of: asrSound) { _ in manager.schedulePrayerNotifications() }
         .onChange(of: maghribSound) { _ in manager.schedulePrayerNotifications() }
         .onChange(of: ishaSound) { _ in manager.schedulePrayerNotifications() }
+    }
+    
+    func getMethodName(for method: Int) -> String {
+        let methodKeys: [Int: String] = [
+            1: "method_karachi",
+            2: "method_isna",
+            3: "method_mwl",
+            4: "method_umm_al_qura",
+            5: "method_egyptian",
+            7: "method_tehran",
+            8: "method_gulf",
+            9: "method_kuwait",
+            10: "method_qatar",
+            11: "method_singapore",
+            12: "method_france",
+            13: "method_turkey",
+            14: "method_russia",
+            15: "method_moonsighting",
+            16: "method_dubai",
+            17: "method_malaysia",
+            18: "method_tunisia",
+            19: "method_algeria",
+            20: "method_indonesia",
+            21: "method_morocco",
+            22: "method_portugal",
+            23: "method_jordan"
+        ]
+        if let key = methodKeys[method] {
+            return Translations.string(key, language: appLanguage)
+        }
+        return "Unknown"
     }
 }
 
@@ -348,6 +392,47 @@ struct LanguageRadioButton: View {
         .contentShape(Rectangle())
         .onTapGesture {
             selection = tag
+        }
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 0)
+                .onChanged { _ in isPressed = true }
+                .onEnded { _ in isPressed = false }
+        )
+    }
+}
+
+// MARK: - Time Format Radio Button Component
+struct TimeFormatRadioButton: View {
+    let title: String
+    let isSelected: Bool
+    let action: () -> Void
+    @State private var isPressed = false
+    
+    var body: some View {
+        HStack(spacing: 6) {
+            ZStack {
+                Circle()
+                    .stroke(isSelected ? Color.accentColor : Color.gray.opacity(0.4), lineWidth: 1)
+                    .frame(width: 16, height: 16)
+                    .background(
+                        Circle()
+                            .fill(isSelected ? Color.accentColor : Color.clear)
+                            .frame(width: 16, height: 16)
+                    )
+                if isSelected {
+                    Circle()
+                        .fill(Color.white)
+                        .frame(width: 6, height: 6)
+                }
+            }
+            Text(title)
+                .font(.system(size: 12))
+                .foregroundColor(.primary)
+        }
+        .opacity(isPressed ? 0.5 : 1.0)
+        .contentShape(Rectangle())
+        .onTapGesture {
+            action()
         }
         .simultaneousGesture(
             DragGesture(minimumDistance: 0)
