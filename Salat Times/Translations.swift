@@ -259,6 +259,16 @@ struct Translations {
                 "fa": "جستجو...",
                 "de": "Suchen..."
             ],
+            "change": [
+                "ar": "تغيير",
+                "en": "Change",
+                "ru": "Изменить",
+                "id": "Ubah",
+                "tr": "Değiştir",
+                "ur": "تبدیل کریں",
+                "fa": "تغییر",
+                "de": "Ändern"
+            ],
             "loading": [
                 "ar": "جاري التحميل...",
                 "en": "Loading...",

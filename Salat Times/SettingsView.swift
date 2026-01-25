@@ -219,7 +219,7 @@ struct CitySearchPicker: View {
     @Binding var selectedCityRaw: String
     let appLanguage: String
     @State private var searchText = ""
-    @State private var isExpanded = false
+    @State private var isShowingPopover = false
     
     private var selectedCity: City? {
         City(rawValue: selectedCityRaw)
@@ -240,77 +240,61 @@ struct CitySearchPicker: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Button(action: { isExpanded.toggle() }) {
-                HStack {
-                    VStack(alignment: .leading, spacing: 2) {
-                        if let city = selectedCity {
-                            Text(city.getName(language: appLanguage))
-                                .font(.system(size: 13, weight: .medium))
-                                .foregroundColor(.primary)
-                            Text(city.continent.getName(language: appLanguage))
-                                .font(.system(size: 11))
-                                .foregroundColor(.secondary)
-                        }
-                    }
-                    Spacer()
-                    Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
+        HStack {
+            if let city = selectedCity {
+                VStack(alignment: Translations.isRTL(appLanguage) ? .trailing : .leading, spacing: 2) {
+                    Text(city.getName(language: appLanguage))
+                        .font(.system(size: 13, weight: .medium))
+                    Text(city.continent.getName(language: appLanguage))
                         .font(.system(size: 11))
                         .foregroundColor(.secondary)
                 }
-                .padding(.horizontal, 10)
-                .padding(.vertical, 8)
-                .background(Color.primary.opacity(0.05))
-                .cornerRadius(8)
             }
-            .buttonStyle(.plain)
             
-            if isExpanded {
-                VStack(spacing: 8) {
+            Spacer()
+            
+            Button {
+                isShowingPopover.toggle()
+            } label: {
+                Text(Translations.string("change", language: appLanguage))
+                    .font(.system(size: 12))
+            }
+            .popover(isPresented: $isShowingPopover, arrowEdge: .bottom) {
+                VStack(spacing: 0) {
                     HStack {
                         Image(systemName: "magnifyingglass")
                             .foregroundColor(.secondary)
-                            .font(.system(size: 12))
                         TextField(Translations.string("search", language: appLanguage), text: $searchText)
                             .textFieldStyle(.plain)
-                            .font(.system(size: 12))
                     }
-                    .padding(8)
-                    .background(Color.primary.opacity(0.05))
-                    .cornerRadius(6)
+                    .padding(10)
+                    .background(Color(NSColor.controlBackgroundColor))
                     
-                    ScrollView {
-                        LazyVStack(alignment: .leading, spacing: 4) {
-                            ForEach(Continent.allCases) { continent in
-                                let cities = citiesForContinent(continent)
-                                if !cities.isEmpty {
-                                    Text(continent.getName(language: appLanguage))
-                                        .font(.system(size: 10, weight: .semibold))
-                                        .foregroundColor(.secondary)
-                                        .padding(.top, 6)
-                                        .padding(.leading, 4)
-                                    
+                    Divider()
+                    
+                    List {
+                        ForEach(Continent.allCases) { continent in
+                            let cities = citiesForContinent(continent)
+                            if !cities.isEmpty {
+                                Section(header: Text(continent.getName(language: appLanguage))
+                                    .font(.system(size: 11, weight: .semibold))
+                                    .foregroundColor(.secondary)) {
                                     ForEach(cities) { city in
-                                        Button(action: {
+                                        Button {
                                             selectedCityRaw = city.rawValue
-                                            isExpanded = false
+                                            isShowingPopover = false
                                             searchText = ""
-                                        }) {
+                                        } label: {
                                             HStack {
                                                 Text(city.getName(language: appLanguage))
-                                                    .font(.system(size: 12))
                                                     .foregroundColor(.primary)
                                                 Spacer()
                                                 if city.rawValue == selectedCityRaw {
                                                     Image(systemName: "checkmark")
-                                                        .font(.system(size: 10, weight: .bold))
                                                         .foregroundColor(.accentColor)
+                                                        .font(.system(size: 12, weight: .semibold))
                                                 }
                                             }
-                                            .padding(.horizontal, 8)
-                                            .padding(.vertical, 6)
-                                            .background(city.rawValue == selectedCityRaw ? Color.accentColor.opacity(0.1) : Color.clear)
-                                            .cornerRadius(4)
                                         }
                                         .buttonStyle(.plain)
                                     }
@@ -318,13 +302,12 @@ struct CitySearchPicker: View {
                             }
                         }
                     }
-                    .frame(maxHeight: 250)
+                    .listStyle(.sidebar)
                 }
-                .padding(8)
-                .background(Color.primary.opacity(0.03))
-                .cornerRadius(8)
+                .frame(width: 280, height: 350)
             }
         }
+        .padding(.vertical, 4)
     }
 }
 
