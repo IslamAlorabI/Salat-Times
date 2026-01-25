@@ -299,9 +299,9 @@ class PrayerManager: NSObject, ObservableObject, CLLocationManagerDelegate, UNUs
             }
             
             if let data = data {
-                let decoder = JSONDecoder()
-                if let decoded = try? decoder.decode(PrayerResponse.self, from: data) {
-                    DispatchQueue.main.async {
+                DispatchQueue.main.async {
+                    let decoder = JSONDecoder()
+                    if let decoded = try? decoder.decode(PrayerResponse.self, from: data) {
                         self.timings = decoded.data.timings
                         self.isLoading = false
                         self.schedulePrayerNotifications()

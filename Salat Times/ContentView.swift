@@ -5,6 +5,7 @@ import AppKit
 struct ContentView: View    {
     @EnvironmentObject var manager: PrayerManager
     @Environment(\.openWindow) var openWindow
+    @Environment(\.colorScheme) var colorScheme
     
     @AppStorage("appLanguage") private var appLanguage = "ar"
     @AppStorage("timeFormat24") private var is24HourFormat = true
@@ -87,12 +88,12 @@ struct ContentView: View    {
             } else {
                 let upcomingPrayer = getUpcomingPrayer()
                 VStack(spacing: 4) {
-                    PrayerRow(name: getPrayerName("Fajr"), time: formatTime(manager.timings["Fajr"]), icon: "sunrise", color: Color(red: 0.4, green: 0.3, blue: 0.7), isUpcoming: upcomingPrayer == "Fajr")
-                    PrayerRow(name: getPrayerName("Sunrise"), time: formatTime(manager.timings["Sunrise"]), icon: "sunrise.fill", color: Color(red: 1.0, green: 0.6, blue: 0.2), isUpcoming: upcomingPrayer == "Sunrise")
-                    PrayerRow(name: getPrayerName("Dhuhr"), time: formatTime(manager.timings["Dhuhr"]), icon: "sun.max.fill", color: Color(red: 1.0, green: 0.8, blue: 0.0), isUpcoming: upcomingPrayer == "Dhuhr")
-                    PrayerRow(name: getPrayerName("Asr"), time: formatTime(manager.timings["Asr"]), icon: "sun.min.fill", color: Color(red: 1.0, green: 0.5, blue: 0.0), isUpcoming: upcomingPrayer == "Asr")
-                    PrayerRow(name: getPrayerName("Maghrib"), time: formatTime(manager.timings["Maghrib"]), icon: "sunset.fill", color: Color(red: 1.0, green: 0.3, blue: 0.2), isUpcoming: upcomingPrayer == "Maghrib")
-                    PrayerRow(name: getPrayerName("Isha"), time: formatTime(manager.timings["Isha"]), icon: "moon.stars.fill", color: Color(red: 0.3, green: 0.4, blue: 0.8), isUpcoming: upcomingPrayer == "Isha")
+                    PrayerRow(name: getPrayerName("Fajr"), time: formatTime(manager.timings["Fajr"]), icon: "sunrise", color: getPrayerColor("Fajr"), isUpcoming: upcomingPrayer == "Fajr")
+                    PrayerRow(name: getPrayerName("Sunrise"), time: formatTime(manager.timings["Sunrise"]), icon: "sunrise.fill", color: getPrayerColor("Sunrise"), isUpcoming: upcomingPrayer == "Sunrise")
+                    PrayerRow(name: getPrayerName("Dhuhr"), time: formatTime(manager.timings["Dhuhr"]), icon: "sun.max.fill", color: getPrayerColor("Dhuhr"), isUpcoming: upcomingPrayer == "Dhuhr")
+                    PrayerRow(name: getPrayerName("Asr"), time: formatTime(manager.timings["Asr"]), icon: "sun.min.fill", color: getPrayerColor("Asr"), isUpcoming: upcomingPrayer == "Asr")
+                    PrayerRow(name: getPrayerName("Maghrib"), time: formatTime(manager.timings["Maghrib"]), icon: "sunset.fill", color: getPrayerColor("Maghrib"), isUpcoming: upcomingPrayer == "Maghrib")
+                    PrayerRow(name: getPrayerName("Isha"), time: formatTime(manager.timings["Isha"]), icon: "moon.stars.fill", color: getPrayerColor("Isha"), isUpcoming: upcomingPrayer == "Isha")
                 }
                 .padding(.vertical, 12)
             }
@@ -224,6 +225,39 @@ struct ContentView: View    {
         
         prayerDates.sort { $0.date < $1.date }
         return prayerDates.first(where: { $0.date > now })?.key ?? prayerDates.first?.key
+    }
+    
+    func getPrayerColor(_ key: String) -> Color {
+        let isDark = colorScheme == .dark
+        
+        switch key {
+        case "Fajr":
+            // Purple
+            return isDark ? Color(red: 0.6, green: 0.5, blue: 1.0) : Color(red: 0.4, green: 0.3, blue: 0.7)
+            
+        case "Sunrise":
+            // Orange-Yellow
+            return isDark ? Color(red: 1.0, green: 0.7, blue: 0.4) : Color(red: 0.8, green: 0.4, blue: 0.0)
+            
+        case "Dhuhr":
+            // Yellow
+            return isDark ? Color(red: 1.0, green: 0.9, blue: 0.4) : Color(red: 0.8, green: 0.6, blue: 0.0)
+            
+        case "Asr":
+            // Orange
+            return isDark ? Color(red: 1.0, green: 0.6, blue: 0.2) : Color(red: 0.9, green: 0.4, blue: 0.0)
+            
+        case "Maghrib":
+            // Red-Orange
+            return isDark ? Color(red: 1.0, green: 0.4, blue: 0.3) : Color(red: 0.8, green: 0.2, blue: 0.1)
+            
+        case "Isha":
+            // Blue
+            return isDark ? Color(red: 0.4, green: 0.6, blue: 1.0) : Color(red: 0.1, green: 0.3, blue: 0.7)
+            
+        default:
+            return .primary
+        }
     }
 }
 
