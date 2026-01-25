@@ -110,14 +110,15 @@ struct SettingsView: View {
                 }
                 
                 GroupBox(label: Label(Translations.string("time_format", language: appLanguage), systemImage: "clock")) {
-                    HStack(spacing: 16) {
+                    HStack(spacing: 0) {
                         TimeFormatRadioButton(title: "24H (18:00)", isSelected: is24HourFormat) {
                             is24HourFormat = true
                         }
+                        .frame(maxWidth: .infinity)
                         TimeFormatRadioButton(title: "12H (6:00 PM)", isSelected: !is24HourFormat) {
                             is24HourFormat = false
                         }
-                        Spacer()
+                        .frame(maxWidth: .infinity)
                     }
                     .padding(.vertical, 4)
                 }
