@@ -316,22 +316,44 @@ struct LanguageRadioButton: View {
     let title: String
     let tag: String
     @Binding var selection: String
+    @State private var isPressed = false
+    
+    var isSelected: Bool {
+        selection == tag
+    }
     
     var body: some View {
-        Button(action: {
-            selection = tag
-        }) {
-            HStack(spacing: 6) {
-                Image(systemName: selection == tag ? "largecircle.fill.circle" : "circle")
-                    .font(.system(size: 13))
-                    .foregroundColor(selection == tag ? .accentColor : .secondary)
-                Text(title)
-                    .font(.system(size: 12))
-                    .foregroundColor(.primary)
+        HStack(spacing: 6) {
+            ZStack {
+                Circle()
+                    .stroke(isSelected ? Color.accentColor : Color.gray.opacity(0.4), lineWidth: 1)
+                    .frame(width: 16, height: 16)
+                    .background(
+                        Circle()
+                            .fill(isSelected ? Color.accentColor : Color.clear)
+                            .frame(width: 16, height: 16)
+                    )
+                if isSelected {
+                    Circle()
+                        .fill(Color.white)
+                        .frame(width: 6, height: 6)
+                }
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            Text(title)
+                .font(.system(size: 12))
+                .foregroundColor(.primary)
         }
-        .buttonStyle(.plain)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .opacity(isPressed ? 0.5 : 1.0)
+        .contentShape(Rectangle())
+        .onTapGesture {
+            selection = tag
+        }
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 0)
+                .onChanged { _ in isPressed = true }
+                .onEnded { _ in isPressed = false }
+        )
     }
 }
 
