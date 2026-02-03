@@ -106,11 +106,35 @@ struct PrayerResponse: Codable, Sendable {
 
 struct PrayerData: Codable, Sendable {
     let timings: [String: String]
+    let date: DateInfo
     let meta: PrayerMeta
 }
 
 struct PrayerMeta: Codable, Sendable {
     let timezone: String
+}
+
+struct DateInfo: Codable, Sendable {
+    let hijri: HijriDate
+}
+
+struct HijriDate: Codable, Sendable {
+    let date: String
+    let day: String
+    let month: HijriMonth
+    let year: String
+    let weekday: HijriWeekday
+}
+
+struct HijriMonth: Codable, Sendable {
+    let number: Int
+    let en: String
+    let ar: String
+}
+
+struct HijriWeekday: Codable, Sendable {
+    let en: String
+    let ar: String
 }
 
 class PrayerManager: NSObject, ObservableObject, CLLocationManagerDelegate, UNUserNotificationCenterDelegate {
@@ -119,6 +143,7 @@ class PrayerManager: NSObject, ObservableObject, CLLocationManagerDelegate, UNUs
     @Published var city: String = "Loading..."
     @Published var errorMessage: String? = nil
     @Published var countdownText: String = ""
+    @Published var hijriDate: HijriDate? = nil
     @Published var upcomingPrayerName: String = ""
     @Published var menuBarTitle: String = "Salat Times"
     
@@ -306,6 +331,7 @@ class PrayerManager: NSObject, ObservableObject, CLLocationManagerDelegate, UNUs
                     let decoder = JSONDecoder()
                     if let decoded = try? decoder.decode(PrayerResponse.self, from: data) {
                         self.timings = decoded.data.timings
+                        self.hijriDate = decoded.data.date.hijri
                         self.isLoading = false
                         self.schedulePrayerNotifications()
                         self.updateCountdown()

@@ -40,6 +40,13 @@ struct ContentView: View    {
                         .font(.system(size: 13))
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(Translations.isRTL(appLanguage) ? .trailing : .leading)
+                    
+                    if let hijri = manager.hijriDate {
+                        Text(getHijriDateString(hijri))
+                            .font(.system(size: 12))
+                            .foregroundColor(.secondary.opacity(0.8))
+                            .multilineTextAlignment(Translations.isRTL(appLanguage) ? .trailing : .leading)
+                    }
                 }
                 
                 if !Translations.isRTL(appLanguage) {
@@ -163,6 +170,12 @@ struct ContentView: View    {
             return cityEnum.getName(language: appLanguage)
         }
         return manager.city
+    }
+    
+    func getHijriDateString(_ hijri: HijriDate) -> String {
+        let monthName = Translations.hijriMonthName(hijri.month.number, language: appLanguage)
+        let suffix = Translations.string("hijri_suffix", language: appLanguage)
+        return "\(hijri.day) \(monthName) \(hijri.year) \(suffix)"
     }
     
     func getPrayerName(_ key: String) -> String {
