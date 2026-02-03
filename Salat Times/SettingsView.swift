@@ -224,6 +224,7 @@ struct SettingsView: View {
             manager.loadSavedCity()
         }
         .onChange(of: method) { _ in manager.loadSavedCity() }
+        .onChange(of: numberFormat) { _ in manager.updateCountdown() }
         // Reschedule notifications when any notification setting changes
         .onChange(of: fajrEnabled) { _ in manager.schedulePrayerNotifications() }
         .onChange(of: sunriseEnabled) { _ in manager.schedulePrayerNotifications() }

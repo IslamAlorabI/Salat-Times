@@ -72,6 +72,7 @@ struct ContentView: View    {
                 }
                 .padding(.vertical, 8)
                 .background(.ultraThinMaterial.opacity(0.5))
+                .id(numberFormat)
             }
             
             Divider()
@@ -107,6 +108,7 @@ struct ContentView: View    {
                     PrayerRow(name: getPrayerName("Isha"), time: formatTime(manager.timings["Isha"]), icon: "moon.stars.fill", color: getPrayerColor("Isha"), isUpcoming: upcomingPrayer == "Isha")
                 }
                 .padding(.vertical, 12)
+                .id(numberFormat)
             }
             
             Divider()
