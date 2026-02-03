@@ -181,7 +181,8 @@ struct ContentView: View    {
     @ViewBuilder
     func getHijriDateView(_ hijri: HijriDate) -> some View {
         let monthName = Translations.hijriMonthName(hijri.month.number, language: appLanguage)
-        let suffix = Translations.string("hijri_suffix", language: appLanguage)
+        let yearLabel = Translations.string("hijri_year_label", language: appLanguage)
+        let suffix = Translations.string("hijri_migration_suffix", language: appLanguage)
         let localizedDay = Translations.localizedNumber(hijri.day, numberFormat: numberFormat)
         let localizedYear = Translations.localizedNumber(hijri.year, numberFormat: numberFormat)
         
@@ -197,6 +198,9 @@ struct ContentView: View    {
             // Year and Suffix
             HStack(spacing: 3) {
                 Text(localizedYear)
+                if !yearLabel.isEmpty {
+                    Text(yearLabel)
+                }
                 Text(suffix)
             }
             .font(.system(size: 14, weight: .semibold))

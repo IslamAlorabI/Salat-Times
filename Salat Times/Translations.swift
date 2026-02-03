@@ -747,6 +747,26 @@ struct Translations {
                 "fa": "ه‍.ق",
                 "de": "n.H."
             ],
+            "hijri_year_label": [
+                "ar": "عام",
+                "en": "",
+                "ru": "",
+                "id": "",
+                "tr": "",
+                "ur": "",
+                "fa": "",
+                "de": ""
+            ],
+            "hijri_migration_suffix": [
+                "ar": "— من هجرة النبي ﷺ",
+                "en": "AH",
+                "ru": "г.х.",
+                "id": "H",
+                "tr": "H",
+                "ur": "ھ",
+                "fa": "ه‍.ق",
+                "de": "n.H."
+            ],
             
             "number_format": [
                 "ar": "تنسيق الأرقام",
