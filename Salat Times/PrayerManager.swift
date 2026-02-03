@@ -399,8 +399,8 @@ class PrayerManager: NSObject, ObservableObject, CLLocationManagerDelegate, UNUs
         let prayerTranslationKey = "prayer_\(upcoming.key.lowercased())"
         let prayerName = Translations.string(prayerTranslationKey, language: appLanguage)
         
-        let localizedHours = Translations.localizedNumber("\(hours)", language: appLanguage)
-        let localizedMinutes = Translations.localizedNumber("\(minutes)", language: appLanguage)
+        let localizedHours = Translations.localizedNumber("\(hours)", numberFormat: UserDefaults.standard.string(forKey: "numberFormat") ?? "western")
+        let localizedMinutes = Translations.localizedNumber("\(minutes)", numberFormat: UserDefaults.standard.string(forKey: "numberFormat") ?? "western")
         
         if hours > 0 {
             switch appLanguage {

@@ -9,6 +9,7 @@ struct SettingsView: View {
     
     @AppStorage("appLanguage") private var appLanguage = "ar"
     @AppStorage("timeFormat24") private var is24HourFormat = true
+    @AppStorage("numberFormat") private var numberFormat = "western"
     
     // Notification settings per prayer
     @AppStorage("notification_Fajr_enabled") private var fajrEnabled = true
@@ -65,6 +66,44 @@ struct SettingsView: View {
                         LanguageRadioButton(title: Translations.string("language_ur", language: "ur"), tag: "ur", selection: $appLanguage)
                         LanguageRadioButton(title: Translations.string("language_fa", language: "fa"), tag: "fa", selection: $appLanguage)
                         LanguageRadioButton(title: Translations.string("language_de", language: "de"), tag: "de", selection: $appLanguage)
+                    }
+                    .padding(.vertical, 4)
+                }
+                
+                GroupBox(label: Label(Translations.string("number_format", language: appLanguage), systemImage: "textformat.123")) {
+                    HStack(spacing: 0) {
+                        NumberFormatRadioButton(
+                            title: Translations.string("numbers_western", language: appLanguage),
+                            example: "123",
+                            tag: "western",
+                            selection: $numberFormat
+                        )
+                        
+                        Rectangle()
+                            .fill(Color.gray.opacity(0.3))
+                            .frame(height: 1)
+                            .frame(maxWidth: .infinity)
+                            .padding(.horizontal, 8)
+                        
+                        NumberFormatRadioButton(
+                            title: Translations.string("numbers_arabic", language: appLanguage),
+                            example: "١٢٣",
+                            tag: "arabic",
+                            selection: $numberFormat
+                        )
+                        
+                        Rectangle()
+                            .fill(Color.gray.opacity(0.3))
+                            .frame(height: 1)
+                            .frame(maxWidth: .infinity)
+                            .padding(.horizontal, 8)
+                        
+                        NumberFormatRadioButton(
+                            title: Translations.string("numbers_persian", language: appLanguage),
+                            example: "۱۲۳",
+                            tag: "persian",
+                            selection: $numberFormat
+                        )
                     }
                     .padding(.vertical, 4)
                 }
@@ -456,6 +495,57 @@ struct TimeFormatRadioButton: View {
         .contentShape(Rectangle())
         .onTapGesture {
             action()
+        }
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 0)
+                .onChanged { _ in isPressed = true }
+                .onEnded { _ in isPressed = false }
+        )
+    }
+}
+
+// MARK: - Number Format Radio Button Component
+struct NumberFormatRadioButton: View {
+    let title: String
+    let example: String
+    let tag: String
+    @Binding var selection: String
+    @State private var isPressed = false
+    
+    var isSelected: Bool {
+        selection == tag
+    }
+    
+    var body: some View {
+        VStack(spacing: 4) {
+            HStack(spacing: 6) {
+                ZStack {
+                    Circle()
+                        .stroke(isSelected ? Color.accentColor : Color.gray.opacity(0.4), lineWidth: 1)
+                        .frame(width: 16, height: 16)
+                        .background(
+                            Circle()
+                                .fill(isSelected ? Color.accentColor : Color.clear)
+                                .frame(width: 16, height: 16)
+                        )
+                    if isSelected {
+                        Circle()
+                            .fill(Color.white)
+                            .frame(width: 6, height: 6)
+                    }
+                }
+                Text(title)
+                    .font(.system(size: 12))
+                    .foregroundColor(.primary)
+            }
+            Text(example)
+                .font(.system(size: 11, weight: .medium))
+                .foregroundColor(.secondary)
+        }
+        .opacity(isPressed ? 0.5 : 1.0)
+        .contentShape(Rectangle())
+        .onTapGesture {
+            selection = tag
         }
         .simultaneousGesture(
             DragGesture(minimumDistance: 0)

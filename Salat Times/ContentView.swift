@@ -9,6 +9,7 @@ struct ContentView: View    {
     
     @AppStorage("appLanguage") private var appLanguage = "ar"
     @AppStorage("timeFormat24") private var is24HourFormat = true
+    @AppStorage("numberFormat") private var numberFormat = "western"
     
     var body: some View {
         VStack(spacing: 0) {
@@ -179,8 +180,8 @@ struct ContentView: View    {
     func getHijriDateView(_ hijri: HijriDate) -> some View {
         let monthName = Translations.hijriMonthName(hijri.month.number, language: appLanguage)
         let suffix = Translations.string("hijri_suffix", language: appLanguage)
-        let localizedDay = Translations.localizedNumber(hijri.day, language: appLanguage)
-        let localizedYear = Translations.localizedNumber(hijri.year, language: appLanguage)
+        let localizedDay = Translations.localizedNumber(hijri.day, numberFormat: numberFormat)
+        let localizedYear = Translations.localizedNumber(hijri.year, numberFormat: numberFormat)
         
         HStack(spacing: 4) {
             Text("\(localizedDay) \(monthName)")
@@ -223,7 +224,7 @@ struct ContentView: View    {
             }
         }
         
-        return Translations.localizedNumber(formattedTime, language: appLanguage)
+        return Translations.localizedNumber(formattedTime, numberFormat: numberFormat)
     }
     
     func getUpcomingPrayer() -> String? {

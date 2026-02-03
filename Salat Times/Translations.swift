@@ -746,6 +746,47 @@ struct Translations {
                 "ur": "ھ",
                 "fa": "ه‍.ق",
                 "de": "n.H."
+            ],
+            
+            "number_format": [
+                "ar": "تنسيق الأرقام",
+                "en": "Number Format",
+                "ru": "Формат цифр",
+                "id": "Format Angka",
+                "tr": "Sayı Formatı",
+                "ur": "نمبر فارمیٹ",
+                "fa": "فرمت اعداد",
+                "de": "Zahlenformat"
+            ],
+            "numbers_western": [
+                "ar": "غربية",
+                "en": "Western",
+                "ru": "Западные",
+                "id": "Barat",
+                "tr": "Batı",
+                "ur": "مغربی",
+                "fa": "غربی",
+                "de": "Westlich"
+            ],
+            "numbers_arabic": [
+                "ar": "عربية",
+                "en": "Arabic",
+                "ru": "Арабские",
+                "id": "Arab",
+                "tr": "Arapça",
+                "ur": "عربی",
+                "fa": "عربی",
+                "de": "Arabisch"
+            ],
+            "numbers_persian": [
+                "ar": "فارسية",
+                "en": "Persian",
+                "ru": "Персидские",
+                "id": "Persia",
+                "tr": "Farsça",
+                "ur": "فارسی",
+                "fa": "فارسی",
+                "de": "Persisch"
             ]
         ]
         
@@ -779,8 +820,8 @@ struct Translations {
         return string(key, language: language)
     }
     
-    static func localizedNumber(_ number: String, language: String) -> String {
-        guard ["ar", "fa", "ur"].contains(language) else { return number }
+    static func localizedNumber(_ number: String, numberFormat: String) -> String {
+        guard numberFormat != "western" else { return number }
         
         let arabicNumerals: [Character: Character] = [
             "0": "٠", "1": "١", "2": "٢", "3": "٣", "4": "٤",
@@ -792,7 +833,7 @@ struct Translations {
             "5": "۵", "6": "۶", "7": "۷", "8": "۸", "9": "۹"
         ]
         
-        let numerals = (language == "ar") ? arabicNumerals : persianNumerals
+        let numerals = (numberFormat == "arabic") ? arabicNumerals : persianNumerals
         
         return String(number.map { numerals[$0] ?? $0 })
     }
