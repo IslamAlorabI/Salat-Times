@@ -40,13 +40,6 @@ struct ContentView: View    {
                         .font(.system(size: 13))
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(Translations.isRTL(appLanguage) ? .trailing : .leading)
-                    
-                    if let hijri = manager.hijriDate {
-                        Text(getHijriDateString(hijri))
-                            .font(.system(size: 12))
-                            .foregroundColor(.secondary.opacity(0.8))
-                            .multilineTextAlignment(Translations.isRTL(appLanguage) ? .trailing : .leading)
-                    }
                 }
                 
                 if !Translations.isRTL(appLanguage) {
@@ -69,6 +62,16 @@ struct ContentView: View    {
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
             .background(.thinMaterial)
+            
+            if let hijri = manager.hijriDate {
+                HStack {
+                    Spacer()
+                    getHijriDateView(hijri)
+                    Spacer()
+                }
+                .padding(.vertical, 8)
+                .background(.ultraThinMaterial.opacity(0.5))
+            }
             
             Divider()
             
@@ -172,10 +175,22 @@ struct ContentView: View    {
         return manager.city
     }
     
-    func getHijriDateString(_ hijri: HijriDate) -> String {
+    @ViewBuilder
+    func getHijriDateView(_ hijri: HijriDate) -> some View {
         let monthName = Translations.hijriMonthName(hijri.month.number, language: appLanguage)
         let suffix = Translations.string("hijri_suffix", language: appLanguage)
-        return "\(hijri.day) \(monthName) \(hijri.year) \(suffix)"
+        let localizedDay = Translations.localizedNumber(hijri.day, language: appLanguage)
+        let localizedYear = Translations.localizedNumber(hijri.year, language: appLanguage)
+        
+        HStack(spacing: 4) {
+            Text("\(localizedDay) \(monthName)")
+                .font(.system(size: 14, weight: .medium))
+                .foregroundColor(.secondary)
+            
+            Text("\(localizedYear) \(suffix)")
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundColor(.accentColor)
+        }
     }
     
     func getPrayerName(_ key: String) -> String {
@@ -192,16 +207,23 @@ struct ContentView: View    {
     
     func formatTime(_ time: String?) -> String {
         guard let time = time else { return "--:--" }
-        if is24HourFormat { return time }
         
-        let formatter = DateFormatter()
-        formatter.dateFormat = "HH:mm"
-        if let date = formatter.date(from: time) {
-            formatter.dateFormat = "h:mm a"
-            formatter.locale = Locale(identifier: Translations.locale(appLanguage))
-            return formatter.string(from: date)
+        var formattedTime: String
+        if is24HourFormat {
+            formattedTime = time
+        } else {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "HH:mm"
+            if let date = formatter.date(from: time) {
+                formatter.dateFormat = "h:mm a"
+                formatter.locale = Locale(identifier: Translations.locale(appLanguage))
+                formattedTime = formatter.string(from: date)
+            } else {
+                formattedTime = time
+            }
         }
-        return time
+        
+        return Translations.localizedNumber(formattedTime, language: appLanguage)
     }
     
     func getUpcomingPrayer() -> String? {

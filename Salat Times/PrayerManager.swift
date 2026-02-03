@@ -399,42 +399,43 @@ class PrayerManager: NSObject, ObservableObject, CLLocationManagerDelegate, UNUs
         let prayerTranslationKey = "prayer_\(upcoming.key.lowercased())"
         let prayerName = Translations.string(prayerTranslationKey, language: appLanguage)
         
-        // Format countdown text based on language
+        let localizedHours = Translations.localizedNumber("\(hours)", language: appLanguage)
+        let localizedMinutes = Translations.localizedNumber("\(minutes)", language: appLanguage)
+        
         if hours > 0 {
             switch appLanguage {
             case "ar", "ur", "fa":
-                countdownText = "\(hours)س \(minutes)د"
+                countdownText = "\(localizedHours)س \(localizedMinutes)د"
             case "ru":
-                countdownText = "\(hours)ч \(minutes)м"
+                countdownText = "\(localizedHours)ч \(localizedMinutes)м"
             case "id":
-                countdownText = "\(hours)j \(minutes)m"
+                countdownText = "\(localizedHours)j \(localizedMinutes)m"
             case "tr":
-                countdownText = "\(hours)s \(minutes)d"
+                countdownText = "\(localizedHours)s \(localizedMinutes)d"
             case "de":
-                countdownText = "\(hours)h \(minutes)m"
+                countdownText = "\(localizedHours)h \(localizedMinutes)m"
             default:
-                countdownText = "\(hours)h \(minutes)m"
+                countdownText = "\(localizedHours)h \(localizedMinutes)m"
             }
         } else {
             switch appLanguage {
             case "ar", "ur", "fa":
-                countdownText = "\(minutes)د"
+                countdownText = "\(localizedMinutes)د"
             case "ru":
-                countdownText = "\(minutes)м"
+                countdownText = "\(localizedMinutes)м"
             case "id":
-                countdownText = "\(minutes)m"
+                countdownText = "\(localizedMinutes)m"
             case "tr":
-                countdownText = "\(minutes)d"
+                countdownText = "\(localizedMinutes)d"
             case "de":
-                countdownText = "\(minutes)m"
+                countdownText = "\(localizedMinutes)m"
             default:
-                countdownText = "\(minutes)m"
+                countdownText = "\(localizedMinutes)m"
             }
         }
         
         upcomingPrayerName = prayerName
         
-        // Update menu bar title
         if countdownText.isEmpty {
             menuBarTitle = "Salat Times"
         } else {
