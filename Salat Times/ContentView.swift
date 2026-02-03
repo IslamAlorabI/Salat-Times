@@ -327,12 +327,12 @@ struct PrayerRow: View {
                         .font(.system(size: 12))
                         .foregroundColor(highlightColor)
                     Text(time)
-                        .font(.system(size: 16, weight: .bold, design: .monospaced))
+                        .font(.system(size: 16, weight: .bold))
                         .foregroundColor(highlightColor)
                 }
             } else {
                 Text(time)
-                    .font(.system(size: 16, weight: .bold, design: .monospaced))
+                    .font(.system(size: 16, weight: .bold))
                     .foregroundColor(.secondary)
             }
         }
