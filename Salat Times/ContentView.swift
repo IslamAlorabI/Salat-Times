@@ -186,13 +186,21 @@ struct ContentView: View    {
         let localizedYear = Translations.localizedNumber(hijri.year, numberFormat: numberFormat)
         
         HStack(spacing: 4) {
-            Text("\(localizedDay) \(monthName)")
-                .font(.system(size: 14, weight: .medium))
-                .foregroundColor(.secondary)
+            // Day and Month
+            HStack(spacing: 3) {
+                Text(localizedDay)
+                Text(monthName)
+            }
+            .font(.system(size: 14, weight: .medium))
+            .foregroundColor(.secondary)
             
-            Text("\(localizedYear) \(suffix)")
-                .font(.system(size: 14, weight: .semibold))
-                .foregroundColor(.accentColor)
+            // Year and Suffix
+            HStack(spacing: 3) {
+                Text(localizedYear)
+                Text(suffix)
+            }
+            .font(.system(size: 14, weight: .semibold))
+            .foregroundColor(.accentColor)
         }
     }
     
