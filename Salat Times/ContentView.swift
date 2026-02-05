@@ -15,50 +15,30 @@ struct ContentView: View    {
         VStack(spacing: 0) {
             
             HStack {
-                if Translations.isRTL(appLanguage) {
-                    Button(action: {
-                        manager.loadSavedCity()
-                    }) {
-                        Image(systemName: "arrow.triangle.2.circlepath")
-                            .font(.system(size: 16, weight: .semibold))
-                            .foregroundColor(.white)
-                            .padding(8)
-                            .background(Color.accentColor.opacity(0.8))
-                            .clipShape(Circle())
-                    }
-                    .buttonStyle(.plain)
-                    .help(Translations.string("refresh_data", language: appLanguage))
-                    
-                    Spacer()
-                }
-                
-                VStack(alignment: Translations.isRTL(appLanguage) ? .trailing : .leading, spacing: 4) {
+                VStack(alignment: .leading, spacing: 4) {
                     Text(Translations.string("prayer_times_today", language: appLanguage))
                         .font(.system(size: 18, weight: .bold, design: .rounded))
-                        .multilineTextAlignment(Translations.isRTL(appLanguage) ? .trailing : .leading)
+                        .multilineTextAlignment(.leading)
                     
                     Text(getCityName())
                         .font(.system(size: 13))
                         .foregroundColor(.secondary)
-                        .multilineTextAlignment(Translations.isRTL(appLanguage) ? .trailing : .leading)
+                        .multilineTextAlignment(.leading)
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
                 
-                if !Translations.isRTL(appLanguage) {
-                    Spacer()
-                    
-                    Button(action: {
-                        manager.loadSavedCity()
-                    }) {
-                        Image(systemName: "arrow.triangle.2.circlepath")
-                            .font(.system(size: 16, weight: .semibold))
-                            .foregroundColor(.white)
-                            .padding(8)
-                            .background(Color.accentColor.opacity(0.8))
-                            .clipShape(Circle())
-                    }
-                    .buttonStyle(.plain)
-                    .help(Translations.string("refresh_data", language: appLanguage))
+                Button(action: {
+                    manager.loadSavedCity()
+                }) {
+                    Image(systemName: "arrow.triangle.2.circlepath")
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(.white)
+                        .padding(8)
+                        .background(Color.accentColor.opacity(0.8))
+                        .clipShape(Circle())
                 }
+                .buttonStyle(.plain)
+                .help(Translations.string("refresh_data", language: appLanguage))
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
