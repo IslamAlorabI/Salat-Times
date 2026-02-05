@@ -20,10 +20,15 @@ struct ContentView: View    {
                         .font(.system(size: 18, weight: .bold, design: .rounded))
                         .multilineTextAlignment(.leading)
                     
-                    Text(getCityName())
-                        .font(.system(size: 13))
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.leading)
+                    HStack(spacing: 4) {
+                        Image(systemName: "location.fill")
+                            .font(.system(size: 11))
+                            .foregroundColor(.secondary)
+                        Text(getCityName())
+                            .font(.system(size: 13))
+                            .foregroundColor(.secondary)
+                    }
+                    .multilineTextAlignment(.leading)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 
@@ -51,7 +56,17 @@ struct ContentView: View    {
                     Spacer()
                 }
                 .padding(.vertical, 8)
-                .background(.ultraThinMaterial.opacity(0.5))
+                .padding(.horizontal, 12)
+                .background(
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(.ultraThinMaterial.opacity(0.5))
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(Color.primary.opacity(0.2), lineWidth: 1)
+                )
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
                 .id(numberFormat)
             }
             
@@ -173,7 +188,7 @@ struct ContentView: View    {
                 Text(monthName)
             }
             .font(.system(size: 14, weight: .medium))
-            .foregroundColor(.secondary)
+            .foregroundColor(.white)
             
             // Year and Suffix
             HStack(spacing: 3) {
