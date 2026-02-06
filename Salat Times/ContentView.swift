@@ -48,7 +48,7 @@ struct ContentView: View    {
                             .fill(manager.lastUpdatedFromServer != nil ? Color.green : Color.orange)
                             .frame(width: 8, height: 8)
                         Text(manager.lastUpdatedFromServer != nil ? 
-                             Translations.string("updated", language: appLanguage) :
+                             Translations.string("server_synced", language: appLanguage) :
                              Translations.string("offline", language: appLanguage))
                             .font(.system(size: 11))
                             .foregroundColor(.secondary)
@@ -65,7 +65,8 @@ struct ContentView: View    {
                     upcomingPrayer: getUpcomingPrayer(),
                     prayerName: getPrayerName(getUpcomingPrayer() ?? ""),
                     timeRemaining: getTimeRemaining(),
-                    numberFormat: numberFormat
+                    numberFormat: numberFormat,
+                    appLanguage: appLanguage
                 )
                 .padding(.vertical, 16)
             }
@@ -347,29 +348,30 @@ struct CountdownView: View {
     let prayerName: String
     let timeRemaining: (hours: Int, minutes: Int, seconds: Int)?
     let numberFormat: String
+    let appLanguage: String
     
     var body: some View {
         if let time = timeRemaining, let _ = upcomingPrayer {
-            VStack(spacing: 8) {
-                Text(prayerName)
-                    .font(.system(size: 13, weight: .semibold))
+            VStack(spacing: 6) {
+                Text(Translations.string("prayer_after_format", language: appLanguage).replacingOccurrences(of: "%@", with: prayerName))
+                    .font(.system(size: 12, weight: .medium))
                     .foregroundColor(.secondary)
                 
                 HStack(spacing: 2) {
                     Text(formatTimeUnit(time.hours))
-                        .font(.system(size: 28, weight: .bold, design: .rounded))
+                        .font(.system(size: 22, weight: .bold, design: .rounded))
                         .monospacedDigit()
                     Text(":")
-                        .font(.system(size: 24, weight: .bold, design: .rounded))
+                        .font(.system(size: 18, weight: .bold, design: .rounded))
                         .opacity(0.5)
                     Text(formatTimeUnit(time.minutes))
-                        .font(.system(size: 28, weight: .bold, design: .rounded))
+                        .font(.system(size: 22, weight: .bold, design: .rounded))
                         .monospacedDigit()
                     Text(":")
-                        .font(.system(size: 24, weight: .bold, design: .rounded))
+                        .font(.system(size: 18, weight: .bold, design: .rounded))
                         .opacity(0.5)
                     Text(formatTimeUnit(time.seconds))
-                        .font(.system(size: 28, weight: .bold, design: .rounded))
+                        .font(.system(size: 22, weight: .bold, design: .rounded))
                         .monospacedDigit()
                 }
                 .foregroundColor(.accentColor)

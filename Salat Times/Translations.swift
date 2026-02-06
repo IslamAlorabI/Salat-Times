@@ -299,6 +299,16 @@ struct Translations {
                 "fa": "به‌روز",
                 "de": "Aktualisiert"
             ],
+            "server_synced": [
+                "ar": "تم التحديث",
+                "en": "Server Update",
+                "ru": "Обновлено",
+                "id": "Server Update",
+                "tr": "Sunucu Güncellendi",
+                "ur": "سرور اپ ڈیٹ",
+                "fa": "به‌روزرسانی سرور",
+                "de": "Server Update"
+            ],
             "offline": [
                 "ar": "غير متصل",
                 "en": "Offline",
@@ -308,6 +318,16 @@ struct Translations {
                 "ur": "آف لائن",
                 "fa": "آفلاین",
                 "de": "Offline"
+            ],
+            "prayer_after_format": [
+                "ar": "صلاة %@ بعد:",
+                "en": "%@ prayer in:",
+                "ru": "Молитва %@ через:",
+                "id": "Sholat %@ dalam:",
+                "tr": "%@ namazına:",
+                "ur": "%@ نماز کے بعد:",
+                "fa": "نماز %@ بعد از:",
+                "de": "%@ Gebet in:"
             ],
             
             // Welcome Screen
