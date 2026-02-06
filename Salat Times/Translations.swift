@@ -300,14 +300,14 @@ struct Translations {
                 "de": "Aktualisiert"
             ],
             "server_synced": [
-                "ar": "تم التحديث",
-                "en": "Server Update",
-                "ru": "Обновлено",
-                "id": "Server Update",
+                "ar": "السيرفر محدث",
+                "en": "Server Updated",
+                "ru": "Сервер обновлен",
+                "id": "Server Diperbarui",
                 "tr": "Sunucu Güncellendi",
                 "ur": "سرور اپ ڈیٹ",
-                "fa": "به‌روزرسانی سرور",
-                "de": "Server Update"
+                "fa": "سرور به‌روز",
+                "de": "Server Aktualisiert"
             ],
             "offline": [
                 "ar": "غير متصل",
@@ -325,9 +325,39 @@ struct Translations {
                 "ru": "Молитва %@ через:",
                 "id": "Sholat %@ dalam:",
                 "tr": "%@ namazına:",
-                "ur": "%@ نماز کے بعد:",
+                "ur": "%@ نماز بعد:",
                 "fa": "نماز %@ بعد از:",
                 "de": "%@ Gebet in:"
+            ],
+            "hours_short": [
+                "ar": "ساعة",
+                "en": "hr",
+                "ru": "ч",
+                "id": "jam",
+                "tr": "sa",
+                "ur": "گھنٹہ",
+                "fa": "ساعت",
+                "de": "Std"
+            ],
+            "minutes_short": [
+                "ar": "دقيقة",
+                "en": "min",
+                "ru": "мин",
+                "id": "mnt",
+                "tr": "dk",
+                "ur": "منٹ",
+                "fa": "دقیقه",
+                "de": "Min"
+            ],
+            "seconds_short": [
+                "ar": "ثانية",
+                "en": "sec",
+                "ru": "сек",
+                "id": "dtk",
+                "tr": "sn",
+                "ur": "سیکنڈ",
+                "fa": "ثانیه",
+                "de": "Sek"
             ],
             
             // Welcome Screen

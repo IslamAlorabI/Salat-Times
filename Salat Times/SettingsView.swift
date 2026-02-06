@@ -232,7 +232,7 @@ struct SettingsView: View {
             }
             .padding()
         }
-        .frame(width: 420, height: 750)
+        .frame(minWidth: 420, maxWidth: 500, minHeight: 750)
         .background(.regularMaterial)
         .environment(\.layoutDirection, Translations.isRTL(appLanguage) ? .rightToLeft : .leftToRight)
         .environment(\.locale, Locale(identifier: Translations.locale(appLanguage)))

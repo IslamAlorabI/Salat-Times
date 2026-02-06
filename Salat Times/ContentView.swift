@@ -35,7 +35,6 @@ struct ContentView: View    {
                     }
                     .multilineTextAlignment(.leading)
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
                 
                 Spacer()
                 
@@ -72,6 +71,7 @@ struct ContentView: View    {
             }
             
             Divider()
+                .background(Color.primary)
             
             if manager.isLoading {
                 VStack {
@@ -352,32 +352,51 @@ struct CountdownView: View {
     
     var body: some View {
         if let time = timeRemaining, let _ = upcomingPrayer {
-            VStack(spacing: 6) {
+            VStack(spacing: 8) {
                 Text(Translations.string("prayer_after_format", language: appLanguage).replacingOccurrences(of: "%@", with: prayerName))
-                    .font(.system(size: 12, weight: .medium))
+                    .font(.system(size: 14, weight: .semibold))
                     .foregroundColor(.secondary)
                 
-                HStack(spacing: 2) {
-                    Text(formatTimeUnit(time.hours))
-                        .font(.system(size: 22, weight: .bold, design: .rounded))
-                        .monospacedDigit()
+                HStack(spacing: 12) {
+                    VStack(spacing: 2) {
+                        Text(formatTimeUnit(time.hours))
+                            .font(.system(size: 24, weight: .bold, design: .rounded))
+                            .monospacedDigit()
+                        Text(Translations.string("hours_short", language: appLanguage))
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundColor(.secondary)
+                    }
+                    
                     Text(":")
-                        .font(.system(size: 18, weight: .bold, design: .rounded))
+                        .font(.system(size: 20, weight: .bold, design: .rounded))
                         .opacity(0.5)
-                    Text(formatTimeUnit(time.minutes))
-                        .font(.system(size: 22, weight: .bold, design: .rounded))
-                        .monospacedDigit()
+                    
+                    VStack(spacing: 2) {
+                        Text(formatTimeUnit(time.minutes))
+                            .font(.system(size: 24, weight: .bold, design: .rounded))
+                            .monospacedDigit()
+                        Text(Translations.string("minutes_short", language: appLanguage))
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundColor(.secondary)
+                    }
+                    
                     Text(":")
-                        .font(.system(size: 18, weight: .bold, design: .rounded))
+                        .font(.system(size: 20, weight: .bold, design: .rounded))
                         .opacity(0.5)
-                    Text(formatTimeUnit(time.seconds))
-                        .font(.system(size: 22, weight: .bold, design: .rounded))
-                        .monospacedDigit()
+                    
+                    VStack(spacing: 2) {
+                        Text(formatTimeUnit(time.seconds))
+                            .font(.system(size: 24, weight: .bold, design: .rounded))
+                            .monospacedDigit()
+                        Text(Translations.string("seconds_short", language: appLanguage))
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundColor(.secondary)
+                    }
                 }
                 .foregroundColor(.accentColor)
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 12)
+            .padding(.vertical, 10)
             .padding(.horizontal, 16)
             .background(
                 RoundedRectangle(cornerRadius: 12)
