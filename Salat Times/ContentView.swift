@@ -1,6 +1,7 @@
 
 import SwiftUI
 import AppKit
+import Combine
 
 struct ContentView: View    {
     @EnvironmentObject var manager: PrayerManager
@@ -10,6 +11,9 @@ struct ContentView: View    {
     @AppStorage("appLanguage") private var appLanguage = "ar"
     @AppStorage("timeFormat24") private var is24HourFormat = true
     @AppStorage("numberFormat") private var numberFormat = "western"
+    
+    @State private var currentTime = Date()
+    private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
     var body: some View {
         VStack(spacing: 0) {
@@ -37,7 +41,16 @@ struct ContentView: View    {
             .padding(.vertical, 12)
             .background(.thinMaterial)
             
-
+            
+            if !manager.isLoading && manager.errorMessage == nil {
+                CountdownView(
+                    upcomingPrayer: getUpcomingPrayer(),
+                    prayerName: getPrayerName(getUpcomingPrayer() ?? ""),
+                    timeRemaining: getTimeRemaining(),
+                    numberFormat: numberFormat
+                )
+                .padding(.vertical, 16)
+            }
             
             Divider()
             
@@ -132,6 +145,9 @@ struct ContentView: View    {
                     window.hasShadow = true
                 }
             }
+        }
+        .onReceive(timer) { _ in
+            currentTime = Date()
         }
     }
     
@@ -228,6 +244,40 @@ struct ContentView: View    {
         return prayerDates.first(where: { $0.date > now })?.key ?? prayerDates.first?.key
     }
     
+    func getTimeRemaining() -> (hours: Int, minutes: Int, seconds: Int)? {
+        let calendar = Calendar.current
+        let now = currentTime
+        let prayerOrder = ["Fajr", "Sunrise", "Dhuhr", "Asr", "Maghrib", "Isha"]
+        
+        for prayerKey in prayerOrder {
+            guard let timeString = manager.timings[prayerKey] else { continue }
+            
+            let timeComponents = timeString.split(separator: ":").compactMap({ Int($0) })
+            guard timeComponents.count == 2 else { continue }
+            
+            let hour = timeComponents[0]
+            let minute = timeComponents[1]
+            
+            var components = calendar.dateComponents([.year, .month, .day], from: now)
+            components.hour = hour
+            components.minute = minute
+            components.second = 0
+            
+            guard var prayerDate = calendar.date(from: components) else { continue }
+            
+            if prayerDate < now {
+                prayerDate = calendar.date(byAdding: .day, value: 1, to: prayerDate) ?? prayerDate
+            }
+            
+            if prayerDate > now {
+                let diff = calendar.dateComponents([.hour, .minute, .second], from: now, to: prayerDate)
+                return (hours: diff.hour ?? 0, minutes: diff.minute ?? 0, seconds: diff.second ?? 0)
+            }
+        }
+        
+        return nil
+    }
+    
     func getPrayerColor(_ key: String) -> Color {
         let isDark = colorScheme == .dark
         
@@ -259,6 +309,48 @@ struct ContentView: View    {
         default:
             return .primary
         }
+    }
+}
+
+struct CountdownView: View {
+    let upcomingPrayer: String?
+    let prayerName: String
+    let timeRemaining: (hours: Int, minutes: Int, seconds: Int)?
+    let numberFormat: String
+    
+    var body: some View {
+        VStack(spacing: 6) {
+            if let time = timeRemaining, let _ = upcomingPrayer {
+                HStack(spacing: 2) {
+                    Text(formatTimeUnit(time.hours))
+                        .font(.system(size: 36, weight: .bold, design: .rounded))
+                        .monospacedDigit()
+                    Text(":")
+                        .font(.system(size: 32, weight: .bold, design: .rounded))
+                        .opacity(0.6)
+                    Text(formatTimeUnit(time.minutes))
+                        .font(.system(size: 36, weight: .bold, design: .rounded))
+                        .monospacedDigit()
+                    Text(":")
+                        .font(.system(size: 32, weight: .bold, design: .rounded))
+                        .opacity(0.6)
+                    Text(formatTimeUnit(time.seconds))
+                        .font(.system(size: 36, weight: .bold, design: .rounded))
+                        .monospacedDigit()
+                }
+                .foregroundColor(.accentColor)
+                
+                Text(prayerName)
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(.secondary)
+            }
+        }
+        .frame(maxWidth: .infinity)
+    }
+    
+    private func formatTimeUnit(_ value: Int) -> String {
+        let formatted = String(format: "%02d", value)
+        return Translations.localizedNumber(formatted, numberFormat: numberFormat)
     }
 }
 
