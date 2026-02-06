@@ -58,6 +58,7 @@ struct ContentView: View    {
             .padding(.vertical, 12)
             .background(.thinMaterial)
             
+            Divider()
             
             if !manager.isLoading && manager.errorMessage == nil {
                 CountdownView(
