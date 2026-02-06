@@ -32,43 +32,16 @@ struct ContentView: View    {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 
-                Button(action: {
-                    manager.loadSavedCity()
-                }) {
-                    Image(systemName: "arrow.triangle.2.circlepath")
-                        .font(.system(size: 16, weight: .semibold))
-                        .foregroundColor(.white)
-                        .padding(8)
-                        .background(Color.accentColor.opacity(0.8))
-                        .clipShape(Circle())
+                if let hijri = manager.hijriDate {
+                    getHijriDateView(hijri)
+                        .id(numberFormat)
                 }
-                .buttonStyle(.plain)
-                .help(Translations.string("refresh_data", language: appLanguage))
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
             .background(.thinMaterial)
             
-            if let hijri = manager.hijriDate {
-                HStack {
-                    Spacer()
-                    getHijriDateView(hijri)
-                    Spacer()
-                }
-                .padding(.vertical, 8)
-                .padding(.horizontal, 12)
-                .background(
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(.ultraThinMaterial.opacity(0.5))
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(Color.primary.opacity(0.2), lineWidth: 1)
-                )
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
-                .id(numberFormat)
-            }
+
             
             Divider()
             
@@ -176,31 +149,16 @@ struct ContentView: View    {
     @ViewBuilder
     func getHijriDateView(_ hijri: HijriDate) -> some View {
         let monthName = Translations.hijriMonthName(hijri.month.number, language: appLanguage)
-        let yearLabel = Translations.string("hijri_year_label", language: appLanguage)
-        let suffix = Translations.string("hijri_migration_suffix", language: appLanguage)
         let localizedDay = Translations.localizedNumber(hijri.day, numberFormat: numberFormat)
         let localizedYear = Translations.localizedNumber(hijri.year, numberFormat: numberFormat)
         
-        HStack(spacing: 4) {
-            // Day and Month
-            HStack(spacing: 3) {
-                Text(localizedDay)
-                Text(monthName)
-            }
-            .font(.system(size: 14, weight: .medium))
-            .foregroundColor(.white)
-            
-            // Year and Suffix
-            HStack(spacing: 3) {
-                Text(localizedYear)
-                if !yearLabel.isEmpty {
-                    Text(yearLabel)
-                }
-                Text(suffix)
-            }
-            .font(.system(size: 14, weight: .semibold))
-            .foregroundColor(.accentColor)
+        HStack(spacing: 3) {
+            Text(localizedDay)
+            Text(monthName)
+            Text(localizedYear)
         }
+        .font(.system(size: 13, weight: .medium))
+        .foregroundColor(.secondary)
     }
     
     func getPrayerName(_ key: String) -> String {

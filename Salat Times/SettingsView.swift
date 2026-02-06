@@ -53,6 +53,25 @@ struct SettingsView: View {
                             }
                     }
                     .padding(.vertical, 4)
+                    
+                    Divider()
+                    
+                    HStack {
+                        Text(Translations.string("refresh_data", language: appLanguage))
+                            .font(.system(size: 13))
+                        Spacer()
+                        Button(action: {
+                            manager.loadSavedCity()
+                        }) {
+                            HStack(spacing: 4) {
+                                Image(systemName: "arrow.triangle.2.circlepath")
+                                    .font(.system(size: 12))
+                                Text(Translations.string("refresh", language: appLanguage))
+                                    .font(.system(size: 12))
+                            }
+                        }
+                    }
+                    .padding(.vertical, 4)
                 }
                 
                 GroupBox(label: Label(Translations.string("languages", language: appLanguage), systemImage: "globe")) {

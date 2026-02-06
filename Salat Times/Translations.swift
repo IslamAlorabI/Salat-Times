@@ -130,14 +130,14 @@ struct Translations {
                 "de": "Gebetszeiten heute"
             ],
             "refresh_data": [
-                "ar": "تحديث البيانات",
-                "en": "Refresh Data",
-                "ru": "Обновить данные",
-                "id": "Muat Ulang Data",
-                "tr": "Verileri Yenile",
-                "ur": "ڈیٹا تازہ کریں",
-                "fa": "به‌روزرسانی داده‌ها",
-                "de": "Daten aktualisieren"
+                "ar": "تحديث أوقات الصلاة",
+                "en": "Refresh Prayer Times",
+                "ru": "Обновить время молитв",
+                "id": "Muat Ulang Waktu Sholat",
+                "tr": "Namaz Vakitlerini Yenile",
+                "ur": "نماز کے اوقات تازہ کریں",
+                "fa": "به‌روزرسانی اوقات نماز",
+                "de": "Gebetszeiten aktualisieren"
             ],
             "retry": [
                 "ar": "إعادة المحاولة",
@@ -148,6 +148,16 @@ struct Translations {
                 "ur": "دوبارہ کوشش کریں",
                 "fa": "تلاش مجدد",
                 "de": "Wiederholen"
+            ],
+            "refresh": [
+                "ar": "تحديث",
+                "en": "Refresh",
+                "ru": "Обновить",
+                "id": "Muat Ulang",
+                "tr": "Yenile",
+                "ur": "تازہ کریں",
+                "fa": "به‌روزرسانی",
+                "de": "Aktualisieren"
             ],
             "settings": [
                 "ar": "الإعدادات",
