@@ -402,7 +402,7 @@ struct CountdownView: View {
                     .fill(.ultraThinMaterial)
                     .overlay(
                         RoundedRectangle(cornerRadius: 12)
-                            .stroke(Color.accentColor.opacity(0.2), lineWidth: 1)
+                            .stroke(Color.gray.opacity(0.3), lineWidth: 1)
                     )
             )
             .padding(.horizontal, 12)
