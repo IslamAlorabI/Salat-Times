@@ -289,6 +289,26 @@ struct Translations {
                 "fa": "در حال بارگذاری...",
                 "de": "Lädt..."
             ],
+            "updated": [
+                "ar": "محدث",
+                "en": "Updated",
+                "ru": "Обновлено",
+                "id": "Diperbarui",
+                "tr": "Güncellendi",
+                "ur": "اپ ڈیٹ",
+                "fa": "به‌روز",
+                "de": "Aktualisiert"
+            ],
+            "offline": [
+                "ar": "غير متصل",
+                "en": "Offline",
+                "ru": "Не в сети",
+                "id": "Offline",
+                "tr": "Çevrimdışı",
+                "ur": "آف لائن",
+                "fa": "آفلاین",
+                "de": "Offline"
+            ],
             
             // Welcome Screen
             "app_description": [

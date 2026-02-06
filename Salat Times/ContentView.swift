@@ -36,6 +36,24 @@ struct ContentView: View    {
                     .multilineTextAlignment(.leading)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
+                
+                Spacer()
+                
+                VStack(alignment: .trailing, spacing: 4) {
+                    getGregorianDateView()
+                        .id(numberFormat)
+                    
+                    HStack(spacing: 4) {
+                        Circle()
+                            .fill(manager.lastUpdatedFromServer != nil ? Color.green : Color.orange)
+                            .frame(width: 8, height: 8)
+                        Text(manager.lastUpdatedFromServer != nil ? 
+                             Translations.string("updated", language: appLanguage) :
+                             Translations.string("offline", language: appLanguage))
+                            .font(.system(size: 11))
+                            .foregroundColor(.secondary)
+                    }
+                }
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
@@ -173,6 +191,18 @@ struct ContentView: View    {
                 .foregroundColor(.accentColor)
         }
         .font(.system(size: 18, weight: .bold, design: .rounded))
+    }
+    
+    func getGregorianDateView() -> some View {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: Translations.locale(appLanguage))
+        formatter.dateFormat = "d MMMM yyyy"
+        let dateString = formatter.string(from: Date())
+        let localizedDate = Translations.localizedNumber(dateString, numberFormat: numberFormat)
+        
+        return Text(localizedDate)
+            .font(.system(size: 14, weight: .medium))
+            .foregroundColor(.secondary)
     }
     
     func getPrayerName(_ key: String) -> String {
@@ -319,33 +349,44 @@ struct CountdownView: View {
     let numberFormat: String
     
     var body: some View {
-        VStack(spacing: 6) {
-            if let time = timeRemaining, let _ = upcomingPrayer {
+        if let time = timeRemaining, let _ = upcomingPrayer {
+            VStack(spacing: 8) {
+                Text(prayerName)
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundColor(.secondary)
+                
                 HStack(spacing: 2) {
                     Text(formatTimeUnit(time.hours))
-                        .font(.system(size: 36, weight: .bold, design: .rounded))
+                        .font(.system(size: 28, weight: .bold, design: .rounded))
                         .monospacedDigit()
                     Text(":")
-                        .font(.system(size: 32, weight: .bold, design: .rounded))
-                        .opacity(0.6)
+                        .font(.system(size: 24, weight: .bold, design: .rounded))
+                        .opacity(0.5)
                     Text(formatTimeUnit(time.minutes))
-                        .font(.system(size: 36, weight: .bold, design: .rounded))
+                        .font(.system(size: 28, weight: .bold, design: .rounded))
                         .monospacedDigit()
                     Text(":")
-                        .font(.system(size: 32, weight: .bold, design: .rounded))
-                        .opacity(0.6)
+                        .font(.system(size: 24, weight: .bold, design: .rounded))
+                        .opacity(0.5)
                     Text(formatTimeUnit(time.seconds))
-                        .font(.system(size: 36, weight: .bold, design: .rounded))
+                        .font(.system(size: 28, weight: .bold, design: .rounded))
                         .monospacedDigit()
                 }
                 .foregroundColor(.accentColor)
-                
-                Text(prayerName)
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(.secondary)
             }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 12)
+            .padding(.horizontal, 16)
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(.ultraThinMaterial)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color.accentColor.opacity(0.2), lineWidth: 1)
+                    )
+            )
+            .padding(.horizontal, 12)
         }
-        .frame(maxWidth: .infinity)
     }
     
     private func formatTimeUnit(_ value: Int) -> String {

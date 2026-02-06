@@ -144,6 +144,7 @@ class PrayerManager: NSObject, ObservableObject, CLLocationManagerDelegate, UNUs
     @Published var errorMessage: String? = nil
     @Published var countdownText: String = ""
     @Published var hijriDate: HijriDate? = nil
+    @Published var lastUpdatedFromServer: Date? = nil
     @Published var upcomingPrayerName: String = ""
     @Published var menuBarTitle: String = "Salat Times"
     
@@ -332,6 +333,7 @@ class PrayerManager: NSObject, ObservableObject, CLLocationManagerDelegate, UNUs
                     if let decoded = try? decoder.decode(PrayerResponse.self, from: data) {
                         self.timings = decoded.data.timings
                         self.hijriDate = decoded.data.date.hijri
+                        self.lastUpdatedFromServer = Date()
                         self.isLoading = false
                         self.schedulePrayerNotifications()
                         self.updateCountdown()
