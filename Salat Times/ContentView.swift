@@ -16,9 +16,10 @@ struct ContentView: View    {
             
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(Translations.string("prayer_times_today", language: appLanguage))
-                        .font(.system(size: 18, weight: .bold, design: .rounded))
-                        .multilineTextAlignment(.leading)
+                    if let hijri = manager.hijriDate {
+                        getHijriHeaderView(hijri)
+                            .id(numberFormat)
+                    }
                     
                     HStack(spacing: 4) {
                         Image(systemName: "location.fill")
@@ -31,11 +32,6 @@ struct ContentView: View    {
                     .multilineTextAlignment(.leading)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
-                
-                if let hijri = manager.hijriDate {
-                    getHijriDateView(hijri)
-                        .id(numberFormat)
-                }
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
@@ -147,18 +143,20 @@ struct ContentView: View    {
     }
     
     @ViewBuilder
-    func getHijriDateView(_ hijri: HijriDate) -> some View {
+    func getHijriHeaderView(_ hijri: HijriDate) -> some View {
         let monthName = Translations.hijriMonthName(hijri.month.number, language: appLanguage)
         let localizedDay = Translations.localizedNumber(hijri.day, numberFormat: numberFormat)
         let localizedYear = Translations.localizedNumber(hijri.year, numberFormat: numberFormat)
         
-        HStack(spacing: 3) {
+        HStack(spacing: 4) {
             Text(localizedDay)
+                .foregroundColor(.primary)
             Text(monthName)
+                .foregroundColor(.primary)
             Text(localizedYear)
+                .foregroundColor(.accentColor)
         }
-        .font(.system(size: 13, weight: .medium))
-        .foregroundColor(.secondary)
+        .font(.system(size: 18, weight: .bold, design: .rounded))
     }
     
     func getPrayerName(_ key: String) -> String {
