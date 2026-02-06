@@ -71,7 +71,6 @@ struct ContentView: View    {
             }
             
             Divider()
-                .background(Color.primary)
             
             if manager.isLoading {
                 VStack {
