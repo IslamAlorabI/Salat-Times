@@ -19,8 +19,9 @@ struct SalatTimesApp: App {
                 }
         } label: {
             HStack(spacing: 6) {
-                Image(systemName: "moon.stars.fill")
+                Image(systemName: manager.isWarningActive ? "bell.badge.fill" : "moon.stars.fill")
                     .imageScale(.small)
+                    .symbolRenderingMode(.multicolor)
                 Text(manager.menuBarTitle)
                     .font(.system(size: 11))
             }

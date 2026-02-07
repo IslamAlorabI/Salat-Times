@@ -147,6 +147,7 @@ class PrayerManager: NSObject, ObservableObject, CLLocationManagerDelegate, UNUs
     @Published var lastUpdatedFromServer: Date? = nil
     @Published var upcomingPrayerName: String = ""
     @Published var menuBarTitle: String = "Salat Times"
+    @Published var isWarningActive: Bool = false
     
     private let locationManager = CLLocationManager()
     private let notificationCenter = UNUserNotificationCenter.current()
@@ -474,6 +475,14 @@ class PrayerManager: NSObject, ObservableObject, CLLocationManagerDelegate, UNUs
         }
         
         upcomingPrayerName = prayerName
+        
+        let warningInterval = UserDefaults.standard.integer(forKey: "warningInterval")
+        if warningInterval > 0 {
+            let warningThresholdSeconds = warningInterval * 60
+            isWarningActive = totalSeconds <= warningThresholdSeconds && totalSeconds > 0
+        } else {
+            isWarningActive = false
+        }
         
         if countdownText.isEmpty {
             menuBarTitle = "Salat Times"

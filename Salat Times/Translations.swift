@@ -988,6 +988,77 @@ struct Translations {
                 "ur": "یاد دہانی",
                 "fa": "یادآوری",
                 "de": "Erinnerung"
+            ],
+            
+            "menu_bar_warning": [
+                "ar": "تنبيه شريط القائمة",
+                "en": "Menu Bar Warning",
+                "ru": "Предупреждение в меню",
+                "id": "Peringatan Menu Bar",
+                "tr": "Menü Çubuğu Uyarısı",
+                "ur": "مینو بار انتباہ",
+                "fa": "هشدار نوار منو",
+                "de": "Menüleisten-Warnung"
+            ],
+            "warning_disabled": [
+                "ar": "معطل",
+                "en": "Disabled",
+                "ru": "Отключено",
+                "id": "Nonaktif",
+                "tr": "Devre Dışı",
+                "ur": "غیر فعال",
+                "fa": "غیرفعال",
+                "de": "Deaktiviert"
+            ],
+            "warning_10_minutes": [
+                "ar": "١٠ دقائق",
+                "en": "10 Minutes",
+                "ru": "10 минут",
+                "id": "10 Menit",
+                "tr": "10 Dakika",
+                "ur": "١٠ منٹ",
+                "fa": "١٠ دقیقه",
+                "de": "10 Minuten"
+            ],
+            "warning_15_minutes": [
+                "ar": "١٥ دقائق",
+                "en": "15 Minutes",
+                "ru": "15 минут",
+                "id": "15 Menit",
+                "tr": "15 Dakika",
+                "ur": "١٥ منٹ",
+                "fa": "١٥ دقیقه",
+                "de": "15 Minuten"
+            ],
+            "warning_20_minutes": [
+                "ar": "٢٠ دقائق",
+                "en": "20 Minutes",
+                "ru": "20 минут",
+                "id": "20 Menit",
+                "tr": "20 Dakika",
+                "ur": "٢٠ منٹ",
+                "fa": "٢٠ دقیقه",
+                "de": "20 Minuten"
+            ],
+            "warning_25_minutes": [
+                "ar": "٢٥ دقائق",
+                "en": "25 Minutes",
+                "ru": "25 минут",
+                "id": "25 Menit",
+                "tr": "25 Dakika",
+                "ur": "٢٥ منٹ",
+                "fa": "٢٥ دقیقه",
+                "de": "25 Minuten"
+            ],
+            "warning_30_minutes": [
+                "ar": "٣٠ دقائق",
+                "en": "30 Minutes",
+                "ru": "30 минут",
+                "id": "30 Menit",
+                "tr": "30 Dakika",
+                "ur": "٣٠ منٹ",
+                "fa": "٣٠ دقیقه",
+                "de": "30 Minuten"
             ]
         ]
         
