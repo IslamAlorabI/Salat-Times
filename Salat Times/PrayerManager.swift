@@ -208,8 +208,9 @@ class PrayerManager: NSObject, ObservableObject, CLLocationManagerDelegate, UNUs
         notificationCenter.getPendingNotificationRequests { [weak self] requests in
             guard let self = self else { return }
             let prayerIds = requests.filter { $0.identifier.hasPrefix("prayer_") }.map { $0.identifier }
+            let reminderIds = requests.filter { $0.identifier.hasPrefix("reminder_") }.map { $0.identifier }
             let legacyTestIds = requests.filter { $0.identifier.hasPrefix("test_prayer_") }.map { $0.identifier }
-            self.notificationCenter.removePendingNotificationRequests(withIdentifiers: prayerIds + legacyTestIds)
+            self.notificationCenter.removePendingNotificationRequests(withIdentifiers: prayerIds + reminderIds + legacyTestIds)
             
             DispatchQueue.main.async {
                 self.schedulePrayerNotificationsInternal()
@@ -222,11 +223,11 @@ class PrayerManager: NSObject, ObservableObject, CLLocationManagerDelegate, UNUs
         let today = Date()
         
         let appLanguage = UserDefaults.standard.string(forKey: "appLanguage") ?? "ar"
+        let reminderInterval = UserDefaults.standard.integer(forKey: "reminderInterval")
         
         for (key, timeString) in timings {
             guard ["Fajr", "Sunrise", "Dhuhr", "Asr", "Maghrib", "Isha"].contains(key) else { continue }
             
-            // Check if notification is enabled for this prayer
             guard PrayerNotificationSettings.isEnabled(for: key) else {
                 print("⏭️ Notification disabled for \(key), skipping")
                 continue
@@ -249,16 +250,15 @@ class PrayerManager: NSObject, ObservableObject, CLLocationManagerDelegate, UNUs
                 prayerDate = calendar.date(byAdding: .day, value: 1, to: prayerDate) ?? prayerDate
             }
             
-            let content = UNMutableNotificationContent()
             let prayerTranslationKey = "prayer_\(key.lowercased())"
             let prayerName = Translations.string(prayerTranslationKey, language: appLanguage)
+            let soundSetting = PrayerNotificationSettings.sound(for: key)
+            
+            let content = UNMutableNotificationContent()
             let title = Translations.string("prayer_time", language: appLanguage)
             let bodyFormat = Translations.string("prayer_time_body", language: appLanguage)
             content.title = title
             content.body = String(format: bodyFormat, prayerName)
-            
-            // Use custom sound for this prayer
-            let soundSetting = PrayerNotificationSettings.sound(for: key)
             content.sound = soundSetting.notificationSound
             content.badge = 1
             
@@ -273,6 +273,39 @@ class PrayerManager: NSObject, ObservableObject, CLLocationManagerDelegate, UNUs
                     print("❌ Error scheduling notification for \(key): \(error.localizedDescription)")
                 } else {
                     print("✅ Scheduled notification for \(prayerName) at \(timeString) with sound: \(soundSetting.rawValue)")
+                }
+            }
+            
+            if reminderInterval > 0 {
+                guard let reminderDate = calendar.date(byAdding: .minute, value: -reminderInterval, to: prayerDate),
+                      reminderDate > today else { continue }
+                
+                let reminderContent = UNMutableNotificationContent()
+                reminderContent.title = Translations.string("prayer_reminder_title", language: appLanguage)
+                
+                if reminderInterval == 60 {
+                    let bodyFormat = Translations.string("prayer_reminder_body_hour", language: appLanguage)
+                    reminderContent.body = String(format: bodyFormat, prayerName)
+                } else {
+                    let bodyFormat = Translations.string("prayer_reminder_body", language: appLanguage)
+                    reminderContent.body = String(format: bodyFormat, prayerName, "\(reminderInterval)")
+                }
+                
+                reminderContent.sound = .default
+                reminderContent.badge = 1
+                
+                let reminderTriggerDate = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: reminderDate)
+                let reminderTrigger = UNCalendarNotificationTrigger(dateMatching: reminderTriggerDate, repeats: false)
+                
+                let reminderIdentifier = "reminder_\(key)_\(reminderDate.timeIntervalSince1970)"
+                let reminderRequest = UNNotificationRequest(identifier: reminderIdentifier, content: reminderContent, trigger: reminderTrigger)
+                
+                notificationCenter.add(reminderRequest) { error in
+                    if let error = error {
+                        print("❌ Error scheduling reminder for \(key): \(error.localizedDescription)")
+                    } else {
+                        print("🔔 Scheduled reminder for \(prayerName) \(reminderInterval) min before")
+                    }
                 }
             }
         }

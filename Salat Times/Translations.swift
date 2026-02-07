@@ -887,6 +887,107 @@ struct Translations {
                 "ur": "فارسی",
                 "fa": "فارسی",
                 "de": "Persisch"
+            ],
+            
+            "prayer_reminder": [
+                "ar": "تذكير بالصلاة",
+                "en": "Prayer Reminders",
+                "ru": "Напоминание о молитве",
+                "id": "Pengingat Sholat",
+                "tr": "Namaz Hatırlatıcı",
+                "ur": "نماز کی یاد دہانی",
+                "fa": "یادآوری نماز",
+                "de": "Gebetserinnerung"
+            ],
+            "reminder_disabled": [
+                "ar": "معطل",
+                "en": "Disabled",
+                "ru": "Отключено",
+                "id": "Nonaktif",
+                "tr": "Devre Dışı",
+                "ur": "غیر فعال",
+                "fa": "غیرفعال",
+                "de": "Deaktiviert"
+            ],
+            "reminder_10_minutes": [
+                "ar": "١٠ دقائق",
+                "en": "10 Minutes",
+                "ru": "10 минут",
+                "id": "10 Menit",
+                "tr": "10 Dakika",
+                "ur": "١٠ منٹ",
+                "fa": "١٠ دقیقه",
+                "de": "10 Minuten"
+            ],
+            "reminder_15_minutes": [
+                "ar": "١٥ دقائق",
+                "en": "15 Minutes",
+                "ru": "15 минут",
+                "id": "15 Menit",
+                "tr": "15 Dakika",
+                "ur": "١٥ منٹ",
+                "fa": "١٥ دقیقه",
+                "de": "15 Minuten"
+            ],
+            "reminder_20_minutes": [
+                "ar": "٢٠ دقائق",
+                "en": "20 Minutes",
+                "ru": "20 минут",
+                "id": "20 Menit",
+                "tr": "20 Dakika",
+                "ur": "٢٠ منٹ",
+                "fa": "٢٠ دقیقه",
+                "de": "20 Minuten"
+            ],
+            "reminder_30_minutes": [
+                "ar": "٣٠ دقائق",
+                "en": "30 Minutes",
+                "ru": "30 минут",
+                "id": "30 Menit",
+                "tr": "30 Dakika",
+                "ur": "٣٠ منٹ",
+                "fa": "٣٠ دقیقه",
+                "de": "30 Minuten"
+            ],
+            "reminder_1_hour": [
+                "ar": "ساعة واحدة",
+                "en": "1 Hour",
+                "ru": "1 час",
+                "id": "1 Jam",
+                "tr": "1 Saat",
+                "ur": "١ گھنٹہ",
+                "fa": "١ ساعت",
+                "de": "1 Stunde"
+            ],
+            "prayer_reminder_body": [
+                "ar": "صلاة %@ بعد %@ دقائق",
+                "en": "%@ prayer in %@ minutes",
+                "ru": "Молитва %@ через %@ минут",
+                "id": "Sholat %@ dalam %@ menit",
+                "tr": "%@ namazına %@ dakika",
+                "ur": "%@ نماز %@ منٹ میں",
+                "fa": "نماز %@ در %@ دقیقه",
+                "de": "%@ Gebet in %@ Minuten"
+            ],
+            "prayer_reminder_body_hour": [
+                "ar": "صلاة %@ بعد ساعة",
+                "en": "%@ prayer in 1 hour",
+                "ru": "Молитва %@ через 1 час",
+                "id": "Sholat %@ dalam 1 jam",
+                "tr": "%@ namazına 1 saat",
+                "ur": "%@ نماز ١ گھنٹے میں",
+                "fa": "نماز %@ در ١ ساعت",
+                "de": "%@ Gebet in 1 Stunde"
+            ],
+            "prayer_reminder_title": [
+                "ar": "تذكير بالصلاة",
+                "en": "Prayer Reminder",
+                "ru": "Напоминание",
+                "id": "Pengingat",
+                "tr": "Hatırlatma",
+                "ur": "یاد دہانی",
+                "fa": "یادآوری",
+                "de": "Erinnerung"
             ]
         ]
         

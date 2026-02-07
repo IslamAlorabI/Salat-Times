@@ -27,6 +27,7 @@ struct SettingsView: View {
     @AppStorage("notification_Isha_sound") private var ishaSound = "default"
     
     @State private var launchAtLogin = SMAppService.mainApp.status == .enabled
+    @AppStorage("reminderInterval") private var reminderInterval = 0
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 25) {
@@ -154,6 +155,26 @@ struct SettingsView: View {
                     .padding(.vertical, 4)
                 }
                 
+                GroupBox(label: Label(Translations.string("prayer_reminder", language: appLanguage), systemImage: "bell.and.waves.left.and.right")) {
+                    HStack {
+                        Text(Translations.string("prayer_reminder", language: appLanguage))
+                            .font(.system(size: 13))
+                        Spacer()
+                        Picker("", selection: $reminderInterval) {
+                            Text(Translations.string("reminder_disabled", language: appLanguage)).tag(0)
+                            Text(Translations.string("reminder_10_minutes", language: appLanguage)).tag(10)
+                            Text(Translations.string("reminder_15_minutes", language: appLanguage)).tag(15)
+                            Text(Translations.string("reminder_20_minutes", language: appLanguage)).tag(20)
+                            Text(Translations.string("reminder_30_minutes", language: appLanguage)).tag(30)
+                            Text(Translations.string("reminder_1_hour", language: appLanguage)).tag(60)
+                        }
+                        .pickerStyle(.menu)
+                        .frame(width: 140)
+                    }
+                    .padding(.vertical, 4)
+                }
+
+                
                 GroupBox(label: Label(Translations.string("prayer_notifications", language: appLanguage), systemImage: "bell.badge")) {
                     VStack(spacing: 12) {
                         PrayerNotificationRow(
@@ -257,6 +278,7 @@ struct SettingsView: View {
         .onChange(of: asrSound) { _ in manager.schedulePrayerNotifications() }
         .onChange(of: maghribSound) { _ in manager.schedulePrayerNotifications() }
         .onChange(of: ishaSound) { _ in manager.schedulePrayerNotifications() }
+        .onChange(of: reminderInterval) { _ in manager.schedulePrayerNotifications() }
     }
 }
 
