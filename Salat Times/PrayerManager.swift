@@ -377,7 +377,7 @@ class PrayerManager: NSObject, ObservableObject, CLLocationManagerDelegate, UNUs
     }
     
     func startCountdownTimer() {
-        countdownTimer = Timer.scheduledTimer(withTimeInterval: 60.0, repeats: true) { [weak self] _ in
+        countdownTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
             DispatchQueue.main.async {
                 self?.updateCountdown()
             }
@@ -428,14 +428,18 @@ class PrayerManager: NSObject, ObservableObject, CLLocationManagerDelegate, UNUs
         }
         
         let timeRemaining = upcoming.date.timeIntervalSince(now)
-        let hours = Int(timeRemaining) / 3600
-        let minutes = (Int(timeRemaining) % 3600) / 60
+        let totalSeconds = Int(timeRemaining)
+        let hours = totalSeconds / 3600
+        let remainingSeconds = totalSeconds % 3600
+        let minutes = remainingSeconds > 0 ? Int(ceil(Double(remainingSeconds) / 60.0)) : 0
         
         let prayerTranslationKey = "prayer_\(upcoming.key.lowercased())"
         let prayerName = Translations.string(prayerTranslationKey, language: appLanguage)
         
-        let localizedHours = Translations.localizedNumber("\(hours)", numberFormat: UserDefaults.standard.string(forKey: "numberFormat") ?? "western")
-        let localizedMinutes = Translations.localizedNumber("\(minutes)", numberFormat: UserDefaults.standard.string(forKey: "numberFormat") ?? "western")
+        let numberFormat = UserDefaults.standard.string(forKey: "numberFormat") ?? "western"
+        let localizedHours = Translations.localizedNumber("\(hours)", numberFormat: numberFormat)
+        let displayMinutes = minutes == 0 && totalSeconds > 0 ? "<1" : "\(minutes)"
+        let localizedMinutes = Translations.localizedNumber(displayMinutes, numberFormat: numberFormat)
         
         if hours > 0 {
             switch appLanguage {

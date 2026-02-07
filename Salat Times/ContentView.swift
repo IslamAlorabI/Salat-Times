@@ -12,9 +12,6 @@ struct ContentView: View    {
     @AppStorage("timeFormat24") private var is24HourFormat = true
     @AppStorage("numberFormat") private var numberFormat = "western"
     
-    @State private var currentTime = Date()
-    private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-    
     var body: some View {
         VStack(spacing: 0) {
             
@@ -61,13 +58,15 @@ struct ContentView: View    {
             Divider()
             
             if !manager.isLoading && manager.errorMessage == nil {
-                CountdownView(
-                    upcomingPrayer: getUpcomingPrayer(),
-                    prayerName: getPrayerName(getUpcomingPrayer() ?? ""),
-                    timeRemaining: getTimeRemaining(),
-                    numberFormat: numberFormat,
-                    appLanguage: appLanguage
-                )
+                TimelineView(.periodic(from: .now, by: 1.0)) { context in
+                    CountdownView(
+                        upcomingPrayer: getUpcomingPrayer(),
+                        prayerName: getPrayerName(getUpcomingPrayer() ?? ""),
+                        timeRemaining: getTimeRemaining(at: context.date),
+                        numberFormat: numberFormat,
+                        appLanguage: appLanguage
+                    )
+                }
                 .padding(.vertical, 16)
             }
             
@@ -164,9 +163,6 @@ struct ContentView: View    {
                     window.hasShadow = true
                 }
             }
-        }
-        .onReceive(timer) { _ in
-            currentTime = Date()
         }
     }
     
@@ -275,9 +271,9 @@ struct ContentView: View    {
         return prayerDates.first(where: { $0.date > now })?.key ?? prayerDates.first?.key
     }
     
-    func getTimeRemaining() -> (hours: Int, minutes: Int, seconds: Int)? {
+    func getTimeRemaining(at date: Date? = nil) -> (hours: Int, minutes: Int, seconds: Int)? {
         let calendar = Calendar.current
-        let now = currentTime
+        let now = date ?? Date()
         let prayerOrder = ["Fajr", "Sunrise", "Dhuhr", "Asr", "Maghrib", "Isha"]
         var prayerDates: [(key: String, date: Date)] = []
         
