@@ -279,6 +279,7 @@ struct ContentView: View    {
         let calendar = Calendar.current
         let now = currentTime
         let prayerOrder = ["Fajr", "Sunrise", "Dhuhr", "Asr", "Maghrib", "Isha"]
+        var prayerDates: [(key: String, date: Date)] = []
         
         for prayerKey in prayerOrder {
             guard let timeString = manager.timings[prayerKey] else { continue }
@@ -300,13 +301,17 @@ struct ContentView: View    {
                 prayerDate = calendar.date(byAdding: .day, value: 1, to: prayerDate) ?? prayerDate
             }
             
-            if prayerDate > now {
-                let diff = calendar.dateComponents([.hour, .minute, .second], from: now, to: prayerDate)
-                return (hours: diff.hour ?? 0, minutes: diff.minute ?? 0, seconds: diff.second ?? 0)
-            }
+            prayerDates.append((key: prayerKey, date: prayerDate))
         }
         
-        return nil
+        prayerDates.sort { $0.date < $1.date }
+        
+        guard let upcoming = prayerDates.first(where: { $0.date > now }) ?? prayerDates.first else {
+            return nil
+        }
+        
+        let diff = calendar.dateComponents([.hour, .minute, .second], from: now, to: upcoming.date)
+        return (hours: diff.hour ?? 0, minutes: diff.minute ?? 0, seconds: diff.second ?? 0)
     }
     
     func getPrayerColor(_ key: String) -> Color {
