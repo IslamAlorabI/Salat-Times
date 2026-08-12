@@ -223,10 +223,27 @@ and the timezone work in `Core` is undone at the last step. Sounds map to
 
 ## Menu bar
 
-`menuBarTitle` is `"<prayer> -<countdown>"`, recomputed every second by a `Timer` in `PrayerManager`.
+`menuBarTitle` is `"<prayer> · <countdown>"`, recomputed every second by a `Timer` in `PrayerManager`
+and assigned only when it actually changes (unconditional assignment invalidated the menu bar ~86,400
+times a day). It was `"<prayer> -<countdown>"` until the hyphen was read as a minus sign.
 `isWarningActive` flips the icon to `bell.badge.fill` when the countdown drops under `warningInterval`
-minutes. The popover runs its own `TimelineView(.periodic(by: 1.0))` — the two countdowns are
-computed independently and must stay in agreement.
+minutes.
+
+The popover runs its own `TimelineView(.periodic(by: 1.0))`, so its countdown and the menu bar's are
+computed independently and must stay in agreement — that is what `Countdown` is for.
+
+**Inside the popover, everything time-dependent must come from the same `context.date`.** The
+countdown was driven by the timeline while the row highlight was computed from a bare `Date()` in the
+enclosing body: the countdown re-rendered every second, the highlight only when something else
+invalidated the view, so once a prayer passed the two could name different prayers until an unrelated
+redraw fixed it. `next(after:)` and `progress(at:in:)` are now both called with `context.date`.
+
+**One translucent layer, not five.** The window carries `.ultraThinMaterial` and nothing else does.
+It previously had material on the window, the header, the footer, the countdown card *and* every
+prayer row, each with its own stroke — stacked translucency turns to mud, and eight bordered rows
+read as eight buttons instead of a list. Depth comes from solid low-opacity fills over the one
+material; only the next prayer's row is drawn at all. `PrayerPalette` holds the per-prayer colours,
+in the app target rather than `Core/`, because `Core/` must not import SwiftUI.
 
 ## Notes
 

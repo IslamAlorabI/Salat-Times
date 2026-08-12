@@ -1,205 +1,58 @@
-
 import SwiftUI
 import AppKit
-import Combine
 
-struct ContentView: View    {
+// The menu bar popover.
+//
+// Shape: a tinted hero carrying the countdown, then a flat list of times, then a toolbar.
+// Two things drive that, both from feedback on earlier versions:
+//
+//  - **No outlined cards.** Every prayer used to sit in its own bordered, translucent
+//    rounded rect, and so did the countdown. Eight boxes stacked vertically read as eight
+//    buttons rather than a list, and the strokes fought the window's own material. The
+//    list is now flat; the only marked row is the next prayer, and it is marked with a
+//    leading accent bar and weight rather than a border.
+//  - **The hero is what makes it read as an app** rather than a menu. It carries the
+//    hour's colour (`PrayerPalette.heroGradient`), so the panel looks different at Fajr
+//    than at Maghrib, and it gives the countdown somewhere to be large without competing
+//    with the list.
+//
+// One invariant: **everything time-dependent comes from a single `TimelineView`'s
+// `context.date`.** The countdown was once driven by the timeline while the row highlight
+// read a bare `Date()` from the body, so the highlight only moved when something else
+// invalidated the view — after a prayer passed, the two named different prayers.
+
+struct ContentView: View {
     @EnvironmentObject var manager: PrayerManager
     @Environment(\.openWindow) var openWindow
     @Environment(\.colorScheme) var colorScheme
-    
+
     @AppStorage("appLanguage") private var appLanguage = "ar"
-    @AppStorage("timeFormat24") private var is24HourFormat = true
     @AppStorage("numberFormat") private var numberFormat = "western"
-    
+
     var body: some View {
         VStack(spacing: 0) {
-            
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    if let hijri = manager.hijriDate {
-                        getHijriHeaderView(hijri)
-                            .id(numberFormat)
-                    }
-                    
-                    HStack(spacing: 4) {
-                        Image(systemName: "location.fill")
-                            .font(.system(size: 11))
-                            .foregroundColor(.secondary)
-                        Text(getCityName())
-                            .font(.system(size: 13))
-                            .foregroundColor(.secondary)
-                    }
-                    .multilineTextAlignment(.leading)
-                }
-                
-                Spacer()
-                
-                VStack(alignment: .trailing, spacing: 4) {
-                    getGregorianDateView()
-                        .id(numberFormat)
-                    
-                    // Green only when these times came fresh from the server. Cached or
-                    // stale data still displays, but the dot says so.
-                    let isFresh = manager.lastUpdatedFromServer != nil && !manager.isServingStaleData
-                    HStack(spacing: 4) {
-                        Circle()
-                            .fill(isFresh ? Color.green : Color.orange)
-                            .frame(width: 8, height: 8)
-                        Text(Translations.string(isFresh ? "server_synced" : "offline", language: appLanguage))
-                            .font(.system(size: 11))
-                            .foregroundColor(.secondary)
+            TimelineView(.periodic(from: .now, by: 1.0)) { context in
+                let upcoming = PrayerScheduleCalculator.next(after: context.date, in: manager.events)
+
+                VStack(spacing: 0) {
+                    hero(now: context.date, upcoming: upcoming)
+
+                    if let error = manager.errorMessage, manager.timetable.days.isEmpty {
+                        errorState(error)
+                    } else if manager.isLoading && manager.timetable.days.isEmpty {
+                        ProgressView()
+                            .controlSize(.small)
+                            .frame(maxWidth: .infinity, minHeight: 240)
+                    } else {
+                        prayerList(upcoming: upcoming)
                     }
                 }
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
-            .background(.thinMaterial)
-            
-            Divider()
-            
-            if !manager.isLoading && manager.errorMessage == nil {
-                TimelineView(.periodic(from: .now, by: 1.0)) { context in
-                    CountdownView(
-                        upcoming: PrayerScheduleCalculator.next(after: context.date, in: manager.events),
-                        now: context.date,
-                        numberFormat: numberFormat,
-                        appLanguage: appLanguage
-                    )
-                }
-                .padding(.vertical, 16)
-            }
-            
-            Divider()
-            
-            if manager.isLoading {
-                VStack {
-                    Spacer()
-                    ProgressView()
-                        .scaleEffect(0.8)
-                    Spacer()
-                }
-            } else if let error = manager.errorMessage {
-                VStack(spacing: 10) {
-                    Spacer()
-                    Image(systemName: "wifi.slash")
-                        .font(.largeTitle)
-                        .foregroundColor(.orange)
-                    Text(error)
-                        .font(.caption)
-                    Button(Translations.string("retry", language: appLanguage)) {
-                        manager.loadSavedCity()
-                    }
-                    Spacer()
-                }
-            } else {
-                let upcomingKey = PrayerScheduleCalculator.next(after: Date(), in: manager.events)?.key
-                let today = manager.todayEvents
-                VStack(spacing: 4) {
-                    ForEach(today.filter { !$0.key.isNightMarker }) { event in
-                        PrayerRow(name: event.name(language: appLanguage),
-                                  time: manager.formattedTime(event.date),
-                                  icon: event.key.systemImageName,
-                                  color: getPrayerColor(event.key),
-                                  isUpcoming: upcomingKey == event.key)
-                    }
 
-                    // Midnight and the last third mark the night rather than a prayer:
-                    // nothing counts down to them and nothing notifies for them, so they
-                    // sit below the divider in a quieter style instead of competing with
-                    // the six rows above. Both come straight from Aladhan — the app has
-                    // never computed them, which is why they cost nothing to show.
-                    let nightMarkers = PrayerKey.displayOrder
-                        .filter(\.isNightMarker)
-                        .compactMap { key in today.first { $0.key == key } }
-
-                    if !nightMarkers.isEmpty {
-                        Divider()
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 4)
-
-                        ForEach(nightMarkers) { event in
-                            PrayerRow(name: event.name(language: appLanguage),
-                                      time: manager.formattedTime(event.date),
-                                      icon: event.key.systemImageName,
-                                      color: getPrayerColor(event.key),
-                                      isUpcoming: false,
-                                      isSecondary: true)
-                        }
-                    }
-                }
-                .padding(.vertical, 12)
-                .id(numberFormat)
-            }
-            
-            Divider()
-            
-            HStack {
-                Text("v3.0")
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
-                Spacer()
-                
-                Button {
-                    openWindow(id: "settings")
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        NSApplication.shared.activate(ignoringOtherApps: true)
-                        if let window = NSApplication.shared.windows.first(where: { $0.title == Translations.string("settings", language: appLanguage) }) {
-                            window.makeKeyAndOrderFront(nil)
-                            window.orderFrontRegardless()
-                        }
-                    }
-                } label: {
-                    HStack(spacing: 4) {
-                        Image(systemName: "gearshape")
-                        Text(Translations.string("settings", language: appLanguage))
-                    }
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(.accentColor)
-                }
-                .buttonStyle(.link)
-
-                Spacer()
-
-                Button {
-                    openWindow(id: "schedule")
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        NSApplication.shared.activate(ignoringOtherApps: true)
-                        if let window = NSApplication.shared.windows.first(where: { $0.title == Translations.string("monthly_schedule", language: appLanguage) }) {
-                            window.makeKeyAndOrderFront(nil)
-                            window.orderFrontRegardless()
-                        }
-                    }
-                } label: {
-                    HStack(spacing: 4) {
-                        Image(systemName: "calendar")
-                        Text(Translations.string("monthly_schedule", language: appLanguage))
-                    }
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(.accentColor)
-                }
-                .buttonStyle(.link)
-
-                Spacer()
-
-                Button(action: {
-                    NSApplication.shared.terminate(nil)
-                }) {
-                    HStack(spacing: 4) {
-                        Image(systemName: "power")
-                        Text(Translations.string("quit", language: appLanguage))
-                    }
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(.accentColor)
-                }
-                .buttonStyle(.link)
-            }
-            .padding(10)
-            .background(.thinMaterial)
+            toolbar
         }
-        .frame(width: 300)
-        .fixedSize(horizontal: true, vertical: true)
-        .background(.ultraThinMaterial)
+        .frame(width: 320)
+        .background(Color(nsColor: .windowBackgroundColor))
         .environment(\.layoutDirection, Translations.isRTL(appLanguage) ? .rightToLeft : .leftToRight)
         .environment(\.locale, Locale(identifier: Translations.locale(appLanguage)))
         .onAppear {
@@ -212,151 +65,269 @@ struct ContentView: View    {
             }
         }
     }
-    
-    func getCityName() -> String {
-        if let cityEnum = City.allCases.first(where: { $0.rawValue == manager.city }) {
-            return cityEnum.getName(language: appLanguage)
+
+    // MARK: - Hero
+
+    private func hero(now: Date, upcoming: PrayerEvent?) -> some View {
+        VStack(spacing: 0) {
+            // Location and sync, small and quiet, over the gradient.
+            HStack(spacing: 6) {
+                Image(systemName: "location.fill")
+                    .font(.system(size: 9))
+                Text(cityName)
+                    .font(.system(size: 11, weight: .medium))
+
+                Spacer(minLength: 8)
+
+                let isFresh = manager.lastUpdatedFromServer != nil && !manager.isServingStaleData
+                Circle()
+                    .fill(isFresh ? Color.green : Color.orange)
+                    .frame(width: 6, height: 6)
+                Text(Translations.string(isFresh ? "server_synced" : "offline", language: appLanguage))
+                    .font(.system(size: 10))
+            }
+            .foregroundStyle(.white.opacity(0.75))
+            .padding(.horizontal, 16)
+            .padding(.top, 12)
+
+            if let upcoming {
+                Text(countdownCaption(for: upcoming))
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundStyle(.white.opacity(0.8))
+                    .padding(.top, 14)
+
+                CountdownDigits(remaining: Countdown.from(now, to: upcoming),
+                                numberFormat: numberFormat,
+                                appLanguage: appLanguage)
+                    .padding(.top, 4)
+
+                if let progress = PrayerScheduleCalculator.progress(at: now, in: manager.events) {
+                    ProgressTrack(progress: progress)
+                        .padding(.horizontal, 16)
+                        .padding(.top, 12)
+                }
+            } else {
+                Text("Salat Times")
+                    .font(.system(size: 20, weight: .semibold, design: .rounded))
+                    .foregroundStyle(.white)
+                    .padding(.vertical, 22)
+            }
+
+            // Both calendars on one line, so the hero closes on a single quiet row.
+            HStack(spacing: 6) {
+                if let hijri = manager.hijriDate {
+                    Text(hijriLine(hijri))
+                    Text("·").opacity(0.5)
+                }
+                Text(gregorianDate)
+            }
+            .font(.system(size: 11, weight: .medium))
+            .foregroundStyle(.white.opacity(0.75))
+            .lineLimit(1)
+            .minimumScaleFactor(0.8)
+            .padding(.horizontal, 14)
+            .padding(.top, 12)
+            .padding(.bottom, 13)
         }
-        return manager.city
+        .frame(maxWidth: .infinity)
+        .background(PrayerPalette.heroGradient(for: upcoming?.key))
+        .id(numberFormat)
     }
-    
-    @ViewBuilder
-    func getHijriHeaderView(_ hijri: HijriDate) -> some View {
-        let monthName = Translations.hijriMonthName(hijri.month.number, language: appLanguage)
-        let localizedDay = Translations.localizedNumber(hijri.day, numberFormat: numberFormat)
-        let localizedYear = Translations.localizedNumber(hijri.year, numberFormat: numberFormat)
-        
-        HStack(spacing: 4) {
-            Text(localizedDay)
-                .foregroundColor(.primary)
-            Text(monthName)
-                .foregroundColor(.primary)
-            Text(localizedYear)
-                .foregroundColor(.accentColor)
+
+    // MARK: - List
+
+    private func prayerList(upcoming: PrayerEvent?) -> some View {
+        let today = manager.todayEvents
+        let prayers = today.filter { !$0.key.isNightMarker }
+        // Ordered by `displayOrder`, not by instant: the API files a night's Midnight and
+        // Last Third under the day they are listed with, so sorting by time would float
+        // them above Fajr.
+        let night = PrayerKey.displayOrder
+            .filter(\.isNightMarker)
+            .compactMap { key in today.first { $0.key == key } }
+
+        return VStack(spacing: 0) {
+            ForEach(prayers) { event in
+                row(event, isUpcoming: upcoming?.id == event.id)
+            }
+
+            if !night.isEmpty {
+                Divider()
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 6)
+
+                ForEach(night) { event in
+                    row(event, isUpcoming: false, isSecondary: true)
+                }
+            }
         }
-        .font(.system(size: 18, weight: .bold, design: .rounded))
+        .padding(.vertical, 8)
+        .id(numberFormat)
     }
-    
-    func getGregorianDateView() -> some View {
+
+    private func row(_ event: PrayerEvent, isUpcoming: Bool, isSecondary: Bool = false) -> some View {
+        PrayerRow(name: event.name(language: appLanguage),
+                  time: manager.formattedTime(event.date),
+                  icon: event.key.systemImageName,
+                  color: PrayerPalette.color(for: event.key, scheme: colorScheme),
+                  isUpcoming: isUpcoming,
+                  isSecondary: isSecondary)
+    }
+
+    private func errorState(_ message: String) -> some View {
+        VStack(spacing: 10) {
+            Image(systemName: "wifi.slash")
+                .font(.largeTitle)
+                .foregroundStyle(.orange)
+            Text(message)
+                .font(.system(size: 12))
+                .multilineTextAlignment(.center)
+            Button(Translations.string("retry", language: appLanguage)) {
+                manager.loadSavedCity()
+            }
+        }
+        .padding(.horizontal, 20)
+        .frame(maxWidth: .infinity, minHeight: 240)
+    }
+
+    // MARK: - Toolbar
+
+    private var toolbar: some View {
+        VStack(spacing: 0) {
+            Divider()
+            HStack(spacing: 0) {
+                ToolbarButton(icon: "gearshape",
+                              title: Translations.string("settings", language: appLanguage),
+                              tint: .accentColor) { open("settings") }
+
+                ToolbarButton(icon: "calendar",
+                              title: Translations.string("monthly_schedule", language: appLanguage),
+                              tint: .accentColor) { open("schedule") }
+
+                ToolbarButton(icon: "power",
+                              title: Translations.string("quit", language: appLanguage),
+                              tint: .secondary) { NSApplication.shared.terminate(nil) }
+            }
+            .padding(.vertical, 7)
+            .padding(.horizontal, 6)
+        }
+    }
+
+    private func open(_ id: String) {
+        openWindow(id: id)
+        // `openWindow` on its own leaves the window behind the frontmost app, because the
+        // opener is an `LSUIElement` menu bar extra with no activation of its own.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            NSApplication.shared.activate(ignoringOtherApps: true)
+            let title = Translations.string(id == "settings" ? "settings" : "monthly_schedule",
+                                            language: appLanguage)
+            if let window = NSApplication.shared.windows.first(where: { $0.title == title }) {
+                window.makeKeyAndOrderFront(nil)
+                window.orderFrontRegardless()
+            }
+        }
+    }
+
+    // MARK: - Formatting
+
+    private var cityName: String {
+        City.allCases.first { $0.rawValue == manager.city }?.getName(language: appLanguage)
+            ?? manager.city
+    }
+
+    private func hijriLine(_ hijri: HijriDate) -> String {
+        let month = Translations.hijriMonthName(hijri.month.number, language: appLanguage)
+        let day = Translations.localizedNumber(hijri.day, numberFormat: numberFormat)
+        let year = Translations.localizedNumber(hijri.year, numberFormat: numberFormat)
+        return "\(day) \(month) \(year)"
+    }
+
+    private var gregorianDate: String {
         let formatter = DateFormatter()
+        formatter.timeZone = manager.timetable.timeZone
         formatter.locale = Locale(identifier: Translations.locale(appLanguage))
-        formatter.dateFormat = "d MMMM yyyy"
-        let dateString = formatter.string(from: Date())
-        let localizedDate = Translations.localizedNumber(dateString, numberFormat: numberFormat)
-        
-        return Text(localizedDate)
-            .font(.system(size: 14, weight: .medium))
-            .foregroundColor(.secondary)
+        formatter.dateFormat = "d MMM yyyy"
+        return Translations.localizedNumber(formatter.string(from: Date()), numberFormat: numberFormat)
     }
-    
-    func getPrayerColor(_ key: PrayerKey) -> Color {
-        let isDark = colorScheme == .dark
 
-        switch key {
-        case .fajr:
-            // Purple
-            return isDark ? Color(red: 0.6, green: 0.5, blue: 1.0) : Color(red: 0.4, green: 0.3, blue: 0.7)
-
-        case .sunrise:
-            // Orange-Yellow
-            return isDark ? Color(red: 1.0, green: 0.7, blue: 0.4) : Color(red: 0.8, green: 0.4, blue: 0.0)
-
-        case .dhuhr:
-            // Yellow
-            return isDark ? Color(red: 1.0, green: 0.9, blue: 0.4) : Color(red: 0.8, green: 0.6, blue: 0.0)
-
-        case .asr:
-            // Orange
-            return isDark ? Color(red: 1.0, green: 0.6, blue: 0.2) : Color(red: 0.9, green: 0.4, blue: 0.0)
-
-        case .maghrib:
-            // Red-Orange
-            return isDark ? Color(red: 1.0, green: 0.4, blue: 0.3) : Color(red: 0.8, green: 0.2, blue: 0.1)
-
-        case .isha:
-            // Blue
-            return isDark ? Color(red: 0.4, green: 0.6, blue: 1.0) : Color(red: 0.1, green: 0.3, blue: 0.7)
-
-        case .midnight, .lastThird:
-            // Muted indigo — these mark the night rather than a prayer.
-            return isDark ? Color(red: 0.55, green: 0.55, blue: 0.85) : Color(red: 0.35, green: 0.35, blue: 0.6)
-        }
+    /// Reuses the existing `prayer_after_format` string, minus its trailing colon — it
+    /// reads as a label in the old boxed layout but as a stray mark centred in the hero.
+    private func countdownCaption(for event: PrayerEvent) -> String {
+        Translations.string("prayer_after_format", language: appLanguage)
+            .replacingOccurrences(of: "%@", with: event.name(language: appLanguage))
+            .trimmingCharacters(in: CharacterSet(charactersIn: ": "))
     }
 }
 
-struct CountdownView: View {
-    let upcoming: PrayerEvent?
-    let now: Date
+// MARK: - Countdown digits
+
+/// `14 : 56` with unit captions, on the hero.
+///
+/// The hour field appears only when there is an hour left: `00 hr` spent a third of the
+/// countdown saying nothing, and being leftmost and the same weight as the rest, it was
+/// what the eye landed on first.
+struct CountdownDigits: View {
+    let remaining: Countdown
     let numberFormat: String
     let appLanguage: String
 
     var body: some View {
-        if let upcoming {
-            let time = Countdown.from(now, to: upcoming)
-            VStack(spacing: 8) {
-                Text(Translations.string("prayer_after_format", language: appLanguage)
-                    .replacingOccurrences(of: "%@", with: upcoming.name(language: appLanguage)))
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundColor(.secondary)
-                
-                HStack(spacing: 12) {
-                    VStack(spacing: 2) {
-                        Text(formatTimeUnit(time.hours))
-                            .font(.system(size: 24, weight: .bold, design: .rounded))
-                            .monospacedDigit()
-                        Text(Translations.string("hours_short", language: appLanguage))
-                            .font(.system(size: 10, weight: .medium))
-                            .foregroundColor(.secondary)
-                    }
-                    
-                    Text(":")
-                        .font(.system(size: 20, weight: .bold, design: .rounded))
-                        .opacity(0.5)
-                    
-                    VStack(spacing: 2) {
-                        Text(formatTimeUnit(time.minutes))
-                            .font(.system(size: 24, weight: .bold, design: .rounded))
-                            .monospacedDigit()
-                        Text(Translations.string("minutes_short", language: appLanguage))
-                            .font(.system(size: 10, weight: .medium))
-                            .foregroundColor(.secondary)
-                    }
-                    
-                    Text(":")
-                        .font(.system(size: 20, weight: .bold, design: .rounded))
-                        .opacity(0.5)
-                    
-                    VStack(spacing: 2) {
-                        Text(formatTimeUnit(time.seconds))
-                            .font(.system(size: 24, weight: .bold, design: .rounded))
-                            .monospacedDigit()
-                        Text(Translations.string("seconds_short", language: appLanguage))
-                            .font(.system(size: 10, weight: .medium))
-                            .foregroundColor(.secondary)
-                    }
-                }
-                .foregroundColor(.accentColor)
+        HStack(alignment: .top, spacing: 8) {
+            if remaining.hours > 0 {
+                unit(remaining.hours, Translations.string("hours_short", language: appLanguage))
+                separator
             }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 10)
-            .padding(.horizontal, 16)
-            .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(.ultraThinMaterial)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12)
-                            .stroke(Color.gray.opacity(0.3), lineWidth: 1)
-                    )
-            )
-            .padding(.horizontal, 12)
+            unit(remaining.minutes, Translations.string("minutes_short", language: appLanguage))
+            separator
+            unit(remaining.seconds, Translations.string("seconds_short", language: appLanguage))
         }
     }
-    
-    private func formatTimeUnit(_ value: Int) -> String {
-        let formatted = String(format: "%02d", value)
-        return Translations.localizedNumber(formatted, numberFormat: numberFormat)
+
+    private func unit(_ value: Int, _ label: String) -> some View {
+        VStack(spacing: 1) {
+            Text(Translations.localizedNumber(String(format: "%02d", value), numberFormat: numberFormat))
+                .font(.system(size: 34, weight: .bold, design: .rounded))
+                .monospacedDigit()
+                .foregroundStyle(.white)
+            Text(label)
+                .font(.system(size: 9, weight: .medium))
+                .foregroundStyle(.white.opacity(0.6))
+        }
+    }
+
+    /// Carries an invisible caption so the colon lines up with the digits. As a bare
+    /// `Text` in the `HStack` it centred against each unit's whole stack — digits *plus*
+    /// caption — which parked it below the digits' centre line.
+    private var separator: some View {
+        VStack(spacing: 1) {
+            Text(":")
+                .font(.system(size: 26, weight: .bold, design: .rounded))
+                .foregroundStyle(.white.opacity(0.35))
+            Text(Translations.string("minutes_short", language: appLanguage))
+                .font(.system(size: 9, weight: .medium))
+                .opacity(0)
+        }
     }
 }
+
+/// How far the interval between the last prayer and the next has run.
+struct ProgressTrack: View {
+    let progress: Double
+
+    var body: some View {
+        GeometryReader { geometry in
+            ZStack(alignment: .leading) {
+                Capsule().fill(.white.opacity(0.18))
+                Capsule()
+                    .fill(.white.opacity(0.85))
+                    .frame(width: max(3, geometry.size.width * progress))
+            }
+        }
+        .frame(height: 3)
+    }
+}
+
+// MARK: - Prayer row
 
 struct PrayerRow: View {
     let name: String
@@ -367,79 +338,67 @@ struct PrayerRow: View {
     /// Night markers: shown for reference, never the next prayer, so they read a step
     /// quieter than the six rows above them.
     var isSecondary: Bool = false
-    @Environment(\.layoutDirection) var layoutDirection
-
-    private var highlightColor: Color {
-        Color.accentColor
-    }
-
-    private var nameSize: CGFloat { isSecondary ? 14 : 16 }
-    private var timeSize: CGFloat { isSecondary ? 14 : 16 }
 
     var body: some View {
-        HStack {
+        HStack(spacing: 10) {
+            // The marker for "next" — a bar, not a border. Always present so the rows
+            // stay aligned; transparent for everything but the next prayer.
+            RoundedRectangle(cornerRadius: 1.5)
+                .fill(isUpcoming ? Color.accentColor : .clear)
+                .frame(width: 3, height: 18)
+
             Image(systemName: icon)
-                .frame(width: 24)
-                .foregroundColor(isUpcoming ? highlightColor : color.opacity(isSecondary ? 0.55 : 0.7))
+                .font(.system(size: 13))
+                .foregroundStyle(isUpcoming ? Color.accentColor : color)
+                .frame(width: 20)
 
             Text(name)
-                .font(.system(size: nameSize, weight: isUpcoming ? .semibold : .medium))
-                .foregroundColor(isUpcoming ? highlightColor : (isSecondary ? .secondary : .primary))
+                .font(.system(size: isSecondary ? 12 : 14,
+                              weight: isUpcoming ? .semibold : .regular))
+                .foregroundStyle(isSecondary ? Color.secondary : Color.primary)
 
-            Spacer()
+            Spacer(minLength: 8)
 
-            if isUpcoming {
-                HStack(spacing: 4) {
-                    Image(systemName: layoutDirection == .rightToLeft ? "arrow.left.circle.fill" : "arrow.right.circle.fill")
-                        .font(.system(size: 12))
-                        .foregroundColor(highlightColor)
-                    Text(time)
-                        .font(.system(size: 16, weight: .bold))
-                        .foregroundColor(highlightColor)
-                }
-            } else {
-                Text(time)
-                    .font(.system(size: timeSize, weight: isSecondary ? .semibold : .bold))
-                    .foregroundColor(.secondary)
-            }
+            Text(time)
+                .font(.system(size: isSecondary ? 12 : 14,
+                              weight: isUpcoming ? .semibold : .regular))
+                .monospacedDigit()
+                .foregroundStyle(isUpcoming ? Color.accentColor : Color.secondary)
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, isUpcoming ? 8 : (isSecondary ? 4 : 6))
-        .background(
-            Group {
-                if isUpcoming {
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 8)
-                            .fill(.ultraThinMaterial.opacity(0.6))
-                        RoundedRectangle(cornerRadius: 8)
-                            .fill(
-                                LinearGradient(
-                                    gradient: Gradient(colors: [
-                                        highlightColor.opacity(0.15),
-                                        highlightColor.opacity(0.10)
-                                    ]),
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                )
-                            )
-                    }
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 8)
-                            .stroke(highlightColor.opacity(0.4), lineWidth: 1.5)
-                    )
-                } else {
-                    RoundedRectangle(cornerRadius: 6)
-                        .fill(.ultraThinMaterial.opacity(0.4))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 6)
-                                .stroke(Color.primary.opacity(0.15), lineWidth: 1)
-                        )
-                }
+        .padding(.trailing, 16)
+        .padding(.leading, 8)
+        .padding(.vertical, isSecondary ? 4 : 6)
+    }
+}
+
+// MARK: - Toolbar button
+
+/// Flat, full-width, and highlights on hover — the footer links had no hit feedback at all.
+struct ToolbarButton: View {
+    let icon: String
+    let title: String
+    let tint: Color
+    let action: () -> Void
+
+    @State private var isHovering = false
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 5) {
+                Image(systemName: icon).font(.system(size: 11))
+                Text(title).font(.system(size: 11, weight: .medium))
             }
-        )
-        .cornerRadius(isUpcoming ? 8 : 6)
-        .padding(.horizontal, 8)
-        .shadow(color: isUpcoming ? highlightColor.opacity(0.2) : .clear, radius: 4, x: 0, y: 2)
-        .animation(.easeInOut(duration: 0.2), value: isUpcoming)
+            .foregroundStyle(tint)
+            .lineLimit(1)
+            .minimumScaleFactor(0.85)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 5)
+            .background(
+                RoundedRectangle(cornerRadius: 6, style: .continuous)
+                    .fill(isHovering ? Color.primary.opacity(0.08) : .clear)
+            )
+        }
+        .buttonStyle(.plain)
+        .onHover { isHovering = $0 }
     }
 }

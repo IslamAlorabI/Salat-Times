@@ -322,7 +322,8 @@ class PrayerManager: NSObject, ObservableObject, CLLocationManagerDelegate, UNUs
             && countdown.totalSeconds > 0
             && countdown.totalSeconds <= settings.warningMinutes * 60
 
-        setMenuBarTitle("\(upcomingPrayerName) -\(countdownText)")
+        // A middle dot, not a hyphen: "Isha -26m" read as a minus sign.
+        setMenuBarTitle("\(upcomingPrayerName) · \(countdownText)")
     }
 
     /// Assigning unconditionally every second invalidated the menu bar ~86,400 times a

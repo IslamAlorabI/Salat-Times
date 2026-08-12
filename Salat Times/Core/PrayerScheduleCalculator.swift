@@ -104,6 +104,22 @@ nonisolated enum PrayerScheduleCalculator {
     static func day(containing now: Date, timetable: PrayerTimetable) -> DayTimings? {
         timetable.days[DateStamp.format(now, in: timetable.calendar)]
     }
+
+    /// How far the interval between the last prayer and the next has run, `0...1`.
+    ///
+    /// Returns `nil` rather than a number when there is nothing sensible to draw: no
+    /// surrounding pair, or a zero-length interval. That last case is not theoretical —
+    /// at high latitudes in summer Isha and Fajr can land in the same minute (Oslo in
+    /// June returns `Fajr 01:17`, `Isha 01:18`), and dividing by that span would produce
+    /// an infinity for the bar to render.
+    static func progress(at now: Date, in events: [PrayerEvent]) -> Double? {
+        guard let previous = current(at: now, in: events),
+              let next = next(after: now, in: events) else { return nil }
+        let span = next.date.timeIntervalSince(previous.date)
+        guard span > 0 else { return nil }
+        let elapsed = now.timeIntervalSince(previous.date)
+        return min(max(elapsed / span, 0), 1)
+    }
 }
 
 /// Time remaining, with one rounding rule for the whole app.
@@ -120,6 +136,19 @@ nonisolated struct Countdown: Sendable, Equatable {
 
     static func from(_ now: Date, to event: PrayerEvent) -> Countdown {
         Countdown(totalSeconds: Int(event.date.timeIntervalSince(now).rounded(.down)))
+    }
+
+    /// The popover's reading: `2:47:31`, or `47:31` with under an hour to go.
+    ///
+    /// No leading zero on the first unit, and no per-unit labels — a countdown is read as
+    /// a duration. The popover used to render this as three zero-padded boxes with
+    /// separate colon views and `h`/`m`/`s` captions underneath, which looked like a
+    /// stopwatch rather than "time until Fajr".
+    func clockString(numberFormat: String) -> String {
+        let text = hours > 0
+            ? String(format: "%d:%02d:%02d", hours, minutes, seconds)
+            : String(format: "%d:%02d", minutes, seconds)
+        return Translations.localizedNumber(text, numberFormat: numberFormat)
     }
 
     /// The compact form shown in the menu bar, e.g. `3h 12m` / `٣س ١٢د`.

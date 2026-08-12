@@ -171,6 +171,51 @@ check("Arabic numerals apply to the compact form",
       Countdown(totalSeconds: 3 * 3600 + 12 * 60).compactString(language: "ar", numberFormat: "arabic") == "٣س ١٢د",
       Countdown(totalSeconds: 3 * 3600 + 12 * 60).compactString(language: "ar", numberFormat: "arabic"))
 
+// The popover's one-line reading. Padding only ever applies to the *trailing* units.
+check("over an hour reads h:mm:ss with no leading zero",
+      Countdown(totalSeconds: 2 * 3600 + 7 * 60 + 5).clockString(numberFormat: "western") == "2:07:05",
+      Countdown(totalSeconds: 2 * 3600 + 7 * 60 + 5).clockString(numberFormat: "western"))
+check("under an hour drops the hour field",
+      Countdown(totalSeconds: 47 * 60 + 31).clockString(numberFormat: "western") == "47:31",
+      Countdown(totalSeconds: 47 * 60 + 31).clockString(numberFormat: "western"))
+check("the last seconds still read as a clock",
+      Countdown(totalSeconds: 9).clockString(numberFormat: "western") == "0:09",
+      Countdown(totalSeconds: 9).clockString(numberFormat: "western"))
+check("clockString localizes its numerals",
+      Countdown(totalSeconds: 3600).clockString(numberFormat: "arabic") == "١:٠٠:٠٠",
+      Countdown(totalSeconds: 3600).clockString(numberFormat: "arabic"))
+
+// ---------------------------------------------------------------------------
+print("\n7b. Countdown progress")
+let progressDay = timetable(zone: "Africa/Cairo", days: [
+    "2026-08-12": [.fajr: hm(4, 0), .sunrise: hm(6, 0), .dhuhr: hm(12, 0),
+                   .asr: hm(16, 0), .maghrib: hm(19, 0), .isha: hm(21, 0)],
+])
+let progressEvents = PrayerScheduleCalculator.events(
+    around: at("2026-08-12 10:00:00", "Africa/Cairo"), timetable: progressDay, settings: settings)
+check("halfway between two prayers reads 0.5",
+      PrayerScheduleCalculator.progress(at: at("2026-08-12 09:00:00", "Africa/Cairo"),
+                                        in: progressEvents).map { abs($0 - 0.5) < 0.001 } == true,
+      "\(String(describing: PrayerScheduleCalculator.progress(at: at("2026-08-12 09:00:00", "Africa/Cairo"), in: progressEvents)))")
+check("progress never leaves 0...1",
+      [at("2026-08-12 06:00:01", "Africa/Cairo"), at("2026-08-12 11:59:59", "Africa/Cairo")]
+          .allSatisfy { (PrayerScheduleCalculator.progress(at: $0, in: progressEvents) ?? -1) >= 0
+                     && (PrayerScheduleCalculator.progress(at: $0, in: progressEvents) ?? 2) <= 1 })
+
+// Oslo in June really does return Fajr 01:17 / Isha 01:18. A zero-length interval must
+// not become a division by zero for the progress bar to render.
+let degenerate = timetable(zone: "Europe/Oslo", days: [
+    "2026-06-15": [.isha: hm(1, 17), .fajr: hm(1, 17), .sunrise: hm(3, 53), .dhuhr: hm(13, 21)],
+])
+let degenerateEvents = PrayerScheduleCalculator.events(
+    around: at("2026-06-15 02:00:00", "Europe/Oslo"), timetable: degenerate, settings: settings)
+check("a zero-length night yields no progress rather than infinity",
+      PrayerScheduleCalculator.progress(at: at("2026-06-15 01:17:00", "Europe/Oslo"),
+                                        in: degenerateEvents).map(\.isFinite) != false)
+check("progress is nil when nothing precedes now",
+      PrayerScheduleCalculator.progress(at: at("2026-08-12 00:30:00", "Africa/Cairo"),
+                                        in: progressEvents) == nil)
+
 // ---------------------------------------------------------------------------
 print("\n8. Malformed API times are skipped, not crashed on")
 let parsed = DayTimings.parseMinutes(from: [
