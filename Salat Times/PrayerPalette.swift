@@ -1,5 +1,43 @@
 import SwiftUI
 
+/// How much of the desktop shows through the popover's list.
+///
+/// The original design gave the window *and* every prayer row its own
+/// `.ultraThinMaterial`, which is the most transparent material there is — stacked, it
+/// left the list washed out and hard to read against a busy desktop. These levels run the
+/// other way: `subtle` is nearly opaque and is the default, and you opt *into* seeing
+/// more through it.
+enum PopoverMaterial: Int, CaseIterable, Identifiable {
+    case off = 0
+    case subtle = 1
+    case medium = 2
+    case full = 3
+
+    var id: Int { rawValue }
+
+    var titleKey: String {
+        switch self {
+        case .off:    return "translucency_off"
+        case .subtle: return "translucency_subtle"
+        case .medium: return "translucency_medium"
+        case .full:   return "translucency_full"
+        }
+    }
+
+    var material: Material? {
+        switch self {
+        case .off:    return nil            // a solid window background instead
+        case .subtle: return .ultraThickMaterial
+        case .medium: return .thickMaterial
+        case .full:   return .regularMaterial
+        }
+    }
+
+    static func stored(_ raw: Int) -> PopoverMaterial {
+        PopoverMaterial(rawValue: raw) ?? .subtle
+    }
+}
+
 /// Per-prayer colour, roughly following the sky at that hour.
 ///
 /// Lives in the app target rather than on `PrayerKey`, because `Core/` must not import

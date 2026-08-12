@@ -39,19 +39,16 @@ struct SalatTimesApp: App {
         Window(Translations.string("settings", language: UserDefaults.standard.string(forKey: "appLanguage") ?? "ar"), id: "settings") {
             SettingsView()
                 .environmentObject(manager)
-                .onAppear {
-                    NSApplication.shared.activate(ignoringOtherApps: true)
-                    let appLanguage = UserDefaults.standard.string(forKey: "appLanguage") ?? "ar"
-                    let settingsTitle = Translations.string("settings", language: appLanguage)
-                    if let window = NSApplication.shared.windows.first(where: { $0.title == settingsTitle }) {
-                        window.isOpaque = false
-                        window.backgroundColor = .clear
-                        window.hasShadow = true
-                    }
-                }
+                // Opacity is *not* forced here any more. `SettingsView` drives it from the
+                // translucency setting through `WindowOpacityConfigurator`; hardcoding a
+                // clear background here meant every pixel the view did not paint — the
+                // seam between sidebar and pane — rendered as a black band.
+                .onAppear { NSApplication.shared.activate(ignoringOtherApps: true) }
         }
-        .windowResizability(.contentSize)
-        .defaultSize(width: 400, height: 600)
+        // `.contentMinSize`, not `.contentSize`: the sidebar layout wants to be widened,
+        // and `.contentSize` pins the window to exactly the content's ideal size.
+        .windowResizability(.contentMinSize)
+        .defaultSize(width: 760, height: 640)
         .windowStyle(.hiddenTitleBar)
         
         // Resizable, unlike the other two: a month of times is content the user may well

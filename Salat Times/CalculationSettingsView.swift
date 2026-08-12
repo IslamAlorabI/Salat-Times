@@ -23,6 +23,8 @@ struct CalculationOptionsSection: View {
     @AppStorage("latitudeAdjustment") private var latitudeAdjustment = 0
     @AppStorage("midnightMode") private var midnightMode = 0
 
+    private var isRTL: Bool { Translations.isRTL(appLanguage) }
+
     /// Aladhan's `latitudeAdjustmentMethod`. `0` is a real value (NONE) — verified
     /// against the API, which echoes it back in `meta` — not an "unset" sentinel.
     private let latitudeRules: [(value: Int, key: String)] = [
@@ -33,72 +35,47 @@ struct CalculationOptionsSection: View {
     ]
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            VStack(alignment: alignment, spacing: 6) {
-                HStack(spacing: 0) {
-                    TimeFormatRadioButton(title: Translations.string("madhab_shafii", language: appLanguage),
-                                          isSelected: school == 0) { school = 0 }
-
-                    Rectangle()
-                        .fill(Color.gray.opacity(0.3))
-                        .frame(height: 1)
-                        .frame(maxWidth: .infinity)
-                        .padding(.horizontal, 12)
-
-                    TimeFormatRadioButton(title: Translations.string("madhab_hanafi", language: appLanguage),
-                                          isSelected: school == 1) { school = 1 }
+        SettingsCard(title: Translations.string("calculation_options", language: appLanguage),
+                     footnote: Translations.string("calculation_options_hint", language: appLanguage),
+                     isRTL: isRTL) {
+            SettingsRow(title: Translations.string("asr_madhab", language: appLanguage),
+                        subtitle: Translations.string("asr_madhab_hint", language: appLanguage),
+                        isRTL: isRTL) {
+                Picker("", selection: $school) {
+                    Text(Translations.string("madhab_shafii", language: appLanguage)).tag(0)
+                    Text(Translations.string("madhab_hanafi", language: appLanguage)).tag(1)
                 }
-                hint("asr_madhab_hint")
+                .pickerStyle(.menu)
+                .frame(width: 150)
             }
 
-            Divider()
+            SettingsDivider()
 
-            VStack(alignment: alignment, spacing: 6) {
-                HStack {
-                    Text(Translations.string("high_latitude", language: appLanguage))
-                        .font(.system(size: 13))
-                    Spacer()
-                    Picker("", selection: $latitudeAdjustment) {
-                        ForEach(latitudeRules, id: \.value) { rule in
-                            Text(Translations.string(rule.key, language: appLanguage)).tag(rule.value)
-                        }
+            SettingsRow(title: Translations.string("high_latitude", language: appLanguage),
+                        subtitle: Translations.string("high_latitude_hint", language: appLanguage),
+                        isRTL: isRTL) {
+                Picker("", selection: $latitudeAdjustment) {
+                    ForEach(latitudeRules, id: \.value) { rule in
+                        Text(Translations.string(rule.key, language: appLanguage)).tag(rule.value)
                     }
-                    .pickerStyle(.menu)
-                    .frame(width: 170)
                 }
-                hint("high_latitude_hint")
+                .pickerStyle(.menu)
+                .frame(width: 150)
             }
 
-            Divider()
+            SettingsDivider()
 
-            VStack(alignment: alignment, spacing: 6) {
-                HStack {
-                    Text(Translations.string("midnight_mode", language: appLanguage))
-                        .font(.system(size: 13))
-                    Spacer()
-                    Picker("", selection: $midnightMode) {
-                        Text(Translations.string("midnight_standard", language: appLanguage)).tag(0)
-                        Text(Translations.string("midnight_jafari", language: appLanguage)).tag(1)
-                    }
-                    .pickerStyle(.menu)
-                    .frame(width: 170)
+            SettingsRow(title: Translations.string("midnight_mode", language: appLanguage),
+                        subtitle: Translations.string("midnight_mode_hint", language: appLanguage),
+                        isRTL: isRTL) {
+                Picker("", selection: $midnightMode) {
+                    Text(Translations.string("midnight_standard", language: appLanguage)).tag(0)
+                    Text(Translations.string("midnight_jafari", language: appLanguage)).tag(1)
                 }
-                hint("midnight_mode_hint")
+                .pickerStyle(.menu)
+                .frame(width: 150)
             }
         }
-        .padding(.vertical, 4)
-    }
-
-    private var alignment: HorizontalAlignment {
-        Translations.isRTL(appLanguage) ? .trailing : .leading
-    }
-
-    private func hint(_ key: String) -> some View {
-        Text(Translations.string(key, language: appLanguage))
-            .font(.system(size: 11))
-            .foregroundColor(.secondary)
-            .fixedSize(horizontal: false, vertical: true)
-            .frame(maxWidth: .infinity, alignment: Translations.isRTL(appLanguage) ? .trailing : .leading)
     }
 }
 
@@ -129,8 +106,11 @@ struct PrayerTuningSection: View {
     }
 
     var body: some View {
-        VStack(spacing: 10) {
-            ForEach(rows, id: \.key) { row in
+        SettingsCard(title: Translations.string("prayer_tuning", language: appLanguage),
+                     footnote: Translations.string("prayer_tuning_hint", language: appLanguage),
+                     isRTL: Translations.isRTL(appLanguage)) {
+            ForEach(Array(rows.enumerated()), id: \.element.key) { index, row in
+                if index > 0 { SettingsDivider() }
                 TuneRow(name: Translations.string(row.key.translationKey(isFriday: false), language: appLanguage),
                         icon: row.key.systemImageName,
                         value: row.binding,
@@ -138,7 +118,7 @@ struct PrayerTuningSection: View {
                         numberFormat: numberFormat)
             }
 
-            Divider()
+            SettingsDivider()
 
             HStack(spacing: 12) {
                 Text(Translations.string("apply_to_all", language: appLanguage))
@@ -163,14 +143,9 @@ struct PrayerTuningSection: View {
                 .font(.system(size: 12))
                 .disabled(isPristine && allValue == 0)
             }
-
-            Text(Translations.string("prayer_tuning_hint", language: appLanguage))
-                .font(.system(size: 11))
-                .foregroundColor(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
-                .frame(maxWidth: .infinity, alignment: Translations.isRTL(appLanguage) ? .trailing : .leading)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 9)
         }
-        .padding(.vertical, 4)
         .onAppear {
             let values = Set(rows.map { $0.binding.wrappedValue })
             allValue = values.count == 1 ? (values.first ?? 0) : 0
@@ -188,15 +163,14 @@ private struct TuneRow: View {
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: icon)
-                .font(.system(size: 14))
+                .font(.system(size: 13))
                 .foregroundColor(value == 0 ? .secondary : .accentColor)
-                .frame(width: 22)
+                .frame(width: 20)
 
             Text(name)
                 .font(.system(size: 13))
-                .frame(width: 80, alignment: Translations.isRTL(appLanguage) ? .trailing : .leading)
 
-            Spacer()
+            Spacer(minLength: 8)
 
             Stepper(value: $value, in: PrayerAdjustments.tuneRange) {
                 Text(SettingsFormat.signedMinutes(value, language: appLanguage, numberFormat: numberFormat))
@@ -205,6 +179,8 @@ private struct TuneRow: View {
                     .frame(width: 74, alignment: .leading)
             }
         }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 7)
     }
 }
 
@@ -217,28 +193,23 @@ struct FixedOffsetsSection: View {
     @AppStorage("ishaAfterMaghribMinutes") private var ishaAfterMaghrib = 0
 
     var body: some View {
-        VStack(spacing: 10) {
+        SettingsCard(title: Translations.string("fixed_times", language: appLanguage),
+                     footnote: Translations.string("fixed_times_hint", language: appLanguage),
+                     isRTL: Translations.isRTL(appLanguage)) {
             OffsetRow(label: Translations.string("fajr_before_sunrise", language: appLanguage),
                       icon: "sunrise",
                       minutes: $fajrBeforeSunrise,
                       appLanguage: appLanguage,
                       numberFormat: numberFormat)
 
-            Divider()
+            SettingsDivider()
 
             OffsetRow(label: Translations.string("isha_after_maghrib", language: appLanguage),
                       icon: "moon.stars.fill",
                       minutes: $ishaAfterMaghrib,
                       appLanguage: appLanguage,
                       numberFormat: numberFormat)
-
-            Text(Translations.string("fixed_times_hint", language: appLanguage))
-                .font(.system(size: 11))
-                .foregroundColor(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
-                .frame(maxWidth: .infinity, alignment: Translations.isRTL(appLanguage) ? .trailing : .leading)
         }
-        .padding(.vertical, 4)
     }
 }
 
@@ -260,11 +231,11 @@ private struct OffsetRow: View {
     }
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: 10) {
             Image(systemName: icon)
-                .font(.system(size: 14))
+                .font(.system(size: 13))
                 .foregroundColor(minutes > 0 ? .accentColor : .secondary)
-                .frame(width: 22)
+                .frame(width: 20)
 
             Text(label)
                 .font(.system(size: 13))
@@ -275,7 +246,7 @@ private struct OffsetRow: View {
                 .controlSize(.small)
                 .labelsHidden()
 
-            Spacer()
+            Spacer(minLength: 8)
 
             if minutes > 0 {
                 Stepper(value: $minutes, in: PrayerSettings.fixedOffsetRange, step: 5) {
@@ -287,8 +258,11 @@ private struct OffsetRow: View {
                 Text(Translations.string("off", language: appLanguage))
                     .font(.system(size: 12))
                     .foregroundColor(.secondary)
+                    .frame(width: 74, alignment: .leading)
             }
         }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
     }
 }
 

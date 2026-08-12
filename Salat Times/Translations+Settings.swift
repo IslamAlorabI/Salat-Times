@@ -337,6 +337,275 @@ nonisolated let settingsStrings: [String: [String: String]] = [
         "de": "Systemeinstellungen öffnen"
     ],
 
+    // Settings window sidebar and section headings.
+    "appearance": [
+        "ar": "المظهر",
+        "en": "Appearance",
+        "ru": "Оформление",
+        "id": "Tampilan",
+        "tr": "Görünüm",
+        "ur": "ظاہری شکل",
+        "fa": "ظاهر",
+        "de": "Erscheinungsbild"
+    ],
+    "about": [
+        "ar": "حول التطبيق",
+        "en": "About",
+        "ru": "О программе",
+        "id": "Tentang",
+        "tr": "Hakkında",
+        "ur": "تعارف",
+        "fa": "درباره",
+        "de": "Über"
+    ],
+    "startup": [
+        "ar": "بدء التشغيل",
+        "en": "Startup",
+        "ru": "Запуск",
+        "id": "Mulai",
+        "tr": "Başlangıç",
+        "ur": "آغاز",
+        "fa": "راه‌اندازی",
+        "de": "Start"
+    ],
+    "timing": [
+        "ar": "التوقيت",
+        "en": "Timing",
+        "ru": "Тайминг",
+        "id": "Waktu",
+        "tr": "Zamanlama",
+        "ur": "وقت",
+        "fa": "زمان‌بندی",
+        "de": "Zeitpunkt"
+    ],
+    "interface_language": [
+        "ar": "لغة الواجهة",
+        "en": "Interface language",
+        "ru": "Язык интерфейса",
+        "id": "Bahasa antarmuka",
+        "tr": "Arayüz dili",
+        "ur": "انٹرفیس کی زبان",
+        "fa": "زبان رابط",
+        "de": "Sprache der Oberfläche"
+    ],
+    "refresh_data_hint": [
+        "ar": "يجلب الشهر من جديد بدل الاعتماد على النسخة المحفوظة.",
+        "en": "Fetches the month again instead of using the cached copy.",
+        "ru": "Загружает месяц заново вместо использования кэша.",
+        "id": "Mengambil ulang data bulan ini alih-alih memakai salinan tersimpan.",
+        "tr": "Önbellekteki kopya yerine ayı yeniden indirir.",
+        "ur": "محفوظ نقل کے بجائے مہینہ دوبارہ حاصل کرتا ہے۔",
+        "fa": "به‌جای نسخه ذخیره‌شده، ماه را دوباره دریافت می‌کند.",
+        "de": "Lädt den Monat neu, statt die zwischengespeicherte Fassung zu nutzen."
+    ],
+    "calculation_options": [
+        "ar": "خيارات الحساب",
+        "en": "Calculation Options",
+        "ru": "Параметры расчёта",
+        "id": "Opsi Perhitungan",
+        "tr": "Hesaplama Seçenekleri",
+        "ur": "حساب کے اختیارات",
+        "fa": "گزینه‌های محاسبه",
+        "de": "Berechnungsoptionen"
+    ],
+    "calculation_options_hint": [
+        "ar": "تغيير أي من هذه الخيارات يعيد تحميل أوقات الشهر من الخادم.",
+        "en": "Changing any of these re-downloads the month from the server.",
+        "ru": "Изменение любого из них заново загружает месяц с сервера.",
+        "id": "Mengubah salah satunya akan mengunduh ulang data bulan ini dari server.",
+        "tr": "Bunlardan birini değiştirmek ayı sunucudan yeniden indirir.",
+        "ur": "ان میں سے کوئی بھی تبدیل کرنے پر مہینہ سرور سے دوبارہ ڈاؤن لوڈ ہوتا ہے۔",
+        "fa": "تغییر هرکدام از این‌ها، ماه را دوباره از سرور دریافت می‌کند.",
+        "de": "Eine Änderung lädt den Monat erneut vom Server."
+    ],
+
+    // Popover appearance.
+    "menu_bar_panel": [
+        "ar": "لوحة شريط القوائم",
+        "en": "Menu Bar Panel",
+        "ru": "Панель в строке меню",
+        "id": "Panel Bilah Menu",
+        "tr": "Menü Çubuğu Paneli",
+        "ur": "مینو بار پینل",
+        "fa": "پنل نوار منو",
+        "de": "Menüleisten-Panel"
+    ],
+    "translucency": [
+        "ar": "الشفافية",
+        "en": "Translucency",
+        "ru": "Прозрачность",
+        "id": "Transparansi",
+        "tr": "Saydamlık",
+        "ur": "شفافیت",
+        "fa": "شفافیت",
+        "de": "Transparenz"
+    ],
+    "translucency_off": [
+        "ar": "معطّلة",
+        "en": "Off",
+        "ru": "Выкл.",
+        "id": "Nonaktif",
+        "tr": "Kapalı",
+        "ur": "بند",
+        "fa": "خاموش",
+        "de": "Aus"
+    ],
+    "translucency_subtle": [
+        "ar": "خفيفة",
+        "en": "Subtle",
+        "ru": "Слабая",
+        "id": "Halus",
+        "tr": "Hafif",
+        "ur": "ہلکی",
+        "fa": "ملایم",
+        "de": "Dezent"
+    ],
+    "translucency_medium": [
+        "ar": "متوسطة",
+        "en": "Medium",
+        "ru": "Средняя",
+        "id": "Sedang",
+        "tr": "Orta",
+        "ur": "درمیانی",
+        "fa": "متوسط",
+        "de": "Mittel"
+    ],
+    "translucency_full": [
+        "ar": "كاملة",
+        "en": "Full",
+        "ru": "Полная",
+        "id": "Penuh",
+        "tr": "Tam",
+        "ur": "مکمل",
+        "fa": "کامل",
+        "de": "Voll"
+    ],
+    "translucency_hint": [
+        "ar": "يتحكم في مقدار ما يظهر من سطح المكتب خلف قائمة الأوقات. الترويسة الملوّنة تبقى معتمة دائمًا.",
+        "en": "Controls how much of the desktop shows through behind the list. The coloured header always stays solid.",
+        "ru": "Определяет, насколько виден рабочий стол за списком. Цветная шапка всегда остаётся непрозрачной.",
+        "id": "Mengatur seberapa banyak desktop terlihat di balik daftar. Bagian header berwarna selalu solid.",
+        "tr": "Listenin arkasında masaüstünün ne kadar göründüğünü belirler. Renkli başlık her zaman opak kalır.",
+        "ur": "طے کرتا ہے کہ فہرست کے پیچھے ڈیسک ٹاپ کتنا نظر آئے۔ رنگین ہیڈر ہمیشہ ٹھوس رہتا ہے۔",
+        "fa": "تعیین می‌کند چه مقدار از میزکار پشت فهرست دیده شود. سربرگ رنگی همیشه مات می‌ماند.",
+        "de": "Legt fest, wie viel vom Schreibtisch hinter der Liste durchscheint. Der farbige Kopfbereich bleibt immer deckend."
+    ],
+    "show_night_times": [
+        "ar": "إظهار منتصف الليل والثلث الأخير",
+        "en": "Show Midnight and Last Third",
+        "ru": "Показывать полночь и последнюю треть",
+        "id": "Tampilkan Tengah Malam dan Sepertiga Malam Terakhir",
+        "tr": "Gece yarısını ve son üçte biri göster",
+        "ur": "نصف شب اور آخری تہائی دکھائیں",
+        "fa": "نمایش نیمه‌شب و ثلث آخر",
+        "de": "Mitternacht und letztes Drittel anzeigen"
+    ],
+    "show_night_times_hint": [
+        "ar": "علامتان تحددان الليل، ولا يصدر عنهما تنبيه ولا يُحسب لهما العد التنازلي.",
+        "en": "Two markers for the night. Nothing counts down to them and nothing notifies for them.",
+        "ru": "Две отметки ночи. Обратный отсчёт и уведомления для них не действуют.",
+        "id": "Dua penanda malam. Tidak ada hitung mundur maupun notifikasi untuk keduanya.",
+        "tr": "Geceyi işaretleyen iki zaman. Bunlar için geri sayım da bildirim de yoktur.",
+        "ur": "رات کی دو نشانیاں۔ ان کے لیے نہ کاؤنٹ ڈاؤن ہوتا ہے نہ اطلاع۔",
+        "fa": "دو نشانه برای شب. نه شمارش معکوسی دارند و نه اعلانی.",
+        "de": "Zwei Marken für die Nacht. Kein Countdown und keine Mitteilung dafür."
+    ],
+
+    // About.
+    "app_name": [
+        "ar": "أوقات الصلاة",
+        "en": "Salat Times",
+        "ru": "Salat Times",
+        "id": "Salat Times",
+        "tr": "Salat Times",
+        "ur": "نماز کے اوقات",
+        "fa": "اوقات نماز",
+        "de": "Salat Times"
+    ],
+    "about_tagline": [
+        "ar": "أوقات الصلاة وعدّ تنازلي مباشر في شريط القوائم.",
+        "en": "Prayer times and a live countdown, in your menu bar.",
+        "ru": "Время молитв и живой обратный отсчёт в строке меню.",
+        "id": "Waktu salat dan hitung mundur langsung di bilah menu Anda.",
+        "tr": "Menü çubuğunuzda namaz vakitleri ve canlı geri sayım.",
+        "ur": "آپ کے مینو بار میں نماز کے اوقات اور براہِ راست کاؤنٹ ڈاؤن۔",
+        "fa": "اوقات نماز و شمارش معکوس زنده، در نوار منوی شما.",
+        "de": "Gebetszeiten und ein Live-Countdown in Ihrer Menüleiste."
+    ],
+    "about_details": [
+        "ar": "التفاصيل",
+        "en": "Details",
+        "ru": "Сведения",
+        "id": "Detail",
+        "tr": "Ayrıntılar",
+        "ur": "تفصیلات",
+        "fa": "جزئیات",
+        "de": "Details"
+    ],
+    "about_version": [
+        "ar": "الإصدار",
+        "en": "Version",
+        "ru": "Версия",
+        "id": "Versi",
+        "tr": "Sürüm",
+        "ur": "ورژن",
+        "fa": "نسخه",
+        "de": "Version"
+    ],
+    "about_requires": [
+        "ar": "يتطلب",
+        "en": "Requires",
+        "ru": "Требуется",
+        "id": "Membutuhkan",
+        "tr": "Gerekli",
+        "ur": "درکار",
+        "fa": "نیازمند",
+        "de": "Erfordert"
+    ],
+    // "Credits" was a bad fit and the Arabic made it obvious: شكر وتقدير is what you head
+    // a dedication with, not a list of two links. The card holds where the data comes
+    // from and who wrote the app, so it is simply "Links".
+    "about_links": [
+        "ar": "روابط",
+        "en": "Links",
+        "ru": "Ссылки",
+        "id": "Tautan",
+        "tr": "Bağlantılar",
+        "ur": "روابط",
+        "fa": "پیوندها",
+        "de": "Links"
+    ],
+    "about_data_source": [
+        "ar": "مصدر البيانات",
+        "en": "Data source",
+        "ru": "Источник данных",
+        "id": "Sumber data",
+        "tr": "Veri kaynağı",
+        "ur": "ڈیٹا کا ماخذ",
+        "fa": "منبع داده",
+        "de": "Datenquelle"
+    ],
+    "about_data_note": [
+        "ar": "تُجلب الأوقات شهرًا كاملًا في كل مرة وتُحفظ محليًا، فيعمل التطبيق دون اتصال لأسابيع.",
+        "en": "Times are fetched a month at a time and cached locally, so the app keeps working offline for weeks.",
+        "ru": "Время загружается помесячно и кэшируется локально, поэтому приложение неделями работает офлайн.",
+        "id": "Waktu diambil per bulan dan disimpan secara lokal, sehingga aplikasi tetap berfungsi offline selama berminggu-minggu.",
+        "tr": "Vakitler aylık olarak indirilip yerel olarak saklanır; uygulama haftalarca çevrimdışı çalışır.",
+        "ur": "اوقات ایک ماہ کے حساب سے حاصل کر کے مقامی طور پر محفوظ کیے جاتے ہیں، اس لیے ایپ ہفتوں تک آف لائن کام کرتی ہے۔",
+        "fa": "اوقات ماه‌به‌ماه دریافت و به‌صورت محلی ذخیره می‌شود، پس برنامه هفته‌ها بدون اینترنت کار می‌کند.",
+        "de": "Die Zeiten werden monatsweise geladen und lokal gespeichert, sodass die App wochenlang offline funktioniert."
+    ],
+    "about_developer": [
+        "ar": "المطوّر",
+        "en": "Developer",
+        "ru": "Разработчик",
+        "id": "Pengembang",
+        "tr": "Geliştirici",
+        "ur": "ڈویلپر",
+        "fa": "توسعه‌دهنده",
+        "de": "Entwickler"
+    ],
+
     // Settings window tab labels.
     "prayer_times": [
         "ar": "أوقات الصلاة",

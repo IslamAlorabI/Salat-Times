@@ -28,6 +28,8 @@ struct ContentView: View {
 
     @AppStorage("appLanguage") private var appLanguage = "ar"
     @AppStorage("numberFormat") private var numberFormat = "western"
+    @AppStorage("listMaterial") private var listMaterial = PopoverMaterial.subtle.rawValue
+    @AppStorage("showNightTimes") private var showNightTimes = true
 
     var body: some View {
         VStack(spacing: 0) {
@@ -52,7 +54,16 @@ struct ContentView: View {
             toolbar
         }
         .frame(width: 320)
-        .background(Color(nsColor: .windowBackgroundColor))
+        // The hero paints its own gradient, so this only shows behind the list and
+        // toolbar. `Off` gives a solid window; the rest let progressively more of the
+        // desktop through.
+        .background {
+            if let material = PopoverMaterial.stored(listMaterial).material {
+                Rectangle().fill(material)
+            } else {
+                Rectangle().fill(Color(nsColor: .windowBackgroundColor))
+            }
+        }
         .environment(\.layoutDirection, Translations.isRTL(appLanguage) ? .rightToLeft : .leftToRight)
         .environment(\.locale, Locale(identifier: Translations.locale(appLanguage)))
         .onAppear {
@@ -142,9 +153,9 @@ struct ContentView: View {
         // Ordered by `displayOrder`, not by instant: the API files a night's Midnight and
         // Last Third under the day they are listed with, so sorting by time would float
         // them above Fajr.
-        let night = PrayerKey.displayOrder
-            .filter(\.isNightMarker)
-            .compactMap { key in today.first { $0.key == key } }
+        let night = showNightTimes
+            ? PrayerKey.displayOrder.filter(\.isNightMarker).compactMap { key in today.first { $0.key == key } }
+            : []
 
         return VStack(spacing: 0) {
             ForEach(prayers) { event in
@@ -195,21 +206,31 @@ struct ContentView: View {
     private var toolbar: some View {
         VStack(spacing: 0) {
             Divider()
-            HStack(spacing: 0) {
+            // Spacers do the spreading, so each button's hover highlight can hug its own
+            // label instead of being stretched to a third of the bar.
+            HStack(spacing: 2) {
+                Spacer(minLength: 0)
+
                 ToolbarButton(icon: "gearshape",
                               title: Translations.string("settings", language: appLanguage),
                               tint: .accentColor) { open("settings") }
+
+                Spacer(minLength: 0)
 
                 ToolbarButton(icon: "calendar",
                               title: Translations.string("monthly_schedule", language: appLanguage),
                               tint: .accentColor) { open("schedule") }
 
+                Spacer(minLength: 0)
+
                 ToolbarButton(icon: "power",
                               title: Translations.string("quit", language: appLanguage),
                               tint: .secondary) { NSApplication.shared.terminate(nil) }
+
+                Spacer(minLength: 0)
             }
-            .padding(.vertical, 7)
-            .padding(.horizontal, 6)
+            .padding(.vertical, 6)
+            .padding(.horizontal, 4)
         }
     }
 
@@ -390,13 +411,14 @@ struct ToolbarButton: View {
             }
             .foregroundStyle(tint)
             .lineLimit(1)
-            .minimumScaleFactor(0.85)
-            .frame(maxWidth: .infinity)
+            .fixedSize()
+            .padding(.horizontal, 8)
             .padding(.vertical, 5)
             .background(
                 RoundedRectangle(cornerRadius: 6, style: .continuous)
-                    .fill(isHovering ? Color.primary.opacity(0.08) : .clear)
+                    .fill(isHovering ? Color.primary.opacity(0.09) : .clear)
             )
+            .contentShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
         }
         .buttonStyle(.plain)
         .onHover { isHovering = $0 }

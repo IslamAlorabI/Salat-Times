@@ -388,5 +388,64 @@ check("a fixed offset of 0 stays off — 0 means disabled, not 15",
 for key in store.dictionaryRepresentation().keys { store.removeObject(forKey: key) }
 
 
+// ---------------------------------------------------------------------------
+print("\n12. Every string carries all eight languages")
+// A missing language falls back to English and then to the raw key, silently — so a
+// half-translated key looks fine in English and ships broken everywhere else.
+let languages = ["ar", "en", "ru", "id", "tr", "ur", "fa", "de"]
+let tables: [(String, [String: [String: String]])] = [
+    ("uiStrings", uiStrings),
+    ("methodStrings", methodStrings),
+    ("prayerStrings", prayerStrings),
+    ("hijriStrings", hijriStrings),
+    ("settingsStrings", settingsStrings),
+]
+
+// Deliberately blank outside Arabic: "عام ١٤٤٨" reads naturally, "year 1448" does not,
+// so the label simply does not exist in the other seven. Present but empty is the honest
+// encoding of that — the key still resolves rather than falling through to its own name.
+let intentionallyBlank: Set<String> = ["hijri_year_label", "hijri_migration_suffix"]
+
+var incomplete: [String] = []
+var blank: [String] = []
+var totalKeys = 0
+for (table, entries) in tables {
+    for (key, values) in entries {
+        totalKeys += 1
+        let missing = languages.filter { values[$0] == nil }
+        if !missing.isEmpty {
+            incomplete.append("\(table).\(key) missing \(missing.sorted().joined(separator: ","))")
+        }
+        if !intentionallyBlank.contains(key),
+           values.contains(where: { $0.value.trimmingCharacters(in: .whitespaces).isEmpty }) {
+            blank.append("\(table).\(key)")
+        }
+    }
+}
+
+check("no key is missing a language",
+      incomplete.isEmpty,
+      "\(incomplete.count): \(incomplete.sorted().prefix(5).joined(separator: "; "))")
+check("no translation is blank", blank.isEmpty, blank.sorted().prefix(5).joined(separator: "; "))
+check("the tables are non-trivial", totalKeys > 150, "\(totalKeys)")
+
+// Keys the code looks up by literal have no compiler to catch a typo.
+let requiredKeys = [
+    "general", "prayer_times", "appearance", "about", "prayer_notifications",
+    "startup", "timing", "interface_language", "refresh_data_hint",
+    "calculation_options", "calculation_options_hint",
+    "menu_bar_panel", "translucency", "translucency_off", "translucency_subtle",
+    "translucency_medium", "translucency_full", "translucency_hint",
+    "show_night_times", "show_night_times_hint",
+    "app_name", "about_tagline", "about_details", "about_version",
+    "about_requires", "about_links", "about_data_source",
+    "about_data_note", "about_developer",
+    "monthly_schedule", "schedule_date", "export_csv", "print", "schedule_footnote",
+    "asr_madhab", "high_latitude", "midnight_mode", "prayer_tuning", "fixed_times",
+]
+let unresolved = requiredKeys.filter { Translations.string($0, language: "de") == $0 }
+check("every key the UI asks for resolves", unresolved.isEmpty, unresolved.joined(separator: ", "))
+
+
 print("\n\(checks - failures)/\(checks) checks passed")
 exit(failures == 0 ? 0 : 1)
