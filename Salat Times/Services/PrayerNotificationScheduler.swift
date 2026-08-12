@@ -101,12 +101,16 @@ final class PrayerNotificationScheduler {
     func reconcile(now: Date = Date(),
                    timetable: PrayerTimetable,
                    settings: PrayerSettings) async {
+        // Read the per-prayer preferences off the snapshot rather than `UserDefaults`,
+        // so what gets scheduled is exactly what the manager diffed and decided to act
+        // on — and so the sounds folded into `notificationFingerprint` are the same
+        // ones actually attached to the content.
         let planned = Self.plan(
             now: now,
             timetable: timetable,
             settings: settings,
-            isEnabled: { PrayerNotificationSettings.isEnabled(for: $0.rawValue) },
-            sound: { PrayerNotificationSettings.sound(for: $0.rawValue).notificationSound })
+            isEnabled: { settings.enabledPrayers.contains($0.rawValue) },
+            sound: { (NotificationSound(rawValue: settings.prayerSounds[$0.rawValue] ?? "default") ?? .defaultSound).notificationSound })
 
         let desired = Dictionary(uniqueKeysWithValues: planned.map { ($0.identifier, $0) })
         let pending = await center.pendingNotificationRequests()

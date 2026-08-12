@@ -39,15 +39,13 @@ class PrayerManager: NSObject, ObservableObject, CLLocationManagerDelegate, UNUs
     private let locationManager = CLLocationManager()
     private let notificationCenter = UNUserNotificationCenter.current()
     private var countdownTimer: Timer?
-    private var languageObserver: NSObjectProtocol?
-    private var lastLanguage: String = ""
+    private var settingsObserver: NSObjectProtocol?
+    private var settingsDebounce: Task<Void, Never>?
 
     override init() {
         super.init()
         locationManager.delegate = self
         notificationCenter.delegate = self
-
-        lastLanguage = settings.language
 
         startLifecycle()
 
@@ -58,7 +56,7 @@ class PrayerManager: NSObject, ObservableObject, CLLocationManagerDelegate, UNUs
 
         requestNotificationPermission()
         clearBadgeAndDeliveredNotifications()
-        observeLanguageChanges()
+        observeSettingsChanges()
     }
 
     /// Hooks up every reason the schedule can go stale. Without this the app fetched
@@ -105,24 +103,58 @@ class PrayerManager: NSObject, ObservableObject, CLLocationManagerDelegate, UNUs
     deinit {
         refreshTask?.cancel()
         countdownTimer?.invalidate()
+        settingsDebounce?.cancel()
         MainActor.assumeIsolated { lifecycle.stop() }
-        if let observer = languageObserver {
+        if let observer = settingsObserver {
             NotificationCenter.default.removeObserver(observer)
         }
     }
 
-    func observeLanguageChanges() {
-        languageObserver = NotificationCenter.default.addObserver(
+    /// Watches `UserDefaults` for *any* change and reacts to whatever actually moved.
+    ///
+    /// This replaces a hand-written `.onChange` per control in `SettingsView`, where
+    /// every new setting silently did nothing until someone remembered to add its hook.
+    /// One observer plus an `Equatable` snapshot means a setting takes effect because it
+    /// is *in* `PrayerSettings`, not because a view remembered to say so.
+    func observeSettingsChanges() {
+        settingsObserver = NotificationCenter.default.addObserver(
             forName: UserDefaults.didChangeNotification,
             object: nil,
             queue: .main
         ) { [weak self] _ in
-            guard let self = self else { return }
-            let currentLanguage = UserDefaults.standard.string(forKey: "appLanguage") ?? "ar"
-            if currentLanguage != self.lastLanguage {
-                self.lastLanguage = currentLanguage
-                self.reloadSettings()
-            }
+            self?.scheduleSettingsDiff()
+        }
+    }
+
+    /// `didChangeNotification` fires per key written, so dragging a stepper emits a
+    /// burst. Coalesce them, then let the equality check discard the ones that changed
+    /// nothing we care about.
+    private func scheduleSettingsDiff() {
+        settingsDebounce?.cancel()
+        settingsDebounce = Task { @MainActor [weak self] in
+            try? await Task.sleep(nanoseconds: 250_000_000)
+            guard !Task.isCancelled else { return }
+            self?.applySettingsChange()
+        }
+    }
+
+    private func applySettingsChange() {
+        let updated = PrayerSettings.load()
+        let previous = settings
+        guard updated != previous else { return }
+        settings = updated
+
+        if updated.requestFingerprint != previous.requestFingerprint {
+            // City, method, madhab, high-latitude rule or midnight mode: the server
+            // returns different numbers, so the cache for these months no longer applies.
+            Log.data.notice("Request settings changed; refetching")
+            city = City.allCases.first { $0.rawValue == updated.cityRaw }?.rawValue ?? updated.cityRaw
+            refresh(force: true)
+        } else {
+            // Tuning, offsets, language, sounds, reminders: all applied on read, so the
+            // cached timetable is still good and this costs no network.
+            rebuildEvents()
+            schedulePrayerNotifications()
         }
     }
 

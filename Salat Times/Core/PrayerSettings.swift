@@ -35,8 +35,15 @@ nonisolated struct PrayerSettings: Sendable, Equatable {
     // Notifications
     var reminderMinutes: Int
     var warningMinutes: Int
+    /// `PrayerKey.rawValue`s the user wants to be notified about.
+    var enabledPrayers: Set<String>
+    /// `PrayerKey.rawValue` -> `NotificationSound.rawValue`.
+    var prayerSounds: [String: String]
 
     static let defaultMethod = 5   // Egyptian General Authority of Survey
+
+    /// A fixed offset is either off (`0`) or a sane distance from its anchor prayer.
+    static let fixedOffsetRange = 15...180
 
     /// Identifies the server response. Two settings with the same fingerprint may share
     /// cached days; anything else must be refetched.
@@ -45,10 +52,17 @@ nonisolated struct PrayerSettings: Sendable, Equatable {
                latitude, longitude, method, school, latitudeAdjustment, midnightMode)
     }
 
-    /// Everything that changes what a scheduled notification would *say* or *when* it
-    /// fires. Baked into notification identifiers so that re-scheduling with unchanged
-    /// settings is a no-op, while a settings change makes the old requests fall out of
-    /// the desired set and get removed.
+    /// Everything that changes what a scheduled notification would *say*, *when* it
+    /// fires, or *how it sounds*. Baked into notification identifiers so that
+    /// re-scheduling with unchanged settings is a no-op, while a settings change makes
+    /// the old requests fall out of the desired set and get removed.
+    ///
+    /// `enabledPrayers` is deliberately **not** here: disabling a prayer already drops
+    /// it from the desired set, and folding it in would rotate — and so rewrite — every
+    /// other prayer's pending requests for nothing. The sounds *are* here, because a
+    /// request's sound is fixed at `add` time: without them in the identifier, changing
+    /// a sound left the already-pending alerts playing the old one.
+    ///
     /// Must be **stable across process launches** — `Swift.Hasher` is randomly seeded
     /// per process, so using it here silently rotated every identifier on every restart
     /// and made the reconciler remove and re-add the whole schedule each time.
@@ -61,7 +75,7 @@ nonisolated struct PrayerSettings: Sendable, Equatable {
             "\(ishaAfterMaghribMinutes)",
         ]
         for key in PrayerKey.allCases.map(\.rawValue).sorted() {
-            parts.append("\(key):\(tuneMinutes[key] ?? 0)")
+            parts.append("\(key):\(tuneMinutes[key] ?? 0):\(prayerSounds[key] ?? "default")")
         }
         return StableHash.digest(parts.joined(separator: "|"))
     }
@@ -73,10 +87,29 @@ nonisolated struct PrayerSettings: Sendable, Equatable {
 
         let storedMethod = defaults.integer(forKey: "calculationMethod")
 
+        // Clamp on read rather than trusting the store: these keys are also written by
+        // the widget and by hand during debugging, and an out-of-range value would go
+        // straight into the request URL or into an instant.
+        func clamp(_ value: Int, to range: ClosedRange<Int>) -> Int {
+            min(max(value, range.lowerBound), range.upperBound)
+        }
+        func fixedOffset(_ key: String) -> Int {
+            let value = defaults.integer(forKey: key)
+            return value <= 0 ? 0 : clamp(value, to: fixedOffsetRange)
+        }
+
         var tune: [String: Int] = [:]
+        var enabled: Set<String> = []
+        var sounds: [String: String] = [:]
         for key in PrayerKey.notifiable {
-            let value = defaults.integer(forKey: "tune_\(key.rawValue)")
+            let value = clamp(defaults.integer(forKey: "tune_\(key.rawValue)"),
+                              to: PrayerAdjustments.tuneRange)
             if value != 0 { tune[key.rawValue] = value }
+            // Absent means on: notifications have always been opt-out, not opt-in.
+            if defaults.object(forKey: "notification_\(key.rawValue)_enabled") as? Bool ?? true {
+                enabled.insert(key.rawValue)
+            }
+            sounds[key.rawValue] = defaults.string(forKey: "notification_\(key.rawValue)_sound") ?? "default"
         }
 
         return PrayerSettings(
@@ -85,17 +118,19 @@ nonisolated struct PrayerSettings: Sendable, Equatable {
             longitude: coords.longitude,
             // 0 means "never set"; the app has always fallen back to the Egyptian method.
             method: storedMethod == 0 ? defaultMethod : storedMethod,
-            school: defaults.integer(forKey: "asrSchool"),
-            latitudeAdjustment: defaults.integer(forKey: "latitudeAdjustment"),
-            midnightMode: defaults.integer(forKey: "midnightMode"),
+            school: clamp(defaults.integer(forKey: "asrSchool"), to: 0...1),
+            latitudeAdjustment: clamp(defaults.integer(forKey: "latitudeAdjustment"), to: 0...3),
+            midnightMode: clamp(defaults.integer(forKey: "midnightMode"), to: 0...1),
             tuneMinutes: tune,
-            fajrBeforeSunriseMinutes: defaults.integer(forKey: "fajrBeforeSunriseMinutes"),
-            ishaAfterMaghribMinutes: defaults.integer(forKey: "ishaAfterMaghribMinutes"),
+            fajrBeforeSunriseMinutes: fixedOffset("fajrBeforeSunriseMinutes"),
+            ishaAfterMaghribMinutes: fixedOffset("ishaAfterMaghribMinutes"),
             language: defaults.string(forKey: "appLanguage") ?? "ar",
             numberFormat: defaults.string(forKey: "numberFormat") ?? "western",
             use24Hour: defaults.object(forKey: "timeFormat24") as? Bool ?? true,
             reminderMinutes: defaults.integer(forKey: "reminderInterval"),
-            warningMinutes: defaults.integer(forKey: "warningInterval")
+            warningMinutes: defaults.integer(forKey: "warningInterval"),
+            enabledPrayers: enabled,
+            prayerSounds: sounds
         )
     }
 }

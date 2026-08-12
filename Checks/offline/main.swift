@@ -40,7 +40,8 @@ var settings = PrayerSettings(
     method: 5, school: 0, latitudeAdjustment: 0, midnightMode: 0,
     tuneMinutes: [:], fajrBeforeSunriseMinutes: 0, ishaAfterMaghribMinutes: 0,
     language: "en", numberFormat: "western", use24Hour: true,
-    reminderMinutes: 0, warningMinutes: 0)
+    reminderMinutes: 0, warningMinutes: 0,
+    enabledPrayers: Set(PrayerKey.notifiable.map(\.rawValue)), prayerSounds: [:])
 
 func at(_ string: String, _ zone: String) -> Date {
     let f = DateFormatter()
@@ -240,6 +241,23 @@ otherCity.latitude = 24.7136
 check("changing the city rotates every identifier",
       Set(planned(otherCity).map(\.identifier)).isDisjoint(with: Set(full.map(\.identifier))))
 
+// A request's sound is fixed when it is added, so a sound change has to rotate the
+// identifier or the already-pending alert keeps playing the old one — the reconciler
+// sees a matching id and does nothing.
+var otherSound = reminding
+otherSound.prayerSounds = [PrayerKey.fajr.rawValue: "Glass"]
+check("changing a sound rotates every identifier",
+      Set(planned(otherSound).map(\.identifier)).isDisjoint(with: Set(full.map(\.identifier))))
+
+// Enabling is handled by the set difference instead, so it must *not* rotate: folding
+// it in would rewrite every other prayer's pending requests for nothing.
+// Enabling is handled by the set difference instead, so it must *not* rotate: folding
+// it in would rewrite every other prayer's pending requests for nothing.
+var otherEnabled = reminding
+otherEnabled.enabledPrayers = [PrayerKey.fajr.rawValue]
+check("toggling a prayer does not rotate identifiers",
+      otherEnabled.notificationFingerprint == reminding.notificationFingerprint)
+
 let fajrOnly = planned(reminding, enabled: [.fajr])
 check("disabled prayers are excluded",
       fajrOnly.allSatisfy { $0.identifier.contains("_Fajr_") }, "\(fajrOnly.count)")
@@ -262,7 +280,10 @@ check("StableHash separates similar inputs",
 
 var fpA = settings
 fpA.reminderMinutes = 15
-let goldenFingerprint = "3jxmgvomwp1b5"
+// Re-pin this only when the fingerprint's *inputs* deliberately change (it last moved
+// when per-prayer sounds joined them). A change here that you did not intend means
+// something reintroduced a per-process hash.
+let goldenFingerprint = "3jyvpwdqhtr2f"
 check("notificationFingerprint matches its golden value",
       fpA.notificationFingerprint == goldenFingerprint,
       fpA.notificationFingerprint)
@@ -273,6 +294,53 @@ check("identical settings give identical fingerprints",
 fpB.tuneMinutes = [PrayerKey.isha.rawValue: -3]
 check("a tune change moves the fingerprint",
       fpA.notificationFingerprint != fpB.notificationFingerprint)
+
+
+// ---------------------------------------------------------------------------
+print("\n11. Settings are clamped on read, not trusted from the store")
+// These keys are written by the settings window today and by a widget later, and an
+// out-of-range value would otherwise go straight into a request URL or an instant.
+let store = UserDefaults(suiteName: "salat-times-checks")!
+for key in store.dictionaryRepresentation().keys { store.removeObject(forKey: key) }
+
+store.set(999, forKey: "tune_Fajr")
+store.set(-999, forKey: "tune_Isha")
+store.set(7, forKey: "asrSchool")
+store.set(42, forKey: "latitudeAdjustment")
+store.set(3, forKey: "midnightMode")
+store.set(6, forKey: "fajrBeforeSunriseMinutes")
+store.set(9999, forKey: "ishaAfterMaghribMinutes")
+
+let loaded = PrayerSettings.load(from: store)
+check("tune clamps to +30", loaded.tuneMinutes[PrayerKey.fajr.rawValue] == 30,
+      "\(String(describing: loaded.tuneMinutes[PrayerKey.fajr.rawValue]))")
+check("tune clamps to -30", loaded.tuneMinutes[PrayerKey.isha.rawValue] == -30,
+      "\(String(describing: loaded.tuneMinutes[PrayerKey.isha.rawValue]))")
+check("school clamps to 0...1", loaded.school == 1, "\(loaded.school)")
+check("latitude rule clamps to 0...3", loaded.latitudeAdjustment == 3, "\(loaded.latitudeAdjustment)")
+check("midnight mode clamps to 0...1", loaded.midnightMode == 1, "\(loaded.midnightMode)")
+check("a too-small fixed offset clamps up to 15",
+      loaded.fajrBeforeSunriseMinutes == 15, "\(loaded.fajrBeforeSunriseMinutes)")
+check("a too-large fixed offset clamps down to 180",
+      loaded.ishaAfterMaghribMinutes == 180, "\(loaded.ishaAfterMaghribMinutes)")
+
+// Notifications have always been opt-out; an absent key must not read as "off".
+check("an unset prayer defaults to notifying",
+      loaded.enabledPrayers == Set(PrayerKey.notifiable.map(\.rawValue)),
+      "\(loaded.enabledPrayers.sorted())")
+store.set(false, forKey: "notification_Sunrise_enabled")
+store.set("Glass", forKey: "notification_Fajr_sound")
+let reloaded = PrayerSettings.load(from: store)
+check("a disabled prayer drops out of the snapshot",
+      !reloaded.enabledPrayers.contains(PrayerKey.sunrise.rawValue))
+check("sounds come through the snapshot",
+      reloaded.prayerSounds[PrayerKey.fajr.rawValue] == "Glass",
+      "\(String(describing: reloaded.prayerSounds[PrayerKey.fajr.rawValue]))")
+check("a fixed offset of 0 stays off — 0 means disabled, not 15",
+      PrayerSettings.load(from: UserDefaults(suiteName: "salat-times-checks-empty")!)
+          .fajrBeforeSunriseMinutes == 0)
+
+for key in store.dictionaryRepresentation().keys { store.removeObject(forKey: key) }
 
 
 print("\n\(checks - failures)/\(checks) checks passed")

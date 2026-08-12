@@ -335,5 +335,252 @@ nonisolated let settingsStrings: [String: [String: String]] = [
         "ur": "سسٹم سیٹنگز کھولیں",
         "fa": "باز کردن تنظیمات سیستم",
         "de": "Systemeinstellungen öffnen"
+    ],
+
+    // Calculation axes that change what the server returns.
+    "asr_madhab": [
+        "ar": "مذهب العصر",
+        "en": "Asr Madhab",
+        "ru": "Мазхаб для Асра",
+        "id": "Mazhab Asar",
+        "tr": "İkindi Mezhebi",
+        "ur": "عصر کا مذہب",
+        "fa": "مذهب عصر",
+        "de": "Asr-Rechtsschule"
+    ],
+    "madhab_shafii": [
+        "ar": "الشافعي",
+        "en": "Shafi'i",
+        "ru": "Шафиитский",
+        "id": "Syafi'i",
+        "tr": "Şafii",
+        "ur": "شافعی",
+        "fa": "شافعی",
+        "de": "Schafiitisch"
+    ],
+    "madhab_hanafi": [
+        "ar": "الحنفي",
+        "en": "Hanafi",
+        "ru": "Ханафитский",
+        "id": "Hanafi",
+        "tr": "Hanefi",
+        "ur": "حنفی",
+        "fa": "حنفی",
+        "de": "Hanafitisch"
+    ],
+    "asr_madhab_hint": [
+        "ar": "المذهب الحنفي يجعل وقت العصر متأخرًا عن بقية المذاهب.",
+        "en": "The Hanafi madhab puts Asr later than the other schools.",
+        "ru": "В ханафитском мазхабе время Асра наступает позже, чем в остальных.",
+        "id": "Mazhab Hanafi menetapkan waktu Asar lebih lambat daripada mazhab lain.",
+        "tr": "Hanefi mezhebinde ikindi vakti diğer mezheplere göre daha geçtir.",
+        "ur": "حنفی مذہب میں عصر کا وقت دیگر مذاہب کے مقابلے میں بعد میں ہوتا ہے۔",
+        "fa": "در مذهب حنفی وقت عصر دیرتر از دیگر مذاهب است.",
+        "de": "In der hanafitischen Rechtsschule beginnt Asr später als in den übrigen."
+    ],
+
+    "high_latitude": [
+        "ar": "قاعدة خطوط العرض العالية",
+        "en": "High Latitude Rule",
+        "ru": "Правило высоких широт",
+        "id": "Aturan Lintang Tinggi",
+        "tr": "Yüksek Enlem Kuralı",
+        "ur": "بلند عرض بلد کا قاعدہ",
+        "fa": "قاعده عرض‌های بالا",
+        "de": "Regel für hohe Breitengrade"
+    ],
+    "latitude_none": [
+        "ar": "بدون تعديل",
+        "en": "None",
+        "ru": "Нет",
+        "id": "Tanpa Penyesuaian",
+        "tr": "Yok",
+        "ur": "کوئی نہیں",
+        "fa": "بدون تنظیم",
+        "de": "Keine"
+    ],
+    "latitude_middle_night": [
+        "ar": "منتصف الليل",
+        "en": "Middle of the Night",
+        "ru": "Середина ночи",
+        "id": "Tengah Malam",
+        "tr": "Gecenin Ortası",
+        "ur": "نصف شب",
+        "fa": "نیمه شب",
+        "de": "Mitte der Nacht"
+    ],
+    "latitude_one_seventh": [
+        "ar": "سُبع الليل",
+        "en": "One Seventh",
+        "ru": "Одна седьмая",
+        "id": "Sepertujuh Malam",
+        "tr": "Gecenin Yedide Biri",
+        "ur": "رات کا ساتواں حصہ",
+        "fa": "یک‌هفتم شب",
+        "de": "Ein Siebtel"
+    ],
+    "latitude_angle_based": [
+        "ar": "حسب الزاوية",
+        "en": "Angle Based",
+        "ru": "На основе угла",
+        "id": "Berdasarkan Sudut",
+        "tr": "Açıya Göre",
+        "ur": "زاویے کی بنیاد پر",
+        "fa": "بر اساس زاویه",
+        "de": "Winkelbasiert"
+    ],
+    "high_latitude_hint": [
+        "ar": "تُستخدم في المدن التي لا تغيب فيها الشمس بما يكفي لحساب الفجر والعشاء بالطريقة المعتادة.",
+        "en": "For cities where the sun does not set far enough to compute Fajr and Isha normally.",
+        "ru": "Для городов, где солнце не опускается достаточно низко для обычного расчёта Фаджра и Иши.",
+        "id": "Untuk kota yang mataharinya tidak cukup terbenam untuk menghitung Subuh dan Isya secara normal.",
+        "tr": "Güneşin, fecir ve yatsıyı normal şekilde hesaplamaya yetecek kadar batmadığı şehirler için.",
+        "ur": "ان شہروں کے لیے جہاں سورج اتنا نہیں ڈوبتا کہ فجر اور عشاء معمول کے مطابق شمار ہو سکیں۔",
+        "fa": "برای شهرهایی که خورشید آن‌قدر پایین نمی‌رود که فجر و عشا به روش معمول محاسبه شود.",
+        "de": "Für Städte, in denen die Sonne nicht tief genug sinkt, um Fajr und Isha normal zu berechnen."
+    ],
+
+    "midnight_mode": [
+        "ar": "حساب منتصف الليل",
+        "en": "Midnight Mode",
+        "ru": "Расчёт полуночи",
+        "id": "Mode Tengah Malam",
+        "tr": "Gece Yarısı Hesabı",
+        "ur": "نصف شب کا حساب",
+        "fa": "حالت نیمه‌شب",
+        "de": "Mitternachtsberechnung"
+    ],
+    "midnight_standard": [
+        "ar": "قياسي (الغروب إلى الشروق)",
+        "en": "Standard (sunset to sunrise)",
+        "ru": "Стандартный (закат — восход)",
+        "id": "Standar (magrib ke terbit)",
+        "tr": "Standart (gün batımı–gün doğumu)",
+        "ur": "معیاری (غروب تا طلوع)",
+        "fa": "استاندارد (غروب تا طلوع)",
+        "de": "Standard (Sonnenuntergang bis Sonnenaufgang)"
+    ],
+    "midnight_jafari": [
+        "ar": "جعفري (الغروب إلى الفجر)",
+        "en": "Jafari (sunset to Fajr)",
+        "ru": "Джафаритский (закат — Фаджр)",
+        "id": "Jafari (magrib ke Subuh)",
+        "tr": "Caferi (gün batımı–fecir)",
+        "ur": "جعفری (غروب تا فجر)",
+        "fa": "جعفری (غروب تا فجر)",
+        "de": "Dschafari (Sonnenuntergang bis Fajr)"
+    ],
+    "midnight_mode_hint": [
+        "ar": "يحدد وقت منتصف الليل والثلث الأخير.",
+        "en": "Sets where Midnight and the Last Third fall.",
+        "ru": "Определяет, когда наступают полночь и последняя треть.",
+        "id": "Menentukan kapan Tengah Malam dan Sepertiga Malam Terakhir jatuh.",
+        "tr": "Gece yarısının ve gecenin son üçte birinin ne zaman olduğunu belirler.",
+        "ur": "نصف شب اور آخری تہائی رات کا وقت طے کرتا ہے۔",
+        "fa": "زمان نیمه‌شب و ثلث آخر شب را تعیین می‌کند.",
+        "de": "Legt fest, wann Mitternacht und das letzte Drittel liegen."
+    ],
+
+    // Corrections applied on read — no refetch.
+    "prayer_tuning": [
+        "ar": "تعديل أوقات الصلاة",
+        "en": "Prayer Time Adjustment",
+        "ru": "Корректировка времени",
+        "id": "Penyesuaian Waktu Salat",
+        "tr": "Namaz Vakti Düzeltmesi",
+        "ur": "نماز کے اوقات کی درستی",
+        "fa": "تنظیم اوقات نماز",
+        "de": "Gebetszeit-Korrektur"
+    ],
+    "prayer_tuning_hint": [
+        "ar": "اضبط كل وقت بما لا يزيد عن 30 دقيقة. يُطبَّق فورًا دون إعادة تحميل.",
+        "en": "Shift any time by up to 30 minutes. Applied instantly, with no re-download.",
+        "ru": "Сдвиг любого времени до 30 минут. Применяется сразу, без повторной загрузки.",
+        "id": "Geser waktu mana pun hingga 30 menit. Langsung diterapkan tanpa mengunduh ulang.",
+        "tr": "Herhangi bir vakti 30 dakikaya kadar kaydırın. Yeniden indirmeden anında uygulanır.",
+        "ur": "کسی بھی وقت کو 30 منٹ تک آگے پیچھے کریں۔ دوبارہ ڈاؤن لوڈ کے بغیر فوراً لاگو ہوتا ہے۔",
+        "fa": "هر وقت را تا 30 دقیقه جابه‌جا کنید. بدون بارگیری دوباره فوراً اعمال می‌شود.",
+        "de": "Verschiebt jede Zeit um bis zu 30 Minuten. Wirkt sofort, ohne erneutes Laden."
+    ],
+    "apply_to_all": [
+        "ar": "تطبيق على الكل",
+        "en": "Apply to all",
+        "ru": "Применить ко всем",
+        "id": "Terapkan ke semua",
+        "tr": "Tümüne uygula",
+        "ur": "سب پر لاگو کریں",
+        "fa": "اعمال بر همه",
+        "de": "Auf alle anwenden"
+    ],
+    "reset": [
+        "ar": "إعادة تعيين",
+        "en": "Reset",
+        "ru": "Сбросить",
+        "id": "Atur ulang",
+        "tr": "Sıfırla",
+        "ur": "ری سیٹ",
+        "fa": "بازنشانی",
+        "de": "Zurücksetzen"
+    ],
+    "minutes_unit": [
+        "ar": "د",
+        "en": "min",
+        "ru": "мин",
+        "id": "mnt",
+        "tr": "dk",
+        "ur": "منٹ",
+        "fa": "دق",
+        "de": "Min."
+    ],
+    "off": [
+        "ar": "معطّل",
+        "en": "Off",
+        "ru": "Выкл.",
+        "id": "Nonaktif",
+        "tr": "Kapalı",
+        "ur": "بند",
+        "fa": "خاموش",
+        "de": "Aus"
+    ],
+
+    "fixed_times": [
+        "ar": "أوقات ثابتة للفجر والعشاء",
+        "en": "Fixed Fajr & Isha",
+        "ru": "Фиксированные Фаджр и Иша",
+        "id": "Subuh & Isya Tetap",
+        "tr": "Sabit Fecir ve Yatsı",
+        "ur": "مقررہ فجر و عشاء",
+        "fa": "فجر و عشای ثابت",
+        "de": "Feste Fajr- und Isha-Zeiten"
+    ],
+    "fajr_before_sunrise": [
+        "ar": "الفجر قبل الشروق",
+        "en": "Fajr before sunrise",
+        "ru": "Фаджр до восхода",
+        "id": "Subuh sebelum terbit",
+        "tr": "Fecir, gün doğumundan önce",
+        "ur": "طلوع سے پہلے فجر",
+        "fa": "فجر پیش از طلوع",
+        "de": "Fajr vor Sonnenaufgang"
+    ],
+    "isha_after_maghrib": [
+        "ar": "العشاء بعد المغرب",
+        "en": "Isha after Maghrib",
+        "ru": "Иша после Магриба",
+        "id": "Isya setelah Magrib",
+        "tr": "Yatsı, akşamdan sonra",
+        "ur": "مغرب کے بعد عشاء",
+        "fa": "عشا پس از مغرب",
+        "de": "Isha nach Maghrib"
+    ],
+    "fixed_times_hint": [
+        "ar": "يستبدل الزاوية المحسوبة بفاصل زمني ثابت — شائع في خطوط العرض العالية.",
+        "en": "Replaces the calculated angle with a fixed interval — common at high latitudes.",
+        "ru": "Заменяет расчётный угол фиксированным интервалом — обычно для высоких широт.",
+        "id": "Mengganti sudut hasil hitungan dengan selang waktu tetap — umum di lintang tinggi.",
+        "tr": "Hesaplanan açıyı sabit bir süreyle değiştirir — yüksek enlemlerde yaygındır.",
+        "ur": "حساب شدہ زاویے کی جگہ مقررہ وقفہ استعمال کرتا ہے — بلند عرض بلد میں عام ہے۔",
+        "fa": "زاویه محاسبه‌شده را با فاصله زمانی ثابت جایگزین می‌کند — در عرض‌های بالا رایج است.",
+        "de": "Ersetzt den berechneten Winkel durch ein festes Intervall — bei hohen Breitengraden üblich."
     ]
 ]

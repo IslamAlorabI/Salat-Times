@@ -94,13 +94,38 @@ struct ContentView: View    {
                 }
             } else {
                 let upcomingKey = PrayerScheduleCalculator.next(after: Date(), in: manager.events)?.key
+                let today = manager.todayEvents
                 VStack(spacing: 4) {
-                    ForEach(manager.todayEvents.filter { !$0.key.isNightMarker }) { event in
+                    ForEach(today.filter { !$0.key.isNightMarker }) { event in
                         PrayerRow(name: event.name(language: appLanguage),
                                   time: manager.formattedTime(event.date),
                                   icon: event.key.systemImageName,
                                   color: getPrayerColor(event.key),
                                   isUpcoming: upcomingKey == event.key)
+                    }
+
+                    // Midnight and the last third mark the night rather than a prayer:
+                    // nothing counts down to them and nothing notifies for them, so they
+                    // sit below the divider in a quieter style instead of competing with
+                    // the six rows above. Both come straight from Aladhan — the app has
+                    // never computed them, which is why they cost nothing to show.
+                    let nightMarkers = PrayerKey.displayOrder
+                        .filter(\.isNightMarker)
+                        .compactMap { key in today.first { $0.key == key } }
+
+                    if !nightMarkers.isEmpty {
+                        Divider()
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 4)
+
+                        ForEach(nightMarkers) { event in
+                            PrayerRow(name: event.name(language: appLanguage),
+                                      time: manager.formattedTime(event.date),
+                                      icon: event.key.systemImageName,
+                                      color: getPrayerColor(event.key),
+                                      isUpcoming: false,
+                                      isSecondary: true)
+                        }
                     }
                 }
                 .padding(.vertical, 12)
@@ -318,24 +343,30 @@ struct PrayerRow: View {
     let icon: String
     let color: Color
     let isUpcoming: Bool
+    /// Night markers: shown for reference, never the next prayer, so they read a step
+    /// quieter than the six rows above them.
+    var isSecondary: Bool = false
     @Environment(\.layoutDirection) var layoutDirection
-    
+
     private var highlightColor: Color {
         Color.accentColor
     }
-    
+
+    private var nameSize: CGFloat { isSecondary ? 14 : 16 }
+    private var timeSize: CGFloat { isSecondary ? 14 : 16 }
+
     var body: some View {
         HStack {
             Image(systemName: icon)
                 .frame(width: 24)
-                .foregroundColor(isUpcoming ? highlightColor : color.opacity(0.7))
-            
+                .foregroundColor(isUpcoming ? highlightColor : color.opacity(isSecondary ? 0.55 : 0.7))
+
             Text(name)
-                .font(.system(size: 16, weight: isUpcoming ? .semibold : .medium))
-                .foregroundColor(isUpcoming ? highlightColor : .primary)
-            
+                .font(.system(size: nameSize, weight: isUpcoming ? .semibold : .medium))
+                .foregroundColor(isUpcoming ? highlightColor : (isSecondary ? .secondary : .primary))
+
             Spacer()
-            
+
             if isUpcoming {
                 HStack(spacing: 4) {
                     Image(systemName: layoutDirection == .rightToLeft ? "arrow.left.circle.fill" : "arrow.right.circle.fill")
@@ -347,12 +378,12 @@ struct PrayerRow: View {
                 }
             } else {
                 Text(time)
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.system(size: timeSize, weight: isSecondary ? .semibold : .bold))
                     .foregroundColor(.secondary)
             }
         }
         .padding(.horizontal, 16)
-        .padding(.vertical, isUpcoming ? 8 : 6)
+        .padding(.vertical, isUpcoming ? 8 : (isSecondary ? 4 : 6))
         .background(
             Group {
                 if isUpcoming {

@@ -37,10 +37,11 @@ instead.
 | File | Role |
 | --- | --- |
 | `Salat Times/SalatTimesApp.swift` | `@main`. `MenuBarExtra` (window style) + `settings` and `welcome` `Window` scenes. |
-| `Salat Times/Core/` | Pure, `nonisolated`, I/O-free model + calculation types. No SwiftUI, no `UserDefaults` reads, no network. Shared by everything and covered by `Checks/`. |
-| `Salat Times/PrayerManager.swift` | The one `ObservableObject`: fetch, countdown timer, notifications, location. Also holds `NotificationSound` and `PrayerNotificationSettings`. |
-| `Salat Times/ContentView.swift` | Menu bar popover: hijri header, countdown, six prayer rows, footer. |
-| `Salat Times/SettingsView.swift` | Settings window + all picker components + the `City` enum (~105 cities, line ~729) with coordinates. |
+| `Salat Times/Core/` | Pure, `nonisolated`, I/O-free model + calculation types. No SwiftUI, no network. Shared by everything and covered by `Checks/`. The one `UserDefaults` touch is `PrayerSettings.load(from:)`, which takes the store as a parameter so the checks can pass a scratch suite. Also holds `City`/`Continent` and `NotificationSound`/`PrayerNotificationSettings`. |
+| `Salat Times/PrayerManager.swift` | The one `ObservableObject`: fetch, countdown timer, notifications, the settings diff, location. |
+| `Salat Times/ContentView.swift` | Menu bar popover: hijri header, countdown, six prayer rows, the two night markers, footer. |
+| `Salat Times/SettingsView.swift` | Settings window + the city/method/language/format/notification picker components. |
+| `Salat Times/CalculationSettingsView.swift` | The madhab, high-latitude and midnight-mode sections, per-prayer tuning, and the Fajr/Isha fixed offsets. |
 | `Salat Times/WelcomeView.swift` | First-launch onboarding, gated on `hasShownWelcome`. |
 | `Salat Times/Translations.swift` | Lookup + numeral/RTL helpers. The strings themselves live in `Translations+UI/Methods/Prayer/Hijri/Settings.swift`. |
 
@@ -70,11 +71,23 @@ rebuild when it changes.
 - `appLanguage` (default `"ar"`), `selectedCityRaw`, `calculationMethod` (`0` means unset → Aladhan method `5`), `timeFormat24`, `numberFormat`, `hasShownWelcome`
 - `reminderInterval`, `warningInterval` — minutes; `0` disables
 - `notification_<Prayer>_enabled` / `notification_<Prayer>_sound` for each of `Fajr Sunrise Dhuhr Asr Maghrib Isha`
+- `asrSchool` (`0` Shafi'i / `1` Hanafi), `latitudeAdjustment` (`0`–`3`; `0` is a real value, NONE, not "unset"), `midnightMode` (`0` standard / `1` Jafari) — request fields
+- `tune_<Prayer>` — minutes, `-30…30`; `fajrBeforeSunriseMinutes` / `ishaAfterMaghribMinutes` — `0` disables, otherwise clamped to `15…180`. All applied on read
 
-There is no settings-changed notification: `SettingsView` wires each control's `.onChange` directly
-to `manager.loadSavedCity()`, `manager.updateCountdown()`, or `manager.schedulePrayerNotifications()`.
-**A new setting needs its own `.onChange` hook or it silently won't take effect.** Language changes
-are the exception — `PrayerManager.observeLanguageChanges()` watches `UserDefaults.didChangeNotification`.
+Every one of these is clamped in `PrayerSettings.load(from:)` rather than trusted, so a bad stored
+value can't reach a request URL or an instant.
+
+**Settings take effect through one debounced diff, not per-control hooks.**
+`PrayerManager.observeSettingsChanges()` watches `UserDefaults.didChangeNotification`, coalesces the
+burst (250 ms), reloads the `PrayerSettings` snapshot and compares it with the previous one. A change
+to `requestFingerprint` refetches; anything else just rebuilds events and reconciles notifications.
+**So a new setting takes effect because `PrayerSettings.load` reads its key — not because a view
+remembered to wire it.** The only `.onChange` left in `SettingsView` writes *another* preference
+(picking a city sets the recommended method); don't add ones that merely call back into the manager.
+
+> Before 2026-08-12 each control wired its own `.onChange` to `manager.loadSavedCity()` /
+> `updateCountdown()` / `schedulePrayerNotifications()`, and a setting without a hook silently did
+> nothing — `timeFormat24` and `warningInterval` had both been shipped that way.
 
 **`PrayerScheduleCalculator` is the only code allowed to turn a wall-clock string into a `Date`.**
 The menu bar timer, the popover's `TimelineView`, and the notification scheduler all consume
@@ -96,7 +109,16 @@ Friday renaming is resolved once into `PrayerEvent.translationKey`; never specia
 **Adjustments are applied on read, never stored.** `PrayerAdjustments` re-applies per-prayer tuning
 and the Fajr/Isha fixed offsets each time a day is read, so changing an offset must never invalidate
 cached data. `PrayerSettings.requestFingerprint` covers only the fields that change what the *server*
-returns.
+returns — city coordinates, `method`, `school`, `latitudeAdjustment`, `midnightMode`. All four
+non-coordinate axes were verified against the live API (Hanafi moves Cairo's Asr 16:37 → 17:44;
+Jafari moves Midnight 01:00 → 00:12; `latitudeAdjustmentMethod` is echoed in `meta` as
+`NONE`/`MIDDLE_OF_THE_NIGHT`/`ONE_SEVENTH`/`ANGLE_BASED`).
+
+The popover shows `Midnight` and `Lastthird` below a divider in a quieter style
+(`PrayerRow(isSecondary:)`), because nothing counts down to them and nothing notifies for them.
+Note their instants are attributed to the `dateStamp` they are *listed under*, which is the day
+before the small hours they actually fall in — the rendered clock is right, but don't build anything
+that fires on a night marker's `date` without resolving that first.
 
 ## External API and caching
 
@@ -137,6 +159,12 @@ the device's rollover, not the city's.
 - **Idempotent.** Identifiers are `prayer_<Key>_<yyyy-MM-dd>_<notificationFingerprint>`. Same
   settings → same identifiers → no churn; changed settings → all identifiers rotate, so the old ones
   fall out of the desired set and are removed. Never go back to clear-then-rebuild.
+  A request's **sound is fixed when it is added**, so the per-prayer sounds are part of that
+  fingerprint — without them the reconciler saw a matching identifier and left the already-pending
+  alerts playing the old sound. `enabledPrayers` is deliberately *not* in it: disabling already drops
+  a prayer from the desired set, and folding it in would rewrite every other prayer's requests for
+  nothing. `reconcile` reads both off the `PrayerSettings` snapshot, not `UserDefaults`, so what is
+  scheduled is exactly what the manager diffed.
 - **Multi-day, within the cap.** `UNUserNotificationCenter` keeps 64 pending requests and silently
   discards the furthest-future ones past that. `horizonDays` budgets against it (6 prayers +
   reminders ≈ 5 days) and the boundary timer slides the window forward on every prayer.

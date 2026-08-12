@@ -13,7 +13,8 @@ var settings = PrayerSettings(
     method: 4, school: 0, latitudeAdjustment: 0, midnightMode: 0,
     tuneMinutes: [:], fajrBeforeSunriseMinutes: 0, ishaAfterMaghribMinutes: 0,
     language: "en", numberFormat: "western", use24Hour: true,
-    reminderMinutes: 0, warningMinutes: 0)
+    reminderMinutes: 0, warningMinutes: 0,
+    enabledPrayers: Set(PrayerKey.notifiable.map(\.rawValue)), prayerSounds: [:])
 
 var failures = 0
 func check(_ label: String, _ ok: Bool, _ detail: @autoclosure () -> String = "") {

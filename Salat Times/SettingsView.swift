@@ -137,7 +137,19 @@ struct SettingsView: View {
                 GroupBox(label: Label(Translations.string("calculation_method", language: appLanguage), systemImage: "function")) {
                     CalculationMethodPicker(selectedMethod: $method, appLanguage: appLanguage)
                 }
-                
+
+                GroupBox(label: Label(Translations.string("asr_madhab", language: appLanguage), systemImage: "building.columns")) {
+                    CalculationOptionsSection()
+                }
+
+                GroupBox(label: Label(Translations.string("prayer_tuning", language: appLanguage), systemImage: "slider.horizontal.3")) {
+                    PrayerTuningSection()
+                }
+
+                GroupBox(label: Label(Translations.string("fixed_times", language: appLanguage), systemImage: "arrow.left.arrow.right")) {
+                    FixedOffsetsSection()
+                }
+
                 GroupBox(label: Label(Translations.string("time_format", language: appLanguage), systemImage: "clock")) {
                     HStack(spacing: 0) {
                         TimeFormatRadioButton(title: "24H (18:00)", isSelected: is24HourFormat) {
@@ -304,28 +316,15 @@ struct SettingsView: View {
         .background(.regularMaterial)
         .environment(\.layoutDirection, Translations.isRTL(appLanguage) ? .rightToLeft : .leftToRight)
         .environment(\.locale, Locale(identifier: Translations.locale(appLanguage)))
+        // Every setting below reaches `PrayerManager` through its debounced
+        // `UserDefaults` diff, so controls do not need — and must not grow — an
+        // `.onChange` hook each. The one hook left writes *another* preference rather
+        // than reacting to this one.
         .onChange(of: selectedCityRaw) { newValue in
             if let city = City(rawValue: newValue) {
                 method = city.recommendedMethod
             }
-            manager.loadSavedCity()
         }
-        .onChange(of: method) { _ in manager.loadSavedCity() }
-        .onChange(of: numberFormat) { _ in manager.updateCountdown() }
-        // Reschedule notifications when any notification setting changes
-        .onChange(of: fajrEnabled) { _ in manager.schedulePrayerNotifications() }
-        .onChange(of: sunriseEnabled) { _ in manager.schedulePrayerNotifications() }
-        .onChange(of: dhuhrEnabled) { _ in manager.schedulePrayerNotifications() }
-        .onChange(of: asrEnabled) { _ in manager.schedulePrayerNotifications() }
-        .onChange(of: maghribEnabled) { _ in manager.schedulePrayerNotifications() }
-        .onChange(of: ishaEnabled) { _ in manager.schedulePrayerNotifications() }
-        .onChange(of: fajrSound) { _ in manager.schedulePrayerNotifications() }
-        .onChange(of: sunriseSound) { _ in manager.schedulePrayerNotifications() }
-        .onChange(of: dhuhrSound) { _ in manager.schedulePrayerNotifications() }
-        .onChange(of: asrSound) { _ in manager.schedulePrayerNotifications() }
-        .onChange(of: maghribSound) { _ in manager.schedulePrayerNotifications() }
-        .onChange(of: ishaSound) { _ in manager.schedulePrayerNotifications() }
-        .onChange(of: reminderInterval) { _ in manager.schedulePrayerNotifications() }
     }
 }
 
