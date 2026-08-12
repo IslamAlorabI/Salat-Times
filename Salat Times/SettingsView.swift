@@ -26,7 +26,7 @@ struct SettingsView: View {
     var body: some View {
         HStack(spacing: 0) {
             sidebar
-            Divider()
+            Divider().ignoresSafeArea()
             detail
         }
         .frame(minWidth: 680, minHeight: 580)
@@ -56,11 +56,17 @@ struct SettingsView: View {
         }
         .padding(.horizontal, 8)
         .padding(.bottom, 10)
-        .frame(width: 190)
+        .frame(width: 190, alignment: .top)
+        .frame(maxHeight: .infinity)
         // A tint over the shared background rather than a material of its own, so the
         // sidebar reads as a sidebar at every translucency level without ever becoming a
         // second, differently-blurred surface.
-        .background(Color.primary.opacity(0.05))
+        //
+        // `.ignoresSafeArea()` is what makes it reach the very top. The window uses
+        // `.hiddenTitleBar`, but the *content* is still inset below where the title bar
+        // would be, so the tint stopped short and the window background showed through as
+        // a pale strip above the sidebar.
+        .background(Color.primary.opacity(0.05).ignoresSafeArea())
     }
 
     private var detail: some View {

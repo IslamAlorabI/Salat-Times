@@ -31,9 +31,14 @@ struct AboutView: View {
         return raw
     }
 
-    private static var copyrightYear: String {
-        "\(Calendar.current.component(.year, from: Date()))"
-    }
+    /// A literal, and it must stay one.
+    ///
+    /// This was briefly `Calendar.current.component(.year, from: Date())`, which is
+    /// nonsense: a copyright year records when the work was published, not what day it is
+    /// on the reader's machine. That version would have claimed a new copyright every
+    /// 1 January without a line of code changing — and would have read "© 2019" to anyone
+    /// whose clock was wrong. Bump it by editing it.
+    private static let copyrightYear = "2026"
 
     /// Version strings, URLs and the like are Latin-script and must stay left-to-right
     /// even in an Arabic window — otherwise `3.0 (30)` renders with its parentheses

@@ -84,9 +84,10 @@ struct ContentView: View {
             // Location and sync, small and quiet, over the gradient.
             HStack(spacing: 6) {
                 Image(systemName: "location.fill")
-                    .font(.system(size: 9))
+                    .font(.system(size: 10))
                 Text(cityName)
-                    .font(.system(size: 11, weight: .medium))
+                    .font(.system(size: 12, weight: .medium))
+                    .lineLimit(1)
 
                 Spacer(minLength: 8)
 
@@ -132,10 +133,10 @@ struct ContentView: View {
                 }
                 Text(gregorianDate)
             }
-            .font(.system(size: 11, weight: .medium))
-            .foregroundStyle(.white.opacity(0.75))
+            .font(.system(size: 12.5, weight: .medium))
+            .foregroundStyle(.white.opacity(0.85))
             .lineLimit(1)
-            .minimumScaleFactor(0.8)
+            .minimumScaleFactor(0.75)
             .padding(.horizontal, 14)
             .padding(.top, 12)
             .padding(.bottom, 13)
@@ -223,9 +224,10 @@ struct ContentView: View {
 
                 Spacer(minLength: 0)
 
+                // Red: it is the one destructive action in the panel.
                 ToolbarButton(icon: "power",
                               title: Translations.string("quit", language: appLanguage),
-                              tint: .secondary) { NSApplication.shared.terminate(nil) }
+                              tint: .red) { NSApplication.shared.terminate(nil) }
 
                 Spacer(minLength: 0)
             }

@@ -157,6 +157,16 @@ struct SettingsCard<Content: View>: View {
     let isRTL: Bool
     @ViewBuilder var content: () -> Content
 
+    /// A flat `controlBackgroundColor` fill read as a dead grey slab. A shallow top-down
+    /// gradient plus a hairline and a soft shadow is what gives the card an edge and a
+    /// light source — the difference between "a coloured rectangle" and "a surface".
+    private static var surface: LinearGradient {
+        LinearGradient(colors: [Color(nsColor: .controlBackgroundColor),
+                                Color(nsColor: .controlBackgroundColor).opacity(0.72)],
+                       startPoint: .top,
+                       endPoint: .bottom)
+    }
+
     var body: some View {
         VStack(alignment: isRTL ? .trailing : .leading, spacing: 6) {
             if let title {
@@ -169,20 +179,23 @@ struct SettingsCard<Content: View>: View {
             VStack(spacing: 0) {
                 content()
             }
-            .background(
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .fill(Color(nsColor: .controlBackgroundColor))
-            )
+            .background(Self.surface)
+            // Clipped, not just backed: a row's hover highlight is a full-bleed rectangle,
+            // so without this it spilled square over the card's rounded corners.
+            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
             .overlay(
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .strokeBorder(Color.primary.opacity(0.06), lineWidth: 1)
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .strokeBorder(Color.primary.opacity(0.09), lineWidth: 0.5)
             )
+            .shadow(color: .black.opacity(0.13), radius: 2.5, y: 1)
 
             if let footnote {
                 Text(footnote)
                     .font(.system(size: 11))
                     .foregroundStyle(.secondary)
+                    .multilineTextAlignment(isRTL ? .trailing : .leading)
                     .fixedSize(horizontal: false, vertical: true)
+                    .frame(maxWidth: .infinity, alignment: isRTL ? .trailing : .leading)
                     .padding(.horizontal, 4)
             }
         }
@@ -202,11 +215,18 @@ struct SettingsRow<Trailing: View>: View {
             VStack(alignment: isRTL ? .trailing : .leading, spacing: 2) {
                 Text(title)
                     .font(.system(size: 13))
+                    .frame(maxWidth: .infinity, alignment: isRTL ? .trailing : .leading)
                 if let subtitle {
+                    // Both the frame *and* `multilineTextAlignment` are needed. Without
+                    // the frame the label hugs its own width, so a short title and a long
+                    // wrapped description ended up starting at two different edges; without
+                    // the alignment the wrapped lines stay leading-aligned inside it.
                     Text(subtitle)
                         .font(.system(size: 11))
                         .foregroundStyle(.secondary)
+                        .multilineTextAlignment(isRTL ? .trailing : .leading)
                         .fixedSize(horizontal: false, vertical: true)
+                        .frame(maxWidth: .infinity, alignment: isRTL ? .trailing : .leading)
                 }
             }
 
