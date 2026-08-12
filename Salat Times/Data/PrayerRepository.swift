@@ -74,6 +74,23 @@ actor PrayerRepository {
         return Snapshot(timetable: timetable, fetchedAt: newestFetch, servedStale: servedStale)
     }
 
+    /// One specific month, whichever month `date` falls in.
+    ///
+    /// `load(around:)` deliberately only reaches for the months the *scheduler* needs.
+    /// The schedule window's stepper can walk to any month, so it asks for one directly —
+    /// same cache-first contract, same stale-beats-nothing fallback, and a month the user
+    /// browses to is cached like any other.
+    func month(containing date: Date, settings: PrayerSettings) async throws -> Snapshot {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = knownTimeZone(for: settings) ?? .current
+
+        let key = MonthKey.containing(date, calendar: calendar, settings: settings)
+        let entry = try await month(key, settings: settings, forceRefresh: false)
+        return Snapshot(timetable: entry.timetable,
+                        fetchedAt: entry.isStale() ? nil : entry.fetchedAt,
+                        servedStale: entry.isStale())
+    }
+
     // MARK: - Internals
 
     private func month(_ key: MonthKey, settings: PrayerSettings, forceRefresh: Bool) async throws -> CachedMonth {

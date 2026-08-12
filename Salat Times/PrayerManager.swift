@@ -342,6 +342,13 @@ class PrayerManager: NSObject, ObservableObject, CLLocationManagerDelegate, UNUs
         return Translations.localizedNumber(formatter.string(from: date), numberFormat: settings.numberFormat)
     }
 
+    /// The timetable for whichever month `date` falls in, for the schedule window's
+    /// stepper. Cache-first like everything else, so walking back through months the user
+    /// has already viewed costs nothing.
+    func monthTimetable(containing date: Date) async throws -> PrayerTimetable {
+        try await repository.month(containing: date, settings: settings).timetable
+    }
+
     /// Today's events in the city's zone, for the popover list.
     var todayEvents: [PrayerEvent] {
         let stamp = DateStamp.format(Date(), in: timetable.calendar)

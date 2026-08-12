@@ -408,5 +408,87 @@ nonisolated let uiStrings: [String: [String: String]] = [
         "fa": "بیایید ترجیحات شما را تنظیم کنیم",
         "de": "Lassen Sie uns Ihre Einstellungen einrichten"
     ],
+
+    // Monthly schedule window.
+    "monthly_schedule": [
+        "ar": "جدول الشهر",
+        "en": "Monthly Schedule",
+        "ru": "Расписание на месяц",
+        "id": "Jadwal Bulanan",
+        "tr": "Aylık Takvim",
+        "ur": "ماہانہ شیڈول",
+        "fa": "برنامه ماهانه",
+        "de": "Monatsplan"
+    ],
+    "previous_month": [
+        "ar": "الشهر السابق",
+        "en": "Previous month",
+        "ru": "Предыдущий месяц",
+        "id": "Bulan sebelumnya",
+        "tr": "Önceki ay",
+        "ur": "پچھلا مہینہ",
+        "fa": "ماه قبل",
+        "de": "Vorheriger Monat"
+    ],
+    "next_month": [
+        "ar": "الشهر التالي",
+        "en": "Next month",
+        "ru": "Следующий месяц",
+        "id": "Bulan berikutnya",
+        "tr": "Sonraki ay",
+        "ur": "اگلا مہینہ",
+        "fa": "ماه بعد",
+        "de": "Nächster Monat"
+    ],
+    "today": [
+        "ar": "اليوم",
+        "en": "Today",
+        "ru": "Сегодня",
+        "id": "Hari ini",
+        "tr": "Bugün",
+        "ur": "آج",
+        "fa": "امروز",
+        "de": "Heute"
+    ],
+    "schedule_date": [
+        "ar": "التاريخ",
+        "en": "Date",
+        "ru": "Дата",
+        "id": "Tanggal",
+        "tr": "Tarih",
+        "ur": "تاریخ",
+        "fa": "تاریخ",
+        "de": "Datum"
+    ],
+    "export_csv": [
+        "ar": "تصدير CSV",
+        "en": "Export CSV",
+        "ru": "Экспорт CSV",
+        "id": "Ekspor CSV",
+        "tr": "CSV'ye aktar",
+        "ur": "CSV برآمد کریں",
+        "fa": "خروجی CSV",
+        "de": "CSV exportieren"
+    ],
+    "print": [
+        "ar": "طباعة",
+        "en": "Print",
+        "ru": "Печать",
+        "id": "Cetak",
+        "tr": "Yazdır",
+        "ur": "پرنٹ",
+        "fa": "چاپ",
+        "de": "Drucken"
+    ],
+    "schedule_footnote": [
+        "ar": "الأوقات تعكس إعداداتك الحالية.",
+        "en": "Times reflect your current settings.",
+        "ru": "Время показано с учётом ваших настроек.",
+        "id": "Waktu mengikuti pengaturan Anda saat ini.",
+        "tr": "Vakitler mevcut ayarlarınızı yansıtır.",
+        "ur": "اوقات آپ کی موجودہ ترتیبات کے مطابق ہیں۔",
+        "fa": "اوقات بر اساس تنظیمات فعلی شماست.",
+        "de": "Die Zeiten folgen Ihren aktuellen Einstellungen."
+    ],
 ]
 

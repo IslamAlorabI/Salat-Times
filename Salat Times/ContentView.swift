@@ -158,9 +158,30 @@ struct ContentView: View    {
                     .foregroundColor(.accentColor)
                 }
                 .buttonStyle(.link)
-                
+
                 Spacer()
-                
+
+                Button {
+                    openWindow(id: "schedule")
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        NSApplication.shared.activate(ignoringOtherApps: true)
+                        if let window = NSApplication.shared.windows.first(where: { $0.title == Translations.string("monthly_schedule", language: appLanguage) }) {
+                            window.makeKeyAndOrderFront(nil)
+                            window.orderFrontRegardless()
+                        }
+                    }
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: "calendar")
+                        Text(Translations.string("monthly_schedule", language: appLanguage))
+                    }
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(.accentColor)
+                }
+                .buttonStyle(.link)
+
+                Spacer()
+
                 Button(action: {
                     NSApplication.shared.terminate(nil)
                 }) {

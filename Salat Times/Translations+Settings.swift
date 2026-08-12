@@ -337,6 +337,18 @@ nonisolated let settingsStrings: [String: [String: String]] = [
         "de": "Systemeinstellungen öffnen"
     ],
 
+    // Settings window tab labels.
+    "prayer_times": [
+        "ar": "أوقات الصلاة",
+        "en": "Prayer Times",
+        "ru": "Время молитв",
+        "id": "Waktu Salat",
+        "tr": "Namaz Vakitleri",
+        "ur": "نماز کے اوقات",
+        "fa": "اوقات نماز",
+        "de": "Gebetszeiten"
+    ],
+
     // Calculation axes that change what the server returns.
     "asr_madhab": [
         "ar": "مذهب العصر",

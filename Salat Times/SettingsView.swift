@@ -1,39 +1,91 @@
 import SwiftUI
+import os
 import CoreLocation
 import ServiceManagement
 import UserNotifications
 
+/// The settings window.
+///
+/// Three tabs rather than one column: twelve `GroupBox`es stacked in a 500pt-wide
+/// `ScrollView` ran to about twice the window's height, and the calculation sections had
+/// drifted in among the notification ones.
+///
+/// No tab calls back into `PrayerManager` to make a setting take effect — the manager's
+/// debounced `UserDefaults` diff (`observeSettingsChanges`) picks every write up. The
+/// only calls left are genuine *actions*: refresh now, and re-reading the notification
+/// authorization.
 struct SettingsView: View {
+    @AppStorage("appLanguage") private var appLanguage = "ar"
+
+    var body: some View {
+        VStack(spacing: 0) {
+            TabView {
+                GeneralSettingsTab()
+                    .tabItem {
+                        Label(Translations.string("general", language: appLanguage),
+                              systemImage: "gearshape")
+                    }
+
+                PrayerTimesSettingsTab()
+                    .tabItem {
+                        Label(Translations.string("prayer_times", language: appLanguage),
+                              systemImage: "clock")
+                    }
+
+                NotificationSettingsTab()
+                    .tabItem {
+                        Label(Translations.string("prayer_notifications", language: appLanguage),
+                              systemImage: "bell.badge")
+                    }
+            }
+            .padding(.top, 10)
+
+            Divider()
+
+            HStack {
+                Spacer()
+                Link(destination: URL(string: "https://github.com/IslamAlorabI")!) {
+                    Text("Made with ♥︎ by Islam AlorabI - 2026")
+                        .font(.system(size: 11, weight: .medium, design: .monospaced))
+                        .foregroundColor(.secondary)
+                        .opacity(0.7)
+                }
+                .buttonStyle(.plain)
+                Spacer()
+            }
+            .padding(.vertical, 8)
+        }
+        .frame(minWidth: 470, maxWidth: 580, minHeight: 620)
+        .background(.regularMaterial)
+        .environment(\.layoutDirection, Translations.isRTL(appLanguage) ? .rightToLeft : .leftToRight)
+        .environment(\.locale, Locale(identifier: Translations.locale(appLanguage)))
+    }
+}
+
+/// One tab's worth of `GroupBox`es. Each tab still scrolls — the prayer-times tab is
+/// genuinely tall — but only over its own content.
+private struct SettingsTabScroll<Content: View>: View {
+    @ViewBuilder var content: () -> Content
+
+    var body: some View {
+        ScrollView(showsIndicators: false) {
+            VStack(alignment: .leading, spacing: 20, content: content)
+                .padding()
+        }
+    }
+}
+
+// MARK: - General
+
+struct GeneralSettingsTab: View {
     @EnvironmentObject var manager: PrayerManager
-    @AppStorage("calculationMethod") private var method = 5
-    @AppStorage("selectedCityRaw") private var selectedCityRaw = City.cairo.rawValue
-    
     @AppStorage("appLanguage") private var appLanguage = "ar"
     @AppStorage("timeFormat24") private var is24HourFormat = true
     @AppStorage("numberFormat") private var numberFormat = "western"
-    
-    // Notification settings per prayer
-    @AppStorage("notification_Fajr_enabled") private var fajrEnabled = true
-    @AppStorage("notification_Sunrise_enabled") private var sunriseEnabled = true
-    @AppStorage("notification_Dhuhr_enabled") private var dhuhrEnabled = true
-    @AppStorage("notification_Asr_enabled") private var asrEnabled = true
-    @AppStorage("notification_Maghrib_enabled") private var maghribEnabled = true
-    @AppStorage("notification_Isha_enabled") private var ishaEnabled = true
-    
-    @AppStorage("notification_Fajr_sound") private var fajrSound = "default"
-    @AppStorage("notification_Sunrise_sound") private var sunriseSound = "default"
-    @AppStorage("notification_Dhuhr_sound") private var dhuhrSound = "default"
-    @AppStorage("notification_Asr_sound") private var asrSound = "default"
-    @AppStorage("notification_Maghrib_sound") private var maghribSound = "default"
-    @AppStorage("notification_Isha_sound") private var ishaSound = "default"
-    
     @State private var launchAtLogin = SMAppService.mainApp.status == .enabled
-    @AppStorage("reminderInterval") private var reminderInterval = 0
-    @AppStorage("warningInterval") private var warningInterval = 0
+
     var body: some View {
-        ScrollView(showsIndicators: false) {
-            VStack(alignment: .leading, spacing: 25) {
-                
+        SettingsTabScroll {
                 GroupBox(label: Label(Translations.string("general", language: appLanguage), systemImage: "gearshape")) {
                     HStack {
                         Text(Translations.string("launch_at_login", language: appLanguage))
@@ -50,15 +102,15 @@ struct SettingsView: View {
                                         try SMAppService.mainApp.unregister()
                                     }
                                 } catch {
-                                    print("Failed to update launch at login: \(error)")
+                                    Log.data.error("Could not update launch at login: \(error.localizedDescription, privacy: .public)")
                                     launchAtLogin = !newValue
                                 }
                             }
                     }
                     .padding(.vertical, 4)
-                    
+
                     Divider()
-                    
+
                     HStack {
                         Text(Translations.string("refresh_data", language: appLanguage))
                             .font(.system(size: 13))
@@ -76,7 +128,7 @@ struct SettingsView: View {
                     }
                     .padding(.vertical, 4)
                 }
-                
+
                 GroupBox(label: Label(Translations.string("languages", language: appLanguage), systemImage: "globe")) {
                     let columns = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
                     LazyVGrid(columns: columns, spacing: 12) {
@@ -129,7 +181,37 @@ struct SettingsView: View {
                     }
                     .padding(.vertical, 4)
                 }
-                
+                GroupBox(label: Label(Translations.string("time_format", language: appLanguage), systemImage: "clock")) {
+                    HStack(spacing: 0) {
+                        TimeFormatRadioButton(title: "24H (18:00)", isSelected: is24HourFormat) {
+                            is24HourFormat = true
+                        }
+                        
+                        Rectangle()
+                            .fill(Color.gray.opacity(0.3))
+                            .frame(height: 1)
+                            .frame(maxWidth: .infinity)
+                            .padding(.horizontal, 12)
+                        
+                        TimeFormatRadioButton(title: "12H (6:00 PM)", isSelected: !is24HourFormat) {
+                            is24HourFormat = false
+                        }
+                    }
+                    .padding(.vertical, 4)
+                }
+        }
+    }
+}
+
+// MARK: - Prayer times
+
+struct PrayerTimesSettingsTab: View {
+    @AppStorage("appLanguage") private var appLanguage = "ar"
+    @AppStorage("selectedCityRaw") private var selectedCityRaw = City.cairo.rawValue
+    @AppStorage("calculationMethod") private var method = 5
+
+    var body: some View {
+        SettingsTabScroll {
                 GroupBox(label: Label(Translations.string("location", language: appLanguage), systemImage: "location.fill")) {
                     CitySearchPicker(selectedCityRaw: $selectedCityRaw, appLanguage: appLanguage)
                 }
@@ -149,65 +231,44 @@ struct SettingsView: View {
                 GroupBox(label: Label(Translations.string("fixed_times", language: appLanguage), systemImage: "arrow.left.arrow.right")) {
                     FixedOffsetsSection()
                 }
+        }
+        // The only `.onChange` left in the settings window, and it is here because it
+        // *writes another preference* rather than reacting to this one: choosing a city
+        // moves the calculation method to the one that city's authority uses. Everything
+        // else reaches `PrayerManager` through its debounced `UserDefaults` diff, so do
+        // not add hooks that merely call back into the manager.
+        .onChange(of: selectedCityRaw) { newValue in
+            if let city = City(rawValue: newValue) {
+                method = city.recommendedMethod
+            }
+        }
+    }
+}
 
-                GroupBox(label: Label(Translations.string("time_format", language: appLanguage), systemImage: "clock")) {
-                    HStack(spacing: 0) {
-                        TimeFormatRadioButton(title: "24H (18:00)", isSelected: is24HourFormat) {
-                            is24HourFormat = true
-                        }
-                        
-                        Rectangle()
-                            .fill(Color.gray.opacity(0.3))
-                            .frame(height: 1)
-                            .frame(maxWidth: .infinity)
-                            .padding(.horizontal, 12)
-                        
-                        TimeFormatRadioButton(title: "12H (6:00 PM)", isSelected: !is24HourFormat) {
-                            is24HourFormat = false
-                        }
-                    }
-                    .padding(.vertical, 4)
-                }
-                
-                GroupBox(label: Label(Translations.string("prayer_reminder", language: appLanguage), systemImage: "bell.and.waves.left.and.right")) {
-                    HStack {
-                        Text(Translations.string("prayer_reminder", language: appLanguage))
-                            .font(.system(size: 13))
-                        Spacer()
-                        Picker("", selection: $reminderInterval) {
-                            Text(Translations.string("reminder_disabled", language: appLanguage)).tag(0)
-                            Text(Translations.string("reminder_10_minutes", language: appLanguage)).tag(10)
-                            Text(Translations.string("reminder_15_minutes", language: appLanguage)).tag(15)
-                            Text(Translations.string("reminder_20_minutes", language: appLanguage)).tag(20)
-                            Text(Translations.string("reminder_30_minutes", language: appLanguage)).tag(30)
-                            Text(Translations.string("reminder_1_hour", language: appLanguage)).tag(60)
-                        }
-                        .pickerStyle(.menu)
-                        .frame(width: 140)
-                    }
-                    .padding(.vertical, 4)
-                }
-                
-                GroupBox(label: Label(Translations.string("menu_bar_warning", language: appLanguage), systemImage: "exclamationmark.triangle")) {
-                    HStack {
-                        Text(Translations.string("menu_bar_warning", language: appLanguage))
-                            .font(.system(size: 13))
-                        Spacer()
-                        Picker("", selection: $warningInterval) {
-                            Text(Translations.string("warning_disabled", language: appLanguage)).tag(0)
-                            Text(Translations.string("warning_10_minutes", language: appLanguage)).tag(10)
-                            Text(Translations.string("warning_15_minutes", language: appLanguage)).tag(15)
-                            Text(Translations.string("warning_20_minutes", language: appLanguage)).tag(20)
-                            Text(Translations.string("warning_25_minutes", language: appLanguage)).tag(25)
-                            Text(Translations.string("warning_30_minutes", language: appLanguage)).tag(30)
-                        }
-                        .pickerStyle(.menu)
-                        .frame(width: 140)
-                    }
-                    .padding(.vertical, 4)
-                }
+// MARK: - Notifications
 
-                
+struct NotificationSettingsTab: View {
+    @EnvironmentObject var manager: PrayerManager
+    @AppStorage("appLanguage") private var appLanguage = "ar"
+    @AppStorage("reminderInterval") private var reminderInterval = 0
+    @AppStorage("warningInterval") private var warningInterval = 0
+
+    @AppStorage("notification_Fajr_enabled") private var fajrEnabled = true
+    @AppStorage("notification_Sunrise_enabled") private var sunriseEnabled = true
+    @AppStorage("notification_Dhuhr_enabled") private var dhuhrEnabled = true
+    @AppStorage("notification_Asr_enabled") private var asrEnabled = true
+    @AppStorage("notification_Maghrib_enabled") private var maghribEnabled = true
+    @AppStorage("notification_Isha_enabled") private var ishaEnabled = true
+
+    @AppStorage("notification_Fajr_sound") private var fajrSound = "default"
+    @AppStorage("notification_Sunrise_sound") private var sunriseSound = "default"
+    @AppStorage("notification_Dhuhr_sound") private var dhuhrSound = "default"
+    @AppStorage("notification_Asr_sound") private var asrSound = "default"
+    @AppStorage("notification_Maghrib_sound") private var maghribSound = "default"
+    @AppStorage("notification_Isha_sound") private var ishaSound = "default"
+
+    var body: some View {
+        SettingsTabScroll {
                 GroupBox(label: Label(Translations.string("prayer_notifications", language: appLanguage), systemImage: "bell.badge")) {
                     VStack(spacing: 12) {
                         // Every toggle below is inert if macOS has notifications denied,
@@ -296,35 +357,48 @@ struct SettingsView: View {
                     }
                     .padding(.vertical, 4)
                 }
-                
-                HStack {
-                    Spacer()
-                    Link(destination: URL(string: "https://github.com/IslamAlorabI")!) {
-                        Text("Made with ♥︎ by Islam AlorabI - 2026")
-                            .font(.system(size: 12, weight: .medium, design: .monospaced))
-                            .foregroundColor(.secondary)
-                            .opacity(0.7)
+
+                GroupBox(label: Label(Translations.string("prayer_reminder", language: appLanguage), systemImage: "bell.and.waves.left.and.right")) {
+                    HStack {
+                        Text(Translations.string("prayer_reminder", language: appLanguage))
+                            .font(.system(size: 13))
+                        Spacer()
+                        Picker("", selection: $reminderInterval) {
+                            Text(Translations.string("reminder_disabled", language: appLanguage)).tag(0)
+                            Text(Translations.string("reminder_10_minutes", language: appLanguage)).tag(10)
+                            Text(Translations.string("reminder_15_minutes", language: appLanguage)).tag(15)
+                            Text(Translations.string("reminder_20_minutes", language: appLanguage)).tag(20)
+                            Text(Translations.string("reminder_30_minutes", language: appLanguage)).tag(30)
+                            Text(Translations.string("reminder_1_hour", language: appLanguage)).tag(60)
+                        }
+                        .pickerStyle(.menu)
+                        .frame(width: 140)
                     }
-                    .buttonStyle(.plain)
-                    Spacer()
+                    .padding(.vertical, 4)
                 }
-                .padding(.vertical, 8)
-            }
-            .padding()
+
+                GroupBox(label: Label(Translations.string("menu_bar_warning", language: appLanguage), systemImage: "exclamationmark.triangle")) {
+                    HStack {
+                        Text(Translations.string("menu_bar_warning", language: appLanguage))
+                            .font(.system(size: 13))
+                        Spacer()
+                        Picker("", selection: $warningInterval) {
+                            Text(Translations.string("warning_disabled", language: appLanguage)).tag(0)
+                            Text(Translations.string("warning_10_minutes", language: appLanguage)).tag(10)
+                            Text(Translations.string("warning_15_minutes", language: appLanguage)).tag(15)
+                            Text(Translations.string("warning_20_minutes", language: appLanguage)).tag(20)
+                            Text(Translations.string("warning_25_minutes", language: appLanguage)).tag(25)
+                            Text(Translations.string("warning_30_minutes", language: appLanguage)).tag(30)
+                        }
+                        .pickerStyle(.menu)
+                        .frame(width: 140)
+                    }
+                    .padding(.vertical, 4)
+                }
         }
-        .frame(minWidth: 420, maxWidth: 500, minHeight: 750)
-        .background(.regularMaterial)
-        .environment(\.layoutDirection, Translations.isRTL(appLanguage) ? .rightToLeft : .leftToRight)
-        .environment(\.locale, Locale(identifier: Translations.locale(appLanguage)))
-        // Every setting below reaches `PrayerManager` through its debounced
-        // `UserDefaults` diff, so controls do not need — and must not grow — an
-        // `.onChange` hook each. The one hook left writes *another* preference rather
-        // than reacting to this one.
-        .onChange(of: selectedCityRaw) { newValue in
-            if let city = City(rawValue: newValue) {
-                method = city.recommendedMethod
-            }
-        }
+        // The denial banner was captured once at launch and never re-read, so granting
+        // permission in System Settings left a stale warning on screen.
+        .onAppear { manager.refreshAuthorizationStatus() }
     }
 }
 

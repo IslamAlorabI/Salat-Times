@@ -54,6 +54,15 @@ struct SalatTimesApp: App {
         .defaultSize(width: 400, height: 600)
         .windowStyle(.hiddenTitleBar)
         
+        // Resizable, unlike the other two: a month of times is content the user may well
+        // want wider, and `.contentSize` would pin it shut.
+        Window(Translations.string("monthly_schedule", language: UserDefaults.standard.string(forKey: "appLanguage") ?? "ar"), id: "schedule") {
+            MonthlyScheduleView()
+                .environmentObject(manager)
+                .onAppear { NSApplication.shared.activate(ignoringOtherApps: true) }
+        }
+        .defaultSize(width: 820, height: 620)
+
         Window("Welcome", id: "welcome") {
             WelcomeView()
                 .environmentObject(manager)

@@ -36,12 +36,13 @@ instead.
 
 | File | Role |
 | --- | --- |
-| `Salat Times/SalatTimesApp.swift` | `@main`. `MenuBarExtra` (window style) + `settings` and `welcome` `Window` scenes. |
+| `Salat Times/SalatTimesApp.swift` | `@main`. `MenuBarExtra` (window style) + `settings`, `schedule` and `welcome` `Window` scenes. |
 | `Salat Times/Core/` | Pure, `nonisolated`, I/O-free model + calculation types. No SwiftUI, no network. Shared by everything and covered by `Checks/`. The one `UserDefaults` touch is `PrayerSettings.load(from:)`, which takes the store as a parameter so the checks can pass a scratch suite. Also holds `City`/`Continent` and `NotificationSound`/`PrayerNotificationSettings`. |
 | `Salat Times/PrayerManager.swift` | The one `ObservableObject`: fetch, countdown timer, notifications, the settings diff, location. |
 | `Salat Times/ContentView.swift` | Menu bar popover: hijri header, countdown, six prayer rows, the two night markers, footer. |
-| `Salat Times/SettingsView.swift` | Settings window + the city/method/language/format/notification picker components. |
-| `Salat Times/CalculationSettingsView.swift` | The madhab, high-latitude and midnight-mode sections, per-prayer tuning, and the Fajr/Isha fixed offsets. |
+| `Salat Times/SettingsView.swift` | Settings window: a `TabView` over `GeneralSettingsTab` / `PrayerTimesSettingsTab` / `NotificationSettingsTab`, plus the shared picker components. |
+| `Salat Times/CalculationSettingsView.swift` | The madhab, high-latitude and midnight-mode sections, per-prayer tuning, and the Fajr/Isha fixed offsets. Lives in the Prayer Times tab. |
+| `Salat Times/MonthlyScheduleView.swift` | The `schedule` window: a month of times, CSV export, `⌘P` print. |
 | `Salat Times/WelcomeView.swift` | First-launch onboarding, gated on `hasShownWelcome`. |
 | `Salat Times/Translations.swift` | Lookup + numeral/RTL helpers. The strings themselves live in `Translations+UI/Methods/Prayer/Hijri/Settings.swift`. |
 
@@ -120,6 +121,41 @@ Note their instants are attributed to the `dateStamp` they are *listed under*, w
 before the small hours they actually fall in — the rendered clock is right, but don't build anything
 that fires on a night marker's `date` without resolving that first.
 
+## The two windows
+
+**Settings is three tabs, not one column.** Twelve `GroupBox`es in a single `ScrollView`
+ran to about twice the window height. Each tab is a `SettingsTabScroll` and owns its own
+`@AppStorage`; none of them wire a control back to `PrayerManager` — the debounced diff
+does that. Only two `manager` calls remain in the whole window, and both are real actions:
+"refresh now" and `refreshAuthorizationStatus()` on the notifications tab (the denial
+banner used to be captured once at launch, so granting permission left it stuck on screen).
+
+**`MonthlyScheduleView` uses `Grid`, not `Table`.** `Table` is the native-looking choice
+and the one to reach for by default, but its column order does not follow
+`layoutDirection` — and `ar`/`ur`/`fa` are RTL with Arabic the *default* language. `Grid`
+also lets a row carry a background, which is how "today" and Fridays are marked; `Table`
+on macOS 13 cannot, so they could only have been shown by restyling text. Nothing here
+needs sorting, selection or resizable columns. Rows come from
+`PrayerScheduleCalculator.events(for:)` like everywhere else, so tuning, fixed offsets and
+the Jumu'ah rename arrive already applied.
+
+Three things in that window are easy to get wrong:
+
+- The **Hijri span in the header reads Aladhan's `date.hijri` from the cache**, never
+  `Calendar(identifier: .islamicUmmAlQura)`. The two disagree by up to a day and the
+  popover header already uses Aladhan's — one app must not show two different Hijri dates.
+- The **CSV is deliberately unlocalized**: `yyyy-MM-dd`, 24-hour `HH:mm`, western digits,
+  English `PrayerKey` headers. It goes into a spreadsheet, and Arabic-Indic numerals plus
+  RTL headers make it unparseable.
+- **Print re-renders into an off-screen `NSHostingView`** sized to the paper rather than
+  printing the window, because the on-screen grid is inside a `ScrollView` and would print
+  only the visible rows. It forces `.colorScheme(.light)` so a dark-mode Mac doesn't print
+  white text on white paper.
+
+The stepper walks to arbitrary months via `PrayerRepository.month(containing:settings:)`,
+which is separate from `load(around:)` — the latter deliberately only fetches the months
+the *scheduler* needs. Same cache-first contract, so browsing back is free.
+
 ## External API and caching
 
 `https://api.aladhan.com/v1/calendar/{year}/{month}` — **a month per request**, not a day. Aladhan
@@ -195,7 +231,7 @@ computed independently and must stay in agreement.
 ## Notes
 
 - Deployment target macOS 13.0, Swift 5, bundle id `Islam-AlorabI.Salat-Times`, version 3.0 (also hardcoded as `"v3.0"` in `ContentView`'s footer — update both). The *project-level* deployment target is 15.7; only the app target overrides it to 13.0.0, so any new target inherits 15.7 unless told otherwise.
-- **There is no `.entitlements` file.** Entitlements are synthesized from build settings (`ENABLE_APP_SANDBOX`, `ENABLE_HARDENED_RUNTIME`, `ENABLE_OUTGOING_NETWORK_CONNECTIONS`, …). Inspect what actually shipped with `codesign -d --entitlements - "<path>/Salat Times.app"`.
+- **There is no `.entitlements` file.** Entitlements are synthesized from build settings (`ENABLE_APP_SANDBOX`, `ENABLE_HARDENED_RUNTIME`, `ENABLE_OUTGOING_NETWORK_CONNECTIONS`, …). Inspect what actually shipped with `codesign -d --entitlements - "<path>/Salat Times.app"`. `ENABLE_USER_SELECTED_FILES` was `readonly` until the schedule window needed to *write* a CSV through `NSSavePanel`; it is `readwrite` in both configurations now, and the shipped entitlement is `com.apple.security.files.user-selected.read-write`.
 - `CoreLocation` is wired up but dead: `ENABLE_RESOURCE_ACCESS_LOCATION = NO` means it cannot work at all, `didUpdateLocations` just stops updates, and the city always comes from the `City` enum.
 - `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor` is set, so every new type is `@MainActor` by default. Pure model/calculation types must be marked `nonisolated` explicitly.
 - Launch-at-login uses `SMAppService.mainApp` in both `SettingsView` and `WelcomeView`.
