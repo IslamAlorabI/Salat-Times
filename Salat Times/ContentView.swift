@@ -39,13 +39,14 @@ struct ContentView: View    {
                     getGregorianDateView()
                         .id(numberFormat)
                     
+                    // Green only when these times came fresh from the server. Cached or
+                    // stale data still displays, but the dot says so.
+                    let isFresh = manager.lastUpdatedFromServer != nil && !manager.isServingStaleData
                     HStack(spacing: 4) {
                         Circle()
-                            .fill(manager.lastUpdatedFromServer != nil ? Color.green : Color.orange)
+                            .fill(isFresh ? Color.green : Color.orange)
                             .frame(width: 8, height: 8)
-                        Text(manager.lastUpdatedFromServer != nil ? 
-                             Translations.string("server_synced", language: appLanguage) :
-                             Translations.string("offline", language: appLanguage))
+                        Text(Translations.string(isFresh ? "server_synced" : "offline", language: appLanguage))
                             .font(.system(size: 11))
                             .foregroundColor(.secondary)
                     }
@@ -60,9 +61,8 @@ struct ContentView: View    {
             if !manager.isLoading && manager.errorMessage == nil {
                 TimelineView(.periodic(from: .now, by: 1.0)) { context in
                     CountdownView(
-                        upcomingPrayer: getUpcomingPrayer(),
-                        prayerName: getPrayerName(getUpcomingPrayer() ?? ""),
-                        timeRemaining: getTimeRemaining(at: context.date),
+                        upcoming: PrayerScheduleCalculator.next(after: context.date, in: manager.events),
+                        now: context.date,
                         numberFormat: numberFormat,
                         appLanguage: appLanguage
                     )
@@ -93,14 +93,15 @@ struct ContentView: View    {
                     Spacer()
                 }
             } else {
-                let upcomingPrayer = getUpcomingPrayer()
+                let upcomingKey = PrayerScheduleCalculator.next(after: Date(), in: manager.events)?.key
                 VStack(spacing: 4) {
-                    PrayerRow(name: getPrayerName("Fajr"), time: formatTime(manager.timings["Fajr"]), icon: "sunrise", color: getPrayerColor("Fajr"), isUpcoming: upcomingPrayer == "Fajr")
-                    PrayerRow(name: getPrayerName("Sunrise"), time: formatTime(manager.timings["Sunrise"]), icon: "sunrise.fill", color: getPrayerColor("Sunrise"), isUpcoming: upcomingPrayer == "Sunrise")
-                    PrayerRow(name: getPrayerName("Dhuhr"), time: formatTime(manager.timings["Dhuhr"]), icon: "sun.max.fill", color: getPrayerColor("Dhuhr"), isUpcoming: upcomingPrayer == "Dhuhr")
-                    PrayerRow(name: getPrayerName("Asr"), time: formatTime(manager.timings["Asr"]), icon: "sun.min.fill", color: getPrayerColor("Asr"), isUpcoming: upcomingPrayer == "Asr")
-                    PrayerRow(name: getPrayerName("Maghrib"), time: formatTime(manager.timings["Maghrib"]), icon: "sunset.fill", color: getPrayerColor("Maghrib"), isUpcoming: upcomingPrayer == "Maghrib")
-                    PrayerRow(name: getPrayerName("Isha"), time: formatTime(manager.timings["Isha"]), icon: "moon.stars.fill", color: getPrayerColor("Isha"), isUpcoming: upcomingPrayer == "Isha")
+                    ForEach(manager.todayEvents.filter { !$0.key.isNightMarker }) { event in
+                        PrayerRow(name: event.name(language: appLanguage),
+                                  time: manager.formattedTime(event.date),
+                                  icon: event.key.systemImageName,
+                                  color: getPrayerColor(event.key),
+                                  isUpcoming: upcomingKey == event.key)
+                    }
                 }
                 .padding(.vertical, 12)
                 .id(numberFormat)
@@ -202,159 +203,53 @@ struct ContentView: View    {
             .foregroundColor(.secondary)
     }
     
-    func getPrayerName(_ key: String) -> String {
-        switch key {
-        case "Fajr": return Translations.string("prayer_fajr", language: appLanguage)
-        case "Sunrise": return Translations.string("prayer_sunrise", language: appLanguage)
-        case "Dhuhr": return Translations.string("prayer_dhuhr", language: appLanguage)
-        case "Asr": return Translations.string("prayer_asr", language: appLanguage)
-        case "Maghrib": return Translations.string("prayer_maghrib", language: appLanguage)
-        case "Isha": return Translations.string("prayer_isha", language: appLanguage)
-        default: return key
-        }
-    }
-    
-    func formatTime(_ time: String?) -> String {
-        guard let time = time else { return "--:--" }
-        
-        var formattedTime: String
-        if is24HourFormat {
-            formattedTime = time
-        } else {
-            let formatter = DateFormatter()
-            formatter.dateFormat = "HH:mm"
-            if let date = formatter.date(from: time) {
-                formatter.dateFormat = "h:mm a"
-                formatter.locale = Locale(identifier: Translations.locale(appLanguage))
-                formattedTime = formatter.string(from: date)
-            } else {
-                formattedTime = time
-            }
-        }
-        
-        return Translations.localizedNumber(formattedTime, numberFormat: numberFormat)
-    }
-    
-    func getUpcomingPrayer() -> String? {
-        let calendar = Calendar.current
-        let now = Date()
-        let prayerOrder = ["Fajr", "Sunrise", "Dhuhr", "Asr", "Maghrib", "Isha"]
-        var prayerDates: [(key: String, date: Date)] = []
-        
-        for prayerKey in prayerOrder {
-            guard let timeString = manager.timings[prayerKey] else { continue }
-            
-            let formatter = DateFormatter()
-            formatter.dateFormat = "HH:mm"
-            
-            let timeComponents = timeString.split(separator: ":").compactMap({ Int($0) })
-            guard timeComponents.count == 2 else { continue }
-            
-            let hour = timeComponents[0]
-            let minute = timeComponents[1]
-            
-            var components = calendar.dateComponents([.year, .month, .day], from: now)
-            components.hour = hour
-            components.minute = minute
-            components.second = 0
-            
-            guard var prayerDate = calendar.date(from: components) else { continue }
-            
-            if prayerDate < now {
-                prayerDate = calendar.date(byAdding: .day, value: 1, to: prayerDate) ?? prayerDate
-            }
-            
-            prayerDates.append((key: prayerKey, date: prayerDate))
-        }
-        
-        prayerDates.sort { $0.date < $1.date }
-        return prayerDates.first(where: { $0.date > now })?.key ?? prayerDates.first?.key
-    }
-    
-    func getTimeRemaining(at date: Date? = nil) -> (hours: Int, minutes: Int, seconds: Int)? {
-        let calendar = Calendar.current
-        let now = date ?? Date()
-        let prayerOrder = ["Fajr", "Sunrise", "Dhuhr", "Asr", "Maghrib", "Isha"]
-        var prayerDates: [(key: String, date: Date)] = []
-        
-        for prayerKey in prayerOrder {
-            guard let timeString = manager.timings[prayerKey] else { continue }
-            
-            let timeComponents = timeString.split(separator: ":").compactMap({ Int($0) })
-            guard timeComponents.count == 2 else { continue }
-            
-            let hour = timeComponents[0]
-            let minute = timeComponents[1]
-            
-            var components = calendar.dateComponents([.year, .month, .day], from: now)
-            components.hour = hour
-            components.minute = minute
-            components.second = 0
-            
-            guard var prayerDate = calendar.date(from: components) else { continue }
-            
-            if prayerDate < now {
-                prayerDate = calendar.date(byAdding: .day, value: 1, to: prayerDate) ?? prayerDate
-            }
-            
-            prayerDates.append((key: prayerKey, date: prayerDate))
-        }
-        
-        prayerDates.sort { $0.date < $1.date }
-        
-        guard let upcoming = prayerDates.first(where: { $0.date > now }) ?? prayerDates.first else {
-            return nil
-        }
-        
-        let diff = calendar.dateComponents([.hour, .minute, .second], from: now, to: upcoming.date)
-        return (hours: diff.hour ?? 0, minutes: diff.minute ?? 0, seconds: diff.second ?? 0)
-    }
-    
-    func getPrayerColor(_ key: String) -> Color {
+    func getPrayerColor(_ key: PrayerKey) -> Color {
         let isDark = colorScheme == .dark
-        
+
         switch key {
-        case "Fajr":
+        case .fajr:
             // Purple
             return isDark ? Color(red: 0.6, green: 0.5, blue: 1.0) : Color(red: 0.4, green: 0.3, blue: 0.7)
-            
-        case "Sunrise":
+
+        case .sunrise:
             // Orange-Yellow
             return isDark ? Color(red: 1.0, green: 0.7, blue: 0.4) : Color(red: 0.8, green: 0.4, blue: 0.0)
-            
-        case "Dhuhr":
+
+        case .dhuhr:
             // Yellow
             return isDark ? Color(red: 1.0, green: 0.9, blue: 0.4) : Color(red: 0.8, green: 0.6, blue: 0.0)
-            
-        case "Asr":
+
+        case .asr:
             // Orange
             return isDark ? Color(red: 1.0, green: 0.6, blue: 0.2) : Color(red: 0.9, green: 0.4, blue: 0.0)
-            
-        case "Maghrib":
+
+        case .maghrib:
             // Red-Orange
             return isDark ? Color(red: 1.0, green: 0.4, blue: 0.3) : Color(red: 0.8, green: 0.2, blue: 0.1)
-            
-        case "Isha":
+
+        case .isha:
             // Blue
             return isDark ? Color(red: 0.4, green: 0.6, blue: 1.0) : Color(red: 0.1, green: 0.3, blue: 0.7)
-            
-        default:
-            return .primary
+
+        case .midnight, .lastThird:
+            // Muted indigo — these mark the night rather than a prayer.
+            return isDark ? Color(red: 0.55, green: 0.55, blue: 0.85) : Color(red: 0.35, green: 0.35, blue: 0.6)
         }
     }
 }
 
 struct CountdownView: View {
-    let upcomingPrayer: String?
-    let prayerName: String
-    let timeRemaining: (hours: Int, minutes: Int, seconds: Int)?
+    let upcoming: PrayerEvent?
+    let now: Date
     let numberFormat: String
     let appLanguage: String
-    
+
     var body: some View {
-        if let time = timeRemaining, let _ = upcomingPrayer {
+        if let upcoming {
+            let time = Countdown.from(now, to: upcoming)
             VStack(spacing: 8) {
-                Text(Translations.string("prayer_after_format", language: appLanguage).replacingOccurrences(of: "%@", with: prayerName))
+                Text(Translations.string("prayer_after_format", language: appLanguage)
+                    .replacingOccurrences(of: "%@", with: upcoming.name(language: appLanguage)))
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundColor(.secondary)
                 

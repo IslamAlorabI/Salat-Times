@@ -10,28 +10,9 @@
 		05D2357C2F23AA63007299AA /* Salat Times.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Salat Times.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		05D235A62F23C2C6007299AA /* Exceptions for "Salat Times" folder in "Salat Times" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Assets.xcassets,
-				ContentView.swift,
-				PrayerManager.swift,
-				SalatTimesApp.swift,
-				SettingsView.swift,
-				Translations.swift,
-				WelcomeView.swift,
-			);
-			target = 05D2357B2F23AA63007299AA /* Salat Times */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		05D235A32F23C28B007299AA /* Salat Times */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				05D235A62F23C2C6007299AA /* Exceptions for "Salat Times" folder in "Salat Times" target */,
-			);
 			path = "Salat Times";
 			sourceTree = "<group>";
 		};
@@ -78,6 +59,9 @@
 			buildRules = (
 			);
 			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				05D235A32F23C28B007299AA /* Salat Times */,
 			);
 			name = "Salat Times";
 			packageProductDependencies = (

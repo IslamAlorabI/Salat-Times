@@ -19,11 +19,19 @@ struct SalatTimesApp: App {
                 }
         } label: {
             HStack(spacing: 6) {
-                Image(systemName: manager.isWarningActive ? "bell.badge.fill" : "moon.stars.fill")
-                    .imageScale(.small)
-                    .symbolRenderingMode(.multicolor)
+                // The brand mosque is a template image, so it inverts for dark mode and
+                // dims with the menu bar on its own. The warning state stays an SF Symbol —
+                // it carries colour and urgency that a template image cannot.
+                if manager.isWarningActive {
+                    Image(systemName: "bell.badge.fill")
+                        .imageScale(.small)
+                        .symbolRenderingMode(.multicolor)
+                } else {
+                    Image("MenuBarIcon")
+                }
                 Text(manager.menuBarTitle)
                     .font(.system(size: 11))
+                    .monospacedDigit()
             }
         }
         .menuBarExtraStyle(.window)
