@@ -64,17 +64,26 @@ nonisolated enum SharedStore {
     /// spelling preferences, `NSNavLastRootDirectory`. Copying those into a shared suite
     /// would be both rude and unpredictable, so migration works from a list rather than
     /// sweeping everything.
-    static let ownedKeys: Set<String> = [
-        "appLanguage", "selectedCityRaw", "calculationMethod", "timeFormat24",
-        "numberFormat", "hasShownWelcome", "reminderInterval", "warningInterval",
-        "asrSchool", "latitudeAdjustment", "midnightMode",
-        "fajrBeforeSunriseMinutes", "ishaAfterMaghribMinutes",
-        "listMaterial", "showNightTimes",
-        DeviceLocation.Keys.mode, DeviceLocation.Keys.latitude, DeviceLocation.Keys.longitude,
-        DeviceLocation.Keys.placeName, DeviceLocation.Keys.countryCode,
-        DeviceLocation.Keys.updatedAt, DeviceLocation.Keys.isApproximate,
-        DeviceLocation.Keys.followDevice,
-    ]
+    static let ownedKeys: Set<String> = {
+        var keys: Set<String> = [
+            "appLanguage", "selectedCityRaw", "calculationMethod", "timeFormat24",
+            "numberFormat", "hasShownWelcome", "reminderInterval", "warningInterval",
+            "asrSchool", "latitudeAdjustment", "midnightMode",
+            "fajrBeforeSunriseMinutes", "ishaAfterMaghribMinutes",
+            "listMaterial", "showNightTimes",
+            DeviceLocation.Keys.mode, DeviceLocation.Keys.followDevice,
+        ]
+        keys.formUnion(locationKeys(.device))
+        keys.formUnion(locationKeys(.manual))
+        return keys
+    }()
+
+    /// Both stored coordinates are owned, and listing them from the key set means adding
+    /// a third source cannot leave its keys behind in the old suite.
+    private static func locationKeys(_ keys: LocationKeys) -> Set<String> {
+        [keys.latitude, keys.longitude, keys.placeName,
+         keys.countryCode, keys.updatedAt, keys.isApproximate]
+    }
 
     /// The per-prayer keys are built from `PrayerKey`, so they cannot be listed by hand
     /// without going stale the next time a prayer is added.

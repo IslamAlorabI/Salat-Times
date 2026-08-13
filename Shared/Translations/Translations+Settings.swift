@@ -1006,5 +1006,118 @@ nonisolated let settingsStrings: [String: [String: String]] = [
         "ur": "اپ ڈیٹ ہوا",
         "fa": "به‌روزشده",
         "de": "Aktualisiert"
+    ],
+
+    // MARK: - A point picked by hand
+
+    "location_custom": [
+        "ar": "موقع مخصص",
+        "en": "Custom",
+        "ru": "Свой",
+        "id": "Kustom",
+        "tr": "Özel",
+        "ur": "حسبِ ضرورت",
+        "fa": "دلخواه",
+        "de": "Eigener"
+    ],
+    "location_no_point": [
+        "ar": "لم يُحدَّد موقع بعد",
+        "en": "No point chosen yet",
+        "ru": "Точка ещё не выбрана",
+        "id": "Belum ada titik dipilih",
+        "tr": "Henüz bir nokta seçilmedi",
+        "ur": "ابھی کوئی مقام منتخب نہیں",
+        "fa": "هنوز نقطه‌ای انتخاب نشده",
+        "de": "Noch kein Punkt gewählt"
+    ],
+    "location_no_point_hint": [
+        "ar": "تُستخدم المدينة المختارة إلى أن تحدّد موقعًا على الخريطة.",
+        "en": "The chosen city is used until you pick a point on the map.",
+        "ru": "Пока точка не выбрана, используется выбранный город.",
+        "id": "Kota yang dipilih dipakai sampai Anda memilih titik di peta.",
+        "tr": "Haritada bir nokta seçene kadar seçili şehir kullanılır.",
+        "ur": "جب تک آپ نقشے پر مقام منتخب نہیں کرتے، منتخب شہر استعمال ہوگا۔",
+        "fa": "تا وقتی نقطه‌ای روی نقشه انتخاب نکنید، شهر انتخاب‌شده استفاده می‌شود.",
+        "de": "Bis du einen Punkt auf der Karte wählst, wird die gewählte Stadt verwendet."
+    ],
+    "location_pick_on_map": [
+        "ar": "التحديد على الخريطة…",
+        "en": "Choose on map…",
+        "ru": "Выбрать на карте…",
+        "id": "Pilih di peta…",
+        "tr": "Haritada seç…",
+        "ur": "نقشے پر منتخب کریں…",
+        "fa": "انتخاب روی نقشه…",
+        "de": "Auf Karte wählen…"
+    ],
+    "location_search_places": [
+        "ar": "ابحث عن مدينة أو مكان",
+        "en": "Search for a city or place",
+        "ru": "Найти город или место",
+        "id": "Cari kota atau tempat",
+        "tr": "Şehir veya yer ara",
+        "ur": "شہر یا مقام تلاش کریں",
+        "fa": "جست‌وجوی شهر یا مکان",
+        "de": "Stadt oder Ort suchen"
+    ],
+    "location_no_results": [
+        "ar": "لا توجد نتائج مطابقة.",
+        "en": "No matching places.",
+        "ru": "Ничего не найдено.",
+        "id": "Tidak ada tempat yang cocok.",
+        "tr": "Eşleşen yer yok.",
+        "ur": "کوئی مماثل مقام نہیں ملا۔",
+        "fa": "مکانی یافت نشد.",
+        "de": "Keine passenden Orte."
+    ],
+    "location_map_hint": [
+        "ar": "انقر على الخريطة لوضع علامة، أو ابحث عن مكان، أو اكتب الإحداثيات مباشرة.",
+        "en": "Click the map to drop a pin, search for a place, or type the coordinates directly.",
+        "ru": "Щёлкните по карте, чтобы поставить метку, найдите место или введите координаты.",
+        "id": "Klik peta untuk menaruh pin, cari tempat, atau ketik koordinatnya langsung.",
+        "tr": "İşaret koymak için haritaya tıklayın, bir yer arayın ya da koordinatları doğrudan yazın.",
+        "ur": "نشان لگانے کے لیے نقشے پر کلک کریں، مقام تلاش کریں، یا کوآرڈینیٹس براہِ راست لکھیں۔",
+        "fa": "برای گذاشتن نشانگر روی نقشه کلیک کنید، مکانی را جست‌وجو کنید، یا مختصات را مستقیم بنویسید.",
+        "de": "Klicke auf die Karte, um eine Nadel zu setzen, suche einen Ort oder gib die Koordinaten direkt ein."
+    ],
+    "location_latitude": [
+        "ar": "خط العرض",
+        "en": "Latitude",
+        "ru": "Широта",
+        "id": "Lintang",
+        "tr": "Enlem",
+        "ur": "عرض بلد",
+        "fa": "عرض جغرافیایی",
+        "de": "Breitengrad"
+    ],
+    "location_longitude": [
+        "ar": "خط الطول",
+        "en": "Longitude",
+        "ru": "Долгота",
+        "id": "Bujur",
+        "tr": "Boylam",
+        "ur": "طول بلد",
+        "fa": "طول جغرافیایی",
+        "de": "Längengrad"
+    ],
+    "location_coordinates_invalid": [
+        "ar": "أدخل خط عرض بين ‎-90 و‎90 وخط طول بين ‎-180 و‎180، بنقطة عشرية.",
+        "en": "Enter a latitude between -90 and 90 and a longitude between -180 and 180, using a dot.",
+        "ru": "Введите широту от -90 до 90 и долготу от -180 до 180, с точкой в качестве разделителя.",
+        "id": "Masukkan lintang antara -90 dan 90 serta bujur antara -180 dan 180, pakai titik desimal.",
+        "tr": "-90 ile 90 arasında bir enlem, -180 ile 180 arasında bir boylam girin; ondalık ayırıcı nokta olmalı.",
+        "ur": "‎-90 اور 90 کے درمیان عرض بلد اور ‎-180 اور 180 کے درمیان طول بلد لکھیں، اعشاریے کے لیے نقطہ استعمال کریں۔",
+        "fa": "عرض بین ‎-90 و 90 و طول بین ‎-180 و 180 وارد کنید؛ جداکننده اعشار نقطه است.",
+        "de": "Gib einen Breitengrad zwischen -90 und 90 und einen Längengrad zwischen -180 und 180 ein, mit Punkt."
+    ],
+    "location_use_point": [
+        "ar": "استخدام هذا الموقع",
+        "en": "Use this location",
+        "ru": "Использовать это место",
+        "id": "Gunakan lokasi ini",
+        "tr": "Bu konumu kullan",
+        "ur": "یہی مقام استعمال کریں",
+        "fa": "استفاده از این موقعیت",
+        "de": "Diesen Standort verwenden"
     ]
 ]

@@ -514,23 +514,66 @@ locationStore.set(LocationMode.device.rawValue, forKey: DeviceLocation.Keys.mode
 let following = PrayerSettings.load(from: locationStore)
 check("switching to device mode uses the fix", following.latitude == 51.51, "\(following.latitude)")
 check("the place name labels the settings", following.cityRaw == "London", following.cityRaw)
-check("the snapshot knows it is following the device", following.usesDeviceLocation)
+check("the snapshot knows it is not on a listed city", following.usesCustomCoordinates)
 check("moving changes the request fingerprint, so the month is refetched",
       following.requestFingerprint != PrayerSettings.load(from: UserDefaults(suiteName: "salat-times-checks-empty")!).requestFingerprint)
 
 // Turning the mode on before the first fix must not leave the app with no location at all.
-locationStore.removeObject(forKey: DeviceLocation.Keys.latitude)
-locationStore.removeObject(forKey: DeviceLocation.Keys.longitude)
+locationStore.removeObject(forKey: LocationKeys.device.latitude)
+locationStore.removeObject(forKey: LocationKeys.device.longitude)
 let noFixYet = PrayerSettings.load(from: locationStore)
 check("device mode with no fix falls back to the picked city",
-      noFixYet.latitude == City.cairo.coordinates.latitude && !noFixYet.usesDeviceLocation,
+      noFixYet.latitude == City.cairo.coordinates.latitude && !noFixYet.usesCustomCoordinates,
       "\(noFixYet.latitude)")
 
 // A hand-edited or corrupted coordinate must never reach a request URL.
-locationStore.set(999.0, forKey: DeviceLocation.Keys.latitude)
-locationStore.set(0.0, forKey: DeviceLocation.Keys.longitude)
+locationStore.set(999.0, forKey: LocationKeys.device.latitude)
+locationStore.set(0.0, forKey: LocationKeys.device.longitude)
 check("a corrupt stored coordinate falls back too",
       PrayerSettings.load(from: locationStore).latitude == City.cairo.coordinates.latitude)
+
+for key in locationStore.dictionaryRepresentation().keys { locationStore.removeObject(forKey: key) }
+
+// ---------------------------------------------------------------------------
+print("\n14b. A hand-picked point is a third source, stored apart from the detected fix")
+// The two must not share keys: re-detecting would otherwise overwrite a point the user
+// deliberately dropped on the map, and switching modes back and forth would lose one.
+locationStore.set("Cairo", forKey: "selectedCityRaw")
+DeviceLocation(latitude: 51.5074, longitude: -0.1278,
+               placeName: "London", countryCode: "GB").save(to: locationStore, keys: .device)
+DeviceLocation(latitude: 35.6895, longitude: 139.6917,
+               placeName: "Tokyo", countryCode: "JP").save(to: locationStore, keys: .manual)
+
+locationStore.set(LocationMode.manual.rawValue, forKey: DeviceLocation.Keys.mode)
+let pinned = PrayerSettings.load(from: locationStore)
+check("manual mode uses the pin, not the fix and not the city",
+      pinned.latitude == 35.69 && pinned.cityRaw == "Tokyo",
+      "\(pinned.latitude) \(pinned.cityRaw)")
+check("the pin counts as custom coordinates", pinned.usesCustomCoordinates)
+
+locationStore.set(LocationMode.device.rawValue, forKey: DeviceLocation.Keys.mode)
+check("switching back to the device still finds its own fix",
+      PrayerSettings.load(from: locationStore).cityRaw == "London")
+locationStore.set(LocationMode.manual.rawValue, forKey: DeviceLocation.Keys.mode)
+check("and the pin survived the round trip",
+      PrayerSettings.load(from: locationStore).cityRaw == "Tokyo")
+
+// The map picker writes the pin *before* anything reads it, but a mode set with no pin —
+// or a pin edited by hand into nonsense — must still leave the app somewhere real.
+locationStore.removeObject(forKey: LocationKeys.manual.latitude)
+locationStore.removeObject(forKey: LocationKeys.manual.longitude)
+check("manual mode with no pin falls back to the picked city",
+      PrayerSettings.load(from: locationStore).latitude == City.cairo.coordinates.latitude)
+locationStore.set(12.0, forKey: LocationKeys.manual.latitude)
+locationStore.set(-999.0, forKey: LocationKeys.manual.longitude)
+check("a corrupt pin falls back too",
+      PrayerSettings.load(from: locationStore).latitude == City.cairo.coordinates.latitude)
+
+// An unknown mode written by a future build must not leave anyone without prayer times.
+locationStore.set("satellite-uplink", forKey: DeviceLocation.Keys.mode)
+check("an unrecognised mode reads as the city list",
+      LocationMode.from("satellite-uplink") == .city
+          && PrayerSettings.load(from: locationStore).latitude == City.cairo.coordinates.latitude)
 
 for key in locationStore.dictionaryRepresentation().keys { locationStore.removeObject(forKey: key) }
 
@@ -615,7 +658,13 @@ for store in [legacy, shared] {
 check("app keys are recognised", SharedStore.isOwned("appLanguage"))
 check("per-prayer keys are recognised by prefix",
       SharedStore.isOwned("tune_Fajr") && SharedStore.isOwned("notification_Isha_sound"))
-check("location keys are recognised", SharedStore.isOwned(DeviceLocation.Keys.mode))
+// Both stored coordinates, not just the detected one — a pin left behind in the old suite
+// would come back as an empty custom location on the next launch.
+check("location keys are recognised",
+      SharedStore.isOwned(DeviceLocation.Keys.mode)
+          && SharedStore.isOwned(LocationKeys.device.latitude)
+          && SharedStore.isOwned(LocationKeys.manual.latitude)
+          && SharedStore.isOwned(LocationKeys.manual.placeName))
 // UserDefaults is full of things AppKit and the system put there; copying those into a
 // shared suite would be both rude and unpredictable.
 check("system keys are left alone",

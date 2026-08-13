@@ -1,6 +1,7 @@
 
 import SwiftUI
 import AppKit
+import CoreLocation
 
 // The location controls, shared by the settings window and the first-launch sheet so the
 // two cannot drift into offering different things.
@@ -11,7 +12,7 @@ import AppKit
 // for a fix is what puts the system permission prompt on screen, so it has to be started
 // by a person, and there is nothing to detect until someone asks.
 
-/// City ↔ device, as a segmented control.
+/// City ↔ device ↔ a point picked by hand, as a segmented control.
 struct LocationModePicker: View {
     let appLanguage: String
     @EnvironmentObject var manager: PrayerManager
@@ -20,13 +21,87 @@ struct LocationModePicker: View {
     var body: some View {
         Picker("", selection: Binding(
             get: { LocationMode.from(storedMode) },
-            set: { $0 == .device ? manager.useDeviceLocation() : manager.useCityLocation() }
+            set: { mode in
+                switch mode {
+                case .city: manager.useCityLocation()
+                case .device: manager.useDeviceLocation()
+                case .manual: manager.useManualLocation()
+                }
+            }
         )) {
             Text(Translations.string("location_choose_city", language: appLanguage)).tag(LocationMode.city)
             Text(Translations.string("location_use_device", language: appLanguage)).tag(LocationMode.device)
+            Text(Translations.string("location_custom", language: appLanguage)).tag(LocationMode.manual)
         }
         .pickerStyle(.segmented)
         .labelsHidden()
+    }
+}
+
+/// The hand-picked point: what it is, and the way to change it.
+///
+/// Nothing here re-detects or expires — a point the user chose stays put until they choose
+/// another one, which is the whole difference between this and `DeviceLocationStatus`.
+struct ManualLocationStatus: View {
+    let appLanguage: String
+
+    @EnvironmentObject var manager: PrayerManager
+    // Read for their change notifications as much as their values: `@AppStorage` is what
+    // redraws this row when the picker stores a new point.
+    @AppStorage(LocationKeys.manual.placeName) private var pinName = ""
+    @AppStorage(LocationKeys.manual.latitude) private var pinLatitude = 0.0
+    @AppStorage(LocationKeys.manual.longitude) private var pinLongitude = 0.0
+    @State private var isPickingOnMap = false
+
+    /// `(0, 0)` is a real place, so absence is absence of the stored keys — which is what
+    /// `DeviceLocation.load` checks. The `@AppStorage` values above only trigger the read.
+    private var point: DeviceLocation? {
+        _ = (pinName, pinLatitude, pinLongitude)
+        return DeviceLocation.load(keys: .manual)
+    }
+
+    var body: some View {
+        HStack(spacing: 10) {
+            VStack(alignment: .leading, spacing: 2) {
+                if let point {
+                    Text(point.displayName)
+                        .font(.system(size: 13, weight: .medium))
+                    Text(DeviceLocation.coordinateLabel(latitude: point.latitude,
+                                                        longitude: point.longitude))
+                        .font(.system(size: 11))
+                        .foregroundStyle(.secondary)
+                } else {
+                    Text(Translations.string("location_no_point", language: appLanguage))
+                        .font(.system(size: 13, weight: .medium))
+                    Text(Translations.string("location_no_point_hint", language: appLanguage))
+                        .font(.system(size: 11))
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+
+            Spacer(minLength: 8)
+
+            Button(Translations.string("location_pick_on_map", language: appLanguage)) {
+                isPickingOnMap = true
+            }
+        }
+        .sheet(isPresented: $isPickingOnMap) {
+            MapLocationPicker(
+                appLanguage: appLanguage,
+                // Opens on the chosen point, or on wherever the app currently thinks it
+                // is — the city or the last fix — rather than on the middle of the ocean.
+                initialCoordinate: CLLocationCoordinate2D(
+                    latitude: point?.latitude ?? manager.settings.latitude,
+                    longitude: point?.longitude ?? manager.settings.longitude),
+                onCancel: { isPickingOnMap = false },
+                onChoose: { coordinate, name in
+                    isPickingOnMap = false
+                    manager.setManualLocation(latitude: coordinate.latitude,
+                                              longitude: coordinate.longitude,
+                                              preferredName: name)
+                })
+        }
     }
 }
 
@@ -37,9 +112,9 @@ struct DeviceLocationStatus: View {
     var showsTimestamp = true
 
     @EnvironmentObject var manager: PrayerManager
-    @AppStorage(DeviceLocation.Keys.placeName) private var detectedPlace = ""
-    @AppStorage(DeviceLocation.Keys.updatedAt) private var detectedAt = 0.0
-    @AppStorage(DeviceLocation.Keys.isApproximate) private var isApproximate = false
+    @AppStorage(LocationKeys.device.placeName) private var detectedPlace = ""
+    @AppStorage(LocationKeys.device.updatedAt) private var detectedAt = 0.0
+    @AppStorage(LocationKeys.device.isApproximate) private var isApproximate = false
     @AppStorage("numberFormat") private var numberFormat = "western"
 
     var body: some View {
@@ -86,7 +161,7 @@ struct DeviceLocationStatus: View {
         if !place.isEmpty { return place }
         // A fix whose reverse geocode failed is still a usable fix — it just has to be
         // labelled with its coordinates.
-        if let fix = DeviceLocation.load() { return fix.displayName }
+        if let fix = DeviceLocation.load(keys: .device) { return fix.displayName }
         return Translations.string("location_not_detected", language: appLanguage)
     }
 
@@ -153,8 +228,8 @@ struct LocationSourceSection: View {
     @EnvironmentObject var manager: PrayerManager
     @AppStorage(DeviceLocation.Keys.mode) private var storedMode = LocationMode.city.rawValue
     @AppStorage(DeviceLocation.Keys.followDevice) private var followDevice = false
-    @AppStorage(DeviceLocation.Keys.isApproximate) private var isApproximate = false
-    @AppStorage(DeviceLocation.Keys.updatedAt) private var detectedAt = 0.0
+    @AppStorage(LocationKeys.device.isApproximate) private var isApproximate = false
+    @AppStorage(LocationKeys.device.updatedAt) private var detectedAt = 0.0
 
     private var mode: LocationMode { LocationMode.from(storedMode) }
     private var isDetecting: Bool { manager.locationState == .detecting }
@@ -166,11 +241,16 @@ struct LocationSourceSection: View {
 
         SettingsDivider()
 
-        if mode == .city {
+        switch mode {
+        case .city:
             SettingsStackedRow(title: Translations.string("location", language: appLanguage)) {
                 CitySearchPicker(selectedCityRaw: $selectedCityRaw, appLanguage: appLanguage)
             }
-        } else {
+        case .manual:
+            SettingsStackedRow(title: Translations.string("location", language: appLanguage)) {
+                ManualLocationStatus(appLanguage: appLanguage)
+            }
+        case .device:
             SettingsStackedRow(title: Translations.string("location", language: appLanguage)) {
                 DeviceLocationStatus(appLanguage: appLanguage)
                 if manager.locationState == .denied || manager.locationState == .failed {

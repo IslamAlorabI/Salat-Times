@@ -144,10 +144,13 @@ struct WelcomeView: View {
                         // asking where they are.
                         LocationModePicker(appLanguage: appLanguage)
 
-                        if LocationMode.from(locationModeRaw) == .device {
+                        switch LocationMode.from(locationModeRaw) {
+                        case .device:
                             DeviceLocationStatus(appLanguage: appLanguage, showsTimestamp: false)
                             LocationProblemBanner(appLanguage: appLanguage)
-                        } else {
+                        case .manual:
+                            ManualLocationStatus(appLanguage: appLanguage)
+                        case .city:
                             CitySearchPicker(selectedCityRaw: $selectedCityRaw, appLanguage: appLanguage)
                         }
 

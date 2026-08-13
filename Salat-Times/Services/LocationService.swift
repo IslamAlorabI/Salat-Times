@@ -122,6 +122,28 @@ final class LocationService: NSObject, CLLocationManagerDelegate {
         return fix
     }
 
+    /// Names a coordinate that did not come from a fix — a point dropped on the map or
+    /// typed in by hand. No permission is involved: reverse geocoding a coordinate the
+    /// user supplied is not locating the Mac, so this deliberately does not go anywhere
+    /// near `CLLocationManager`.
+    ///
+    /// `preferredName` is what the user picked in the search results, which is more
+    /// specific than the locality a reverse geocode returns; the geocode is still run,
+    /// because the country code is what moves the calculation method across a border.
+    func describe(latitude: Double,
+                  longitude: Double,
+                  preferredName: String = "",
+                  language: String) async -> DeviceLocation {
+        let place = await reverseGeocode(CLLocation(latitude: latitude, longitude: longitude),
+                                         language: language)
+        let name = preferredName.trimmingCharacters(in: .whitespacesAndNewlines)
+        return DeviceLocation(latitude: latitude,
+                              longitude: longitude,
+                              placeName: name.isEmpty ? place.name : name,
+                              countryCode: place.countryCode,
+                              updatedAt: Date())
+    }
+
     // MARK: - Authorization
 
     private func requestAuthorization() async -> CLAuthorizationStatus {

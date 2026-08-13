@@ -323,8 +323,8 @@ class PrayerManager: NSObject, ObservableObject, UNUserNotificationCenterDelegat
 
     private func store(_ fix: DeviceLocation) {
         let defaults = SharedStore.defaults
-        let previous = DeviceLocation.load(from: defaults)
-        fix.save(to: defaults)
+        let previous = DeviceLocation.load(from: defaults, keys: .device)
+        fix.save(to: defaults, keys: .device)
 
         // Where the user is stays out of the system log — `log show` is readable by anyone
         // on the machine. Enough is logged to debug the flow, and the place itself is
@@ -334,11 +334,16 @@ class PrayerManager: NSObject, ObservableObject, UNUserNotificationCenterDelegat
             \(fix.displayName, privacy: .private)
             """)
 
-        // Crossing a border moves the calculation method to the local authority's — the
-        // same thing that already happens when a city is picked by hand. Deliberately
-        // *only* on a country change, so it never overwrites a deliberate choice made
-        // while staying put.
-        guard !fix.countryCode.isEmpty, previous?.countryCode != fix.countryCode else { return }
+        followMethod(of: fix, previousCountryCode: previous?.countryCode, in: defaults)
+    }
+
+    /// Crossing a border moves the calculation method to the local authority's — the same
+    /// thing that already happens when a city is picked by hand. Deliberately *only* on a
+    /// country change, so it never overwrites a deliberate choice made while staying put.
+    private func followMethod(of fix: DeviceLocation,
+                              previousCountryCode: String?,
+                              in defaults: UserDefaults) {
+        guard !fix.countryCode.isEmpty, previousCountryCode != fix.countryCode else { return }
         let method = City.recommendedMethod(forLatitude: fix.latitude, longitude: fix.longitude)
         if defaults.integer(forKey: "calculationMethod") != method {
             Log.data.notice("Country changed; calculation method now \(method)")
@@ -356,9 +361,44 @@ class PrayerManager: NSObject, ObservableObject, UNUserNotificationCenterDelegat
     /// Switches to device coordinates, detecting immediately if there is no fix yet.
     func useDeviceLocation() {
         SharedStore.defaults.set(LocationMode.device.rawValue, forKey: DeviceLocation.Keys.mode)
-        if DeviceLocation.load() == nil {
+        if DeviceLocation.load(keys: .device) == nil {
             detectLocation()
         }
+    }
+
+    /// Switches to the hand-picked point. Unlike `useDeviceLocation` there is nothing to
+    /// go and fetch: if no point has been chosen yet, `PrayerSettings.load` falls back to
+    /// the picked city until the map picker stores one.
+    func useManualLocation() {
+        SharedStore.defaults.set(LocationMode.manual.rawValue, forKey: DeviceLocation.Keys.mode)
+        locationState = .idle
+    }
+
+    /// Names a coordinate the user chose and stores it as the manual point. The name is
+    /// only ever displayed, so the geocode is allowed to fail — but it is what labels the
+    /// popover, the schedule window and the CSV file name, so it is worth asking for.
+    func setManualLocation(latitude: Double, longitude: Double, preferredName: String = "") {
+        Task { @MainActor in
+            let point = await locationService.describe(latitude: latitude,
+                                                       longitude: longitude,
+                                                       preferredName: preferredName,
+                                                       language: settings.language)
+            storeManualLocation(point)
+        }
+    }
+
+    /// Stores a point chosen on the map or typed in. Same contract as a detected fix:
+    /// writing it to `UserDefaults` is the whole mechanism, and the debounced diff is what
+    /// refetches the month and rotates the notifications.
+    func storeManualLocation(_ point: DeviceLocation) {
+        let defaults = SharedStore.defaults
+        let previous = DeviceLocation.load(from: defaults, keys: .manual)
+        point.save(to: defaults, keys: .manual)
+        defaults.set(LocationMode.manual.rawValue, forKey: DeviceLocation.Keys.mode)
+        locationState = .idle
+
+        Log.data.notice("Manual location set: \(point.displayName, privacy: .private)")
+        followMethod(of: point, previousCountryCode: previous?.countryCode, in: defaults)
     }
 
     /// Loads the months around today, cache-first. Only reaches the network when a

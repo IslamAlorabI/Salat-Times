@@ -4,13 +4,16 @@ import CoreLocation
 
 /// Where the app takes its coordinates from.
 ///
-/// Stored as a string rather than a `Bool` so a third source (a manually typed
-/// coordinate, say) can be added without migrating anyone's preferences.
+/// Stored as a string rather than a `Bool` so a source can be added without migrating
+/// anyone's preferences — which is exactly how `manual` arrived after `city` and `device`.
 nonisolated enum LocationMode: String, Sendable, CaseIterable {
     /// A city picked from the built-in list. The default, and the only mode before 3.1.
     case city
     /// Coordinates from CoreLocation.
     case device
+    /// A point the user chose by hand: dropped on the map, searched for, or typed as a
+    /// latitude and longitude. Nothing ever moves it — unlike `device`, which re-detects.
+    case manual
 
     /// Absent or unrecognised reads as `city`: a preference written by a future build
     /// must never leave an existing one without a location at all.
@@ -19,8 +22,44 @@ nonisolated enum LocationMode: String, Sendable, CaseIterable {
     }
 }
 
-/// A fix from CoreLocation, reduced to what the app actually needs and rounded to
-/// something a prayer timetable can be keyed by.
+/// The `UserDefaults` keys one stored coordinate occupies.
+///
+/// There are two sets, and they are deliberately disjoint. A detected fix and a
+/// hand-picked pin are different answers to different questions, so re-detecting must not
+/// overwrite a pin the user placed on purpose, and switching between the two modes must
+/// not lose either. The names are on disk — rename one and every existing install loses
+/// that location.
+nonisolated struct LocationKeys: Sendable {
+    let latitude: String
+    let longitude: String
+    let placeName: String
+    let countryCode: String
+    let updatedAt: String
+    let isApproximate: String
+
+    /// What CoreLocation (or the IP fallback) last produced. Unchanged since 3.1.
+    static let device = LocationKeys(
+        latitude: "deviceLatitude",
+        longitude: "deviceLongitude",
+        placeName: "devicePlaceName",
+        countryCode: "deviceCountryCode",
+        updatedAt: "deviceLocationUpdatedAt",
+        isApproximate: "deviceLocationIsApproximate")
+
+    /// The point the user picked on the map or typed in. `isApproximate` is stored for
+    /// symmetry only — a chosen point is never approximate.
+    static let manual = LocationKeys(
+        latitude: "manualLatitude",
+        longitude: "manualLongitude",
+        placeName: "manualPlaceName",
+        countryCode: "manualCountryCode",
+        updatedAt: "manualLocationUpdatedAt",
+        isApproximate: "manualLocationIsApproximate")
+}
+
+/// One coordinate the app can work from — a fix from CoreLocation or a point the user
+/// picked by hand — reduced to what the app actually needs and rounded to something a
+/// prayer timetable can be keyed by.
 ///
 /// Kept in `Core/` — and free of CoreLocation's manager types — so the rounding and the
 /// storage contract can be checked without a GUI or a device.
@@ -95,47 +134,55 @@ nonisolated struct DeviceLocation: Equatable, Sendable {
 
     // MARK: - Storage
 
-    /// The `UserDefaults` keys this type owns. Named here rather than spelled out at each
-    /// call site so a view and the manager cannot drift apart on a typo.
+    /// The mode-level keys. The per-coordinate ones live in `LocationKeys`, because there
+    /// is more than one coordinate stored at a time. Named here rather than spelled out
+    /// at each call site so a view and the manager cannot drift apart on a typo.
     enum Keys {
         static let mode = "locationMode"
-        static let latitude = "deviceLatitude"
-        static let longitude = "deviceLongitude"
-        static let placeName = "devicePlaceName"
-        static let countryCode = "deviceCountryCode"
-        static let updatedAt = "deviceLocationUpdatedAt"
-        static let isApproximate = "deviceLocationIsApproximate"
         /// Opt-in: re-detect at launch, on wake and when the day rolls over. Off by
-        /// default, so location is read only when the user asks for it.
+        /// default, so location is read only when the user asks for it. Applies to
+        /// `device` mode only — a hand-picked point is never re-detected.
         static let followDevice = "locationFollowsDevice"
     }
 
-    static func load(from defaults: UserDefaults = SharedStore.defaults) -> DeviceLocation? {
-        guard defaults.object(forKey: Keys.latitude) != nil,
-              defaults.object(forKey: Keys.longitude) != nil else { return nil }
+    static func load(from defaults: UserDefaults = SharedStore.defaults,
+                     keys: LocationKeys = .device) -> DeviceLocation? {
+        guard defaults.object(forKey: keys.latitude) != nil,
+              defaults.object(forKey: keys.longitude) != nil else { return nil }
 
-        let latitude = defaults.double(forKey: Keys.latitude)
-        let longitude = defaults.double(forKey: Keys.longitude)
+        let latitude = defaults.double(forKey: keys.latitude)
+        let longitude = defaults.double(forKey: keys.longitude)
         // A corrupt or hand-edited coordinate must not reach a request URL.
         guard isValid(latitude: latitude, longitude: longitude) else { return nil }
 
-        let stamp = defaults.double(forKey: Keys.updatedAt)
+        let stamp = defaults.double(forKey: keys.updatedAt)
         return DeviceLocation(
             latitude: latitude,
             longitude: longitude,
-            placeName: defaults.string(forKey: Keys.placeName) ?? "",
-            countryCode: defaults.string(forKey: Keys.countryCode) ?? "",
+            placeName: defaults.string(forKey: keys.placeName) ?? "",
+            countryCode: defaults.string(forKey: keys.countryCode) ?? "",
             updatedAt: stamp > 0 ? Date(timeIntervalSince1970: stamp) : .distantPast,
-            isApproximate: defaults.bool(forKey: Keys.isApproximate))
+            isApproximate: defaults.bool(forKey: keys.isApproximate))
     }
 
-    func save(to defaults: UserDefaults = SharedStore.defaults) {
-        defaults.set(latitude, forKey: Keys.latitude)
-        defaults.set(longitude, forKey: Keys.longitude)
-        defaults.set(placeName, forKey: Keys.placeName)
-        defaults.set(countryCode, forKey: Keys.countryCode)
-        defaults.set(updatedAt.timeIntervalSince1970, forKey: Keys.updatedAt)
-        defaults.set(isApproximate, forKey: Keys.isApproximate)
+    func save(to defaults: UserDefaults = SharedStore.defaults,
+              keys: LocationKeys = .device) {
+        defaults.set(latitude, forKey: keys.latitude)
+        defaults.set(longitude, forKey: keys.longitude)
+        defaults.set(placeName, forKey: keys.placeName)
+        defaults.set(countryCode, forKey: keys.countryCode)
+        defaults.set(updatedAt.timeIntervalSince1970, forKey: keys.updatedAt)
+        defaults.set(isApproximate, forKey: keys.isApproximate)
+    }
+
+    /// The keys the given mode reads and writes, or `nil` for the city list — which has
+    /// no stored coordinate at all, it has a `City`.
+    static func keys(for mode: LocationMode) -> LocationKeys? {
+        switch mode {
+        case .city: return nil
+        case .device: return .device
+        case .manual: return .manual
+        }
     }
 
     /// True when the two fixes would produce different prayer times — i.e. when they

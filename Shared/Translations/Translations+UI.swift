@@ -266,6 +266,28 @@ nonisolated let uiStrings: [String: [String: String]] = [
         "fa": "جستجو...",
         "de": "Suchen..."
     ],
+    // The same word without the trailing ellipsis: `search` is a field placeholder, this
+    // one labels a button that acts immediately.
+    "search_action": [
+        "ar": "بحث",
+        "en": "Search",
+        "ru": "Найти",
+        "id": "Cari",
+        "tr": "Ara",
+        "ur": "تلاش",
+        "fa": "جست‌وجو",
+        "de": "Suchen"
+    ],
+    "cancel": [
+        "ar": "إلغاء",
+        "en": "Cancel",
+        "ru": "Отмена",
+        "id": "Batal",
+        "tr": "İptal",
+        "ur": "منسوخ",
+        "fa": "لغو",
+        "de": "Abbrechen"
+    ],
     "change": [
         "ar": "تغيير",
         "en": "Change",

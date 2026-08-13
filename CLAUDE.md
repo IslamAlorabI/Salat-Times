@@ -55,6 +55,8 @@ instead.
 | `Salat-Times/CalculationSettingsView.swift` | The madhab, high-latitude and midnight-mode sections, per-prayer tuning, and the Fajr/Isha fixed offsets. Lives in the Prayer Times tab. |
 | `Salat-Times/MonthlyScheduleView.swift` | The `schedule` window: a month of times, CSV export, `⌘P` print. |
 | `Salat-Times/WelcomeView.swift` | First-launch onboarding, gated on `hasShownWelcome`. |
+| `Salat-Times/LocationControls.swift` | The mode picker and the three source rows, shared by Settings and the welcome sheet. |
+| `Salat-Times/MapLocationPicker.swift` | The MapKit sheet: click to drop a pin, `MKLocalSearch`, typed coordinates. |
 | `Shared/Translations/` | Lookup + numeral/RTL helpers. The strings themselves live in `Translations+UI/Methods/Prayer/Hijri/Settings.swift`. |
 
 ## The widget
@@ -347,23 +349,44 @@ in the app target rather than `Core/`, because `Core/` must not import SwiftUI.
   - `AppPaths.supportDirectory` follows the same rule, and `migrateCacheIfNeeded` moves the cached
     months over so an app updated while offline still has times to show.
 - **There is no `.entitlements` file** — except one line of it. Entitlements are synthesized from build settings (`ENABLE_APP_SANDBOX`, `ENABLE_HARDENED_RUNTIME`, `ENABLE_OUTGOING_NETWORK_CONNECTIONS`, …). The exception is `Salat-Times.entitlements`, which exists solely because App Groups have no build setting to synthesize them from; the synthesized ones are **merged into** it rather than replaced — verified, sandbox/location/network/files all survive. Inspect what actually shipped with `codesign -d --entitlements - "<path>/Salat Times.app"`. `ENABLE_USER_SELECTED_FILES` was `readonly` until the schedule window needed to *write* a CSV through `NSSavePanel`; it is `readwrite` in both configurations now, and the shipped entitlement is `com.apple.security.files.user-selected.read-write`.
-- **Location can come from the Mac instead of the `City` list.** `locationMode` (`city` /
-  `device`) picks the source; `Services/LocationService` is the whole CoreLocation surface — one
-  `async` call that asks for permission, takes a single fix and reverse-geocodes a name.
+- **Location has three sources, not two.** `locationMode` (`city` / `device` / `manual`) picks
+  between the built-in `City` list, a CoreLocation fix, and a point the user chose by hand.
+  `Services/LocationService` is the whole CoreLocation surface — one `async` call that asks for
+  permission, takes a single fix and reverse-geocodes a name, plus `describe(latitude:longitude:)`
+  which names a coordinate the user supplied and deliberately never touches `CLLocationManager`.
   `ENABLE_RESOURCE_ACCESS_LOCATION` must stay `YES` (it was `NO` until 2026-08-13, which made
   every location call fail silently) and the `NSLocationWhenInUseUsageDescription` Info.plist key
   is what the system prompt shows.
-  Three rules hold this together:
+  Four rules hold this together:
   - **Stored coordinates are rounded to 2 decimals** (`DeviceLocation.precisionDecimals`, ~1.1 km).
     `requestFingerprint` prints coordinates to 4 decimals and *is* the cache file name, so an
-    unrounded fix would mint a new month request every time GPS wobbled a few metres.
+    unrounded fix would mint a new month request every time GPS wobbled a few metres. A pin
+    dropped on the map goes through the same rounding, for the same reason.
   - **Detection writes to `UserDefaults` and stops there.** The refetch, the notification rotation
     and the menu bar all follow from the debounced diff noticing new coordinates — same contract
-    as every other setting. Nothing calls back into the manager to "apply" a location.
-  - **Device mode with no fix falls back to the picked city**, as does a corrupt stored
-    coordinate. `PrayerSettings.load` reads the city first for exactly that reason.
+    as every other setting. Nothing calls back into the manager to "apply" a location, and the
+    map picker follows it too: `setManualLocation` writes and returns.
+  - **The detected fix and the hand-picked pin have disjoint keys** (`LocationKeys.device` /
+    `LocationKeys.manual`, both fed to the same `DeviceLocation.load/save`). Sharing one set
+    would let an automatic re-detection overwrite a point the user deliberately chose, and would
+    lose one of them on every switch between the modes. Both sets are in `SharedStore.ownedKeys`.
+  - **Any mode with nothing valid stored falls back to the picked city** — no fix yet, no pin yet,
+    a corrupt coordinate, or a `locationMode` written by a future build. `PrayerSettings.load`
+    reads the city first for exactly that reason.
 
-  Detection is on demand by default. `locationFollowsDevice` opts into re-detecting at launch, on
+  **The map picker is MapKit, and MapKit is free** — part of the OS, no key, no quota, nothing
+  added to a project that has no dependencies. `MapLocationPicker` wraps `MKMapView` in an
+  `NSViewRepresentable` because SwiftUI's own `Map` cannot report where the user clicked until
+  macOS 14 and the floor is 13; search is `MKLocalSearch`, equally keyless. Two details that look
+  like bugs if undone: the click recogniser sets `delaysPrimaryMouseButtonEvents = false` or it
+  swallows the presses `MKMapView` needs for panning and the map goes dead, and the map only
+  re-centres on a `recenterToken` change — following the coordinate unconditionally would yank
+  the map out from under a click. The two coordinate fields parse with `Double(_:)` rather than a
+  `NumberFormatter`, because coordinates are typed and pasted with a dot whatever the app's
+  language is.
+
+  Detection is on demand by default, and applies to `device` mode only — a hand-picked point is
+  never re-detected. `locationFollowsDevice` opts into re-detecting at launch, on
   wake and on the device's day change (`PrayerLifecycle.onDayChanged`, which exists so this does
   not also fire at all six prayers), throttled to once every 30 minutes. Crossing a border moves
   `calculationMethod` to the nearest listed city's `recommendedMethod` — the same thing picking a
