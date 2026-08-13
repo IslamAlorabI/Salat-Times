@@ -325,10 +325,12 @@ check("StableHash separates similar inputs",
 
 var fpA = settings
 fpA.reminderMinutes = 15
-// Re-pin this only when the fingerprint's *inputs* deliberately change (it last moved
-// when per-prayer sounds joined them). A change here that you did not intend means
-// something reintroduced a per-process hash.
-let goldenFingerprint = "3jyvpwdqhtr2f"
+// Re-pin this only when the fingerprint's *inputs* deliberately change. It last moved on
+// 2026-08-13, when `notificationContentVersion` joined them so that bumping the content
+// shape rotates every identifier once and rebuilds the already-pending requests; before
+// that it moved when per-prayer sounds joined them. A change here that you did *not*
+// intend means something reintroduced a per-process hash.
+let goldenFingerprint = "1pziikkwure5n"
 check("notificationFingerprint matches its golden value",
       fpA.notificationFingerprint == goldenFingerprint,
       fpA.notificationFingerprint)
@@ -545,6 +547,56 @@ check("a coordinate in Turkey gets Diyanet",
 check("the Pacific does not fold the world in half",
       City.nearest(toLatitude: 35.68, longitude: 139.69) == .tokyo,
       City.nearest(toLatitude: 35.68, longitude: 139.69).rawValue)
+
+
+// ---------------------------------------------------------------------------
+print("\n16. Delivered notifications expire instead of piling up")
+// Notification Center keeps everything it has ever shown until the user clears it, so six
+// alerts a day becomes a wall of them. The rule: a reminder dies when its prayer arrives,
+// a prayer's alert dies when the next prayer arrives.
+let asr = at("2026-08-13 16:40:00", "Africa/Cairo")
+let maghrib = at("2026-08-13 19:41:00", "Africa/Cairo")
+let asrReminder = asr.addingTimeInterval(-15 * 60)
+
+let inbox: [(identifier: String, date: Date)] = [
+    ("reminder_Asr_2026-08-13_abc", asrReminder),
+    ("prayer_Asr_2026-08-13_abc", asr),
+]
+
+// Between the reminder and Asr, both belong: the reminder is why the user looks.
+let beforeAsr = PrayerNotificationScheduler.staleDelivered(
+    inbox.filter { $0.date <= asrReminder }, now: asrReminder.addingTimeInterval(60),
+    currentPrayer: at("2026-08-13 13:01:00", "Africa/Cairo"))
+check("a reminder survives until its prayer arrives", beforeAsr.isEmpty, "\(beforeAsr)")
+
+// The moment Asr arrives, its reminder is replaced by the prayer's own alert.
+let atAsr = PrayerNotificationScheduler.staleDelivered(inbox, now: asr, currentPrayer: asr)
+check("the reminder goes when the prayer arrives", atAsr == ["reminder_Asr_2026-08-13_abc"], "\(atAsr)")
+check("the prayer's own alert stays", !atAsr.contains("prayer_Asr_2026-08-13_abc"))
+
+// And Asr's alert goes when Maghrib arrives, so at most two are ever on screen.
+let atMaghrib = PrayerNotificationScheduler.staleDelivered(inbox, now: maghrib, currentPrayer: maghrib)
+check("the previous prayer's alert goes at the next prayer", atMaghrib.count == 2, "\(atMaghrib)")
+
+// A clock that jumps forward and back fires everything at once, stamped in the future.
+// Those never become "old", so they would sit there for ever.
+let bogus: [(identifier: String, date: Date)] = [("prayer_Fajr_2038-08-19_abc",
+                                                  at("2038-08-19 08:19:00", "Africa/Cairo"))]
+let jumped = PrayerNotificationScheduler.staleDelivered(bogus, now: asr, currentPrayer: asr)
+check("a future-dated delivery is swept too", jumped.count == 1, "\(jumped)")
+
+// A notification stamped a second or two after its trigger is not "from the future".
+let justNow: [(identifier: String, date: Date)] = [("prayer_Asr_2026-08-13_abc", asr.addingTimeInterval(2))]
+check("a delivery a moment after its instant is kept",
+      PrayerNotificationScheduler.staleDelivered(justNow, now: asr, currentPrayer: asr).isEmpty)
+
+// With no schedule to measure against, fall back to an age limit rather than keeping for ever.
+let old: [(identifier: String, date: Date)] = [("prayer_Isha_2026-08-12_abc", asr.addingTimeInterval(-7200))]
+check("with no schedule, old deliveries still expire",
+      PrayerNotificationScheduler.staleDelivered(old, now: asr, currentPrayer: nil).count == 1)
+check("with no schedule, recent deliveries are kept",
+      PrayerNotificationScheduler.staleDelivered(
+        [("prayer_Isha_2026-08-13_abc", asr.addingTimeInterval(-60))], now: asr, currentPrayer: nil).isEmpty)
 
 
 print("\n\(checks - failures)/\(checks) checks passed")

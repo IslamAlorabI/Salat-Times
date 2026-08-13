@@ -53,6 +53,20 @@ nonisolated struct PrayerSettings: Sendable, Equatable {
     /// A fixed offset is either off (`0`) or a sane distance from its anchor prayer.
     static let fixedOffsetRange = 15...180
 
+    /// Bumped when the *content* of a notification changes shape.
+    ///
+    /// A pending request's content is frozen when it is added, so a code change to what a
+    /// notification says or how it groups cannot reach the ones already scheduled — they
+    /// would keep the old shape for the whole horizon, up to a week. Folding this into
+    /// `notificationFingerprint` rotates every identifier exactly once, which makes the
+    /// reconciler drop the old requests and add them back in the new shape. It is not a
+    /// user setting and never varies at runtime.
+    ///
+    /// - 1: the original content.
+    /// - 2: a prayer and its own reminder share a `threadIdentifier`, so Notification
+    ///   Center stacks them into one entry instead of listing two.
+    static let notificationContentVersion = 2
+
     /// Identifies the server response. Two settings with the same fingerprint may share
     /// cached days; anything else must be refetched.
     var requestFingerprint: String {
@@ -78,6 +92,7 @@ nonisolated struct PrayerSettings: Sendable, Equatable {
         var parts: [String] = [
             requestFingerprint,
             language,
+            "v\(Self.notificationContentVersion)",
             "\(reminderMinutes)",
             "\(fajrBeforeSunriseMinutes)",
             "\(ishaAfterMaghribMinutes)",

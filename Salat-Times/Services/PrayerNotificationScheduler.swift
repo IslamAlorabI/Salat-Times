@@ -39,6 +39,43 @@ final class PrayerNotificationScheduler {
         let title: String
         let body: String
         let sound: UNNotificationSound?
+        /// A prayer and its own reminder share one thread, so Notification Center stacks
+        /// them as a single entry instead of listing them as two unrelated alerts.
+        let threadIdentifier: String
+    }
+
+    /// How long a delivered notification survives when there is no schedule to measure it
+    /// against — an empty timetable, or a cold start before the first fetch.
+    nonisolated static let deliveredFallbackLifetime: TimeInterval = 60 * 60
+
+    /// Tolerance for "delivered in the future". A notification is stamped a moment after
+    /// the instant it was triggered for, and clocks are not exact.
+    nonisolated static let futureTolerance: TimeInterval = 60
+
+    /// Which already-delivered notifications Notification Center should stop showing.
+    ///
+    /// Nothing expires on its own: macOS keeps every alert it has ever shown until the
+    /// user clears it by hand, so an app that fires six or twelve times a day quietly
+    /// builds a wall of them. Two kinds are stale:
+    ///
+    /// - **Anything delivered before the current prayer.** This is what makes a reminder
+    ///   vanish at the moment its prayer arrives — the alert for the prayer replaces it —
+    ///   and the previous prayer's alert vanish when the next prayer arrives. What is left
+    ///   on screen is at most two things: the current prayer's alert, and the next
+    ///   prayer's reminder once it is due.
+    /// - **Anything delivered in the future.** Not a paradox but a symptom: if the clock
+    ///   jumps forward and then back — a flat RTC battery, a VM resuming, a Hackintosh
+    ///   picking the wrong time at boot — every pending request fires at once and is
+    ///   stamped with the bogus date. Those would otherwise never expire, because their
+    ///   date never becomes old.
+    nonisolated static func staleDelivered(_ delivered: [(identifier: String, date: Date)],
+                                           now: Date,
+                                           currentPrayer: Date?) -> [String] {
+        let cutoff = currentPrayer ?? now.addingTimeInterval(-deliveredFallbackLifetime)
+        let future = now.addingTimeInterval(futureTolerance)
+        return delivered
+            .filter { $0.date < cutoff || $0.date > future }
+            .map(\.identifier)
     }
 
     /// Builds the set of notifications that *should* exist, for the days covered by
@@ -66,12 +103,15 @@ final class PrayerNotificationScheduler {
             guard event.date > now, enabled.contains(event.key) else { continue }
             let name = event.name(language: language)
 
+            let thread = "salat_\(event.key.rawValue)_\(event.dateStamp)"
+
             planned.append(PlannedRequest(
                 identifier: "prayer_\(event.key.rawValue)_\(event.dateStamp)_\(fingerprint)",
                 date: event.date,
                 title: Translations.string("prayer_time", language: language),
                 body: String(format: Translations.string("prayer_time_body", language: language), name),
-                sound: sound(event.key)))
+                sound: sound(event.key),
+                threadIdentifier: thread))
 
             guard settings.reminderMinutes > 0 else { continue }
             let reminderDate = event.date.addingTimeInterval(TimeInterval(-settings.reminderMinutes * 60))
@@ -87,7 +127,8 @@ final class PrayerNotificationScheduler {
                 date: reminderDate,
                 title: Translations.string("prayer_reminder_title", language: language),
                 body: body,
-                sound: .default))
+                sound: .default,
+                threadIdentifier: thread))
         }
 
         // Soonest first, so if anything has to be dropped it is the furthest out.
@@ -134,6 +175,9 @@ final class PrayerNotificationScheduler {
             content.title = request.title
             content.body = request.body
             content.sound = request.sound
+            // Groups a prayer with its own reminder, so Notification Center shows one
+            // stacked entry per prayer rather than two separate rows.
+            content.threadIdentifier = request.threadIdentifier
             // No badge: this is a menu bar app, and the count only ever accumulated
             // into a red dot the user had no way to clear.
 
@@ -159,6 +203,26 @@ final class PrayerNotificationScheduler {
         // rather than duplicates.
         let reported = await center.pendingNotificationRequests().count
         Log.notifications.notice("Reconciled: \(desired.count) desired, +\(added) added, -\(obsolete.count) removed (store reports \(reported) pending; may lag)")
+    }
+
+    /// Clears delivered notifications the schedule has moved past.
+    ///
+    /// Safe to call as often as a boundary fires: it only ever removes what
+    /// `staleDelivered` names, and touches nothing this app did not send.
+    func pruneDelivered(now: Date = Date(), events: [PrayerEvent]) async {
+        let delivered = await center.deliveredNotifications()
+        let ours = delivered.filter {
+            $0.request.identifier.hasPrefix("prayer_") || $0.request.identifier.hasPrefix("reminder_")
+        }
+        guard !ours.isEmpty else { return }
+
+        let stale = Self.staleDelivered(ours.map { ($0.request.identifier, $0.date) },
+                                        now: now,
+                                        currentPrayer: PrayerScheduleCalculator.current(at: now, in: events)?.date)
+        guard !stale.isEmpty else { return }
+
+        center.removeDeliveredNotifications(withIdentifiers: stale)
+        Log.notifications.notice("Cleared \(stale.count) delivered notification(s) the schedule has passed (\(ours.count - stale.count) kept)")
     }
 
     func authorizationStatus() async -> UNAuthorizationStatus {

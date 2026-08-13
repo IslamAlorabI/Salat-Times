@@ -235,6 +235,24 @@ the device's rollover, not the city's.
   discards the furthest-future ones past that. `horizonDays` budgets against it (6 prayers +
   reminders ≈ 5 days) and the boundary timer slides the window forward on every prayer.
 
+- **Delivered notifications are swept, because nothing expires on its own.** Notification Center
+  keeps every alert until the user clears it, so six a day (twelve with reminders) becomes a wall.
+  `staleDelivered` — pure, and checked — names two kinds: anything delivered **before the current
+  prayer** (so a reminder is replaced by its prayer's alert, and that alert goes when the next
+  prayer arrives — at most two on screen ever), and anything delivered **in the future**, which is
+  what a clock jumping forward and back leaves behind. Future-dated ones matter: their date never
+  becomes old, so without that rule they would sit there for ever. `PrayerManager` calls
+  `pruneDeliveredNotifications()` from the boundary, wake and became-active hooks.
+- **A pending request's content is frozen when it is added**, so changing what a notification says
+  or how it groups cannot reach the ones already scheduled — up to a week of them.
+  `PrayerSettings.notificationContentVersion` is folded into `notificationFingerprint` for exactly
+  that: bump it and every identifier rotates once, the reconciler drops the old requests and adds
+  them back in the new shape. Bumping it also moves the golden fingerprint pinned in `Checks/`,
+  which must be re-pinned deliberately — an *unintended* change there means someone reintroduced a
+  per-process hash.
+- A prayer and its own reminder share a `threadIdentifier`, so Notification Center stacks them as
+  one entry rather than two unrelated rows.
+
 `pendingNotificationRequests()` is **eventually consistent** — right after a batch of adds, and early
 in startup, it under-reports. Measured: it returned 47 while the store genuinely held all 60. Don't
 shrink the horizon to chase that number. To check what is really scheduled, read the store:

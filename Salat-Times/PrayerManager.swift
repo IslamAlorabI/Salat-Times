@@ -89,6 +89,9 @@ class PrayerManager: NSObject, ObservableObject, UNUserNotificationCenterDelegat
             self.rebuildEvents()
             self.schedulePrayerNotifications()
             self.refresh()
+            // A prayer just arrived, so its own reminder — and the previous prayer's
+            // alert — are no longer what the user needs to see.
+            self.pruneDeliveredNotifications()
         }
         lifecycle.onNeedsReschedule = { [weak self] in
             // Woke from sleep, or the clock/zone moved: every computed instant is suspect.
@@ -98,9 +101,14 @@ class PrayerManager: NSObject, ObservableObject, UNUserNotificationCenterDelegat
             self.refresh()
             // A zone change on wake is exactly what travelling looks like.
             self.detectLocationIfFollowing()
+            // Whatever fired while the Mac was asleep has almost certainly been
+            // overtaken — and a clock that moved is exactly how future-dated
+            // notifications appear.
+            self.pruneDeliveredNotifications()
         }
         lifecycle.onShouldRefresh = { [weak self] in
             self?.refresh()
+            self?.pruneDeliveredNotifications()
         }
         lifecycle.onDayChanged = { [weak self] in
             self?.detectLocationIfFollowing()
@@ -225,6 +233,17 @@ class PrayerManager: NSObject, ObservableObject, UNUserNotificationCenterDelegat
         let settings = self.settings
         Task { [scheduler] in
             await scheduler.reconcile(timetable: timetable, settings: settings)
+        }
+    }
+
+    /// Sweeps Notification Center of alerts the schedule has moved past. Driven from the
+    /// lifecycle hooks — a prayer boundary, waking, becoming active — because those are
+    /// exactly the moments an alert stops being current.
+    func pruneDeliveredNotifications() {
+        let events = self.events
+        guard !events.isEmpty else { return }
+        Task { [scheduler] in
+            await scheduler.pruneDelivered(events: events)
         }
     }
 
