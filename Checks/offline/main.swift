@@ -448,6 +448,8 @@ let requiredKeys = [
     "location_detecting", "location_not_detected", "location_failed", "location_denied",
     "location_open_settings", "location_follow", "location_follow_hint", "location_updated",
     "location_approximate", "location_approximate_short",
+    "widget_needs_app", "widget_next_prayer", "widget_next_prayer_hint",
+    "widget_today", "widget_today_hint",
 ]
 let unresolved = requiredKeys.filter { Translations.string($0, language: "de") == $0 }
 check("every key the UI asks for resolves", unresolved.isEmpty, unresolved.joined(separator: ", "))

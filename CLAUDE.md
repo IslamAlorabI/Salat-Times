@@ -73,8 +73,12 @@ rather than drawing an empty grid.
   entry, or the widget renders the city's times in the Mac's zone.
 - `WidgetCenter.shared.reloadAllTimelines()` is called from `applySettingsChange` and after a fetch
   lands. Without it the widget shows the old city until its own timeline happens to expire.
-- `containerBackground` is required from macOS 14 and does not exist in 13, hence the
-  `widgetBackground()` shim — the app's floor is 13.0.
+- **`containerBackground` is mandatory from macOS 14, and forgetting it does not look like a
+  styling bug.** The system refuses to draw the widget at all and substitutes "Please adopt
+  containerBackground API", which reads as the widget being broken. It must be applied to *every*
+  widget's entry view: the `.widget` placement comes from WidgetKit, and `WidgetViews.swift` is
+  deliberately WidgetKit-free so its layouts can be rendered off-screen, so there is no shared root
+  to hang it on. Guarded with `#available(macOS 14.0, *)` because the app's floor is 13.0.
 - Xcode's template gave the new target `MACOSX_DEPLOYMENT_TARGET = 26.2` and no App Group. Both were
   corrected by hand; a widget without the group entitlement sees neither settings nor cache and
   renders the placeholder for ever, which looks exactly like a broken widget.

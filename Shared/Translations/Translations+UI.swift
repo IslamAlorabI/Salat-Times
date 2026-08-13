@@ -276,6 +276,46 @@ nonisolated let uiStrings: [String: [String: String]] = [
         "fa": "تغییر",
         "de": "Ändern"
     ],
+    "widget_next_prayer": [
+        "ar": "الصلاة القادمة",
+        "en": "Next Prayer",
+        "ru": "Следующая молитва",
+        "id": "Salat Berikutnya",
+        "tr": "Sonraki Vakit",
+        "ur": "اگلی نماز",
+        "fa": "نماز بعدی",
+        "de": "Nächstes Gebet"
+    ],
+    "widget_next_prayer_hint": [
+        "ar": "الصلاة القادمة مع العدّ التنازلي وتقدّم الوقت الحالي.",
+        "en": "The next prayer, with a countdown and how much of the current period has passed.",
+        "ru": "Следующая молитва с обратным отсчётом и долей прошедшего периода.",
+        "id": "Salat berikutnya, dengan hitung mundur dan sisa periode saat ini.",
+        "tr": "Sonraki vakit, geri sayım ve mevcut vaktin ne kadarının geçtiğiyle.",
+        "ur": "اگلی نماز، کاؤنٹ ڈاؤن اور موجودہ وقفے کی پیش رفت کے ساتھ۔",
+        "fa": "نماز بعدی، با شمارش معکوس و میزان گذشت وقت کنونی.",
+        "de": "Das nächste Gebet, mit Countdown und Fortschritt des laufenden Zeitraums."
+    ],
+    "widget_today": [
+        "ar": "مواقيت اليوم",
+        "en": "Today's Times",
+        "ru": "Время на сегодня",
+        "id": "Waktu Hari Ini",
+        "tr": "Bugünün Vakitleri",
+        "ur": "آج کے اوقات",
+        "fa": "اوقات امروز",
+        "de": "Heutige Zeiten"
+    ],
+    "widget_today_hint": [
+        "ar": "مواقيت اليوم كاملة مع تمييز الصلاة القادمة.",
+        "en": "The whole day's times, with the next prayer marked.",
+        "ru": "Все молитвы дня, следующая выделена.",
+        "id": "Waktu salat sehari penuh, dengan salat berikutnya ditandai.",
+        "tr": "Günün tüm vakitleri, sonraki vakit işaretli.",
+        "ur": "پورے دن کے اوقات، اگلی نماز نمایاں۔",
+        "fa": "اوقات کامل امروز، با مشخص‌شدن نماز بعدی.",
+        "de": "Alle Zeiten des Tages, das nächste Gebet hervorgehoben."
+    ],
     "widget_needs_app": [
         "ar": "افتح التطبيق لتحميل المواقيت",
         "en": "Open the app to load times",
