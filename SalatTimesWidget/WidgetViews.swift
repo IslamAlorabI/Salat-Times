@@ -148,15 +148,21 @@ struct NextPrayerWidgetView: View {
 
                 if let date = snapshot.nextDate {
                     // The only thing a widget can animate without being woken.
+                    // `Text(_:style: .timer)` is a live view: the system reserves
+                    // width for the widest value it may show, and that reservation is
+                    // wider than the digits currently visible. Anything laid out around it
+                    // drifts, which is why a 24-minute countdown sat off-centre while a
+                    // six-hour one looked fine. The fixed slot plus explicit centring
+                    // takes the decision away from it — and note a static render cannot
+                    // reproduce this, so it has to be checked in the real widget.
                     Text(date, style: .timer)
-                        .font(.system(size: 15, weight: .bold))
+                        .font(.system(size: 14, weight: .bold))
                         .monospacedDigit()
                         .lineLimit(1)
-                        .minimumScaleFactor(0.6)
+                        .minimumScaleFactor(0.55)
                         .foregroundStyle(tint)
-                        // A timer counting up to six hours is wider than one counting
-                        // minutes; without a fixed box the ring's contents jump about.
-                        .frame(width: diameter - 26)
+                        .multilineTextAlignment(.center)
+                        .frame(width: diameter - 18, alignment: .center)
                 }
 
                 Text(snapshot.nextTime ?? "")
@@ -268,18 +274,26 @@ struct CountdownFooter: View {
     @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
-        HStack(spacing: 6) {
-            Image(systemName: "timer")
-                .font(.system(size: 10, weight: .semibold))
-            Text(snapshot.nextName ?? "")
-                .font(.system(size: 11, weight: .semibold))
-                .lineLimit(1)
-            Spacer(minLength: 4)
+        // Spacers on both ends rather than one between the label and the timer: the
+        // timer's reserved width would otherwise eat the gap and shove the label against
+        // the widget's margin, which is what it did in both English and Arabic.
+        HStack(spacing: 8) {
+            Spacer(minLength: 0)
+            HStack(spacing: 5) {
+                Image(systemName: "timer")
+                    .font(.system(size: 10, weight: .semibold))
+                Text(snapshot.nextName ?? "")
+                    .font(.system(size: 11, weight: .semibold))
+                    .lineLimit(1)
+            }
             Text(date, style: .timer)
                 .font(.system(size: 12, weight: .bold))
                 .monospacedDigit()
                 .lineLimit(1)
-                .frame(maxWidth: 84, alignment: .trailing)
+                .minimumScaleFactor(0.6)
+                .multilineTextAlignment(.center)
+                .frame(width: 68, alignment: .center)
+            Spacer(minLength: 0)
         }
         .foregroundStyle(snapshot.nextKey.map { PrayerPalette.color(for: $0, scheme: colorScheme) } ?? .accentColor)
         .padding(.horizontal, 8)

@@ -34,7 +34,7 @@ struct PrayerTimelineProvider: TimelineProvider {
     }
 
     private func entries(from now: Date) -> [PrayerEntry] {
-        let settings = PrayerSettings.load()
+        let settings = PrayerSettings.load(from: SharedStore.currentDefaults())
         guard let timetable = Self.cachedTimetable(around: now, settings: settings) else {
             return [PrayerEntry(date: now,
                                 snapshot: .empty(language: settings.language,
@@ -84,28 +84,67 @@ struct PrayerTimelineProvider: TimelineProvider {
     }
 }
 
-/// Turns the shared model into finished display values, once per entry.
-private struct SnapshotBuilder {
+/// Turns the shared model into finished display values.
+///
+/// A class with caches, not a struct, and for a measured reason: a timeline holds ~150
+/// entries (a frame every ten minutes so the ring moves) and each one wanted six formatted
+/// clock strings. Building a `DateFormatter` per string meant ~900 allocations per timeline
+/// — the same mistake that made the monthly schedule crawl, except here it is spent inside
+/// WidgetKit's budget for producing a timeline at all, which is why the widgets sat on
+/// their loading skeletons.
+///
+/// The rows for a given civil day are identical across every entry *except* for which one
+/// is next and which have passed, so they are formatted once per day and the flags applied
+/// per entry.
+private final class SnapshotBuilder {
+    private struct RowTemplate {
+        let id: String
+        let name: String
+        let time: String
+        let key: PrayerKey
+        let date: Date
+    }
+
     let timetable: PrayerTimetable
     let settings: PrayerSettings
     let events: [PrayerEvent]
 
+    private let formatter: DateFormatter
+    private let cityName: String
+    private var rowsByDay: [String: [RowTemplate]] = [:]
+    private var hijriByDay: [String: String?] = [:]
+
+    init(timetable: PrayerTimetable, settings: PrayerSettings, events: [PrayerEvent]) {
+        self.timetable = timetable
+        self.settings = settings
+        self.events = events
+
+        let formatter = DateFormatter()
+        formatter.timeZone = timetable.timeZone
+        formatter.locale = Locale(identifier: Translations.locale(settings.language))
+        formatter.dateFormat = settings.use24Hour ? "HH:mm" : "h:mm a"
+        self.formatter = formatter
+
+        // The stored value is the `City` enum's English raw value, which is not what an
+        // Arabic reader sees anywhere else in the app. A detected location's name is
+        // already localized by the geocoder, so it falls through unchanged.
+        self.cityName = City.allCases.first { $0.rawValue == settings.cityRaw }?
+            .getName(language: settings.language) ?? settings.cityRaw
+    }
+
     func snapshot(at moment: Date) -> WidgetSnapshot {
-        let calendar = timetable.calendar
-        let stamp = DateStamp.format(moment, in: calendar)
+        let stamp = DateStamp.format(moment, in: timetable.calendar)
         let next = PrayerScheduleCalculator.next(after: moment, in: events)
         let current = PrayerScheduleCalculator.current(at: moment, in: events)
 
-        let rows = events
-            .filter { $0.dateStamp == stamp && !$0.key.isNightMarker }
-            .map { event in
-                WidgetSnapshot.Row(id: event.id,
-                                   name: event.name(language: settings.language),
-                                   time: formatted(event.date),
-                                   key: event.key,
-                                   isNext: event.id == next?.id,
-                                   isPast: event.date <= moment)
-            }
+        let rows = templates(for: stamp).map { template in
+            WidgetSnapshot.Row(id: template.id,
+                               name: template.name,
+                               time: template.time,
+                               key: template.key,
+                               isNext: template.id == next?.id,
+                               isPast: template.date <= moment)
+        }
 
         return WidgetSnapshot(
             city: cityName,
@@ -123,6 +162,19 @@ private struct SnapshotBuilder {
             needsApp: false)
     }
 
+    private func templates(for stamp: String) -> [RowTemplate] {
+        if let cached = rowsByDay[stamp] { return cached }
+        let built = events
+            .filter { $0.dateStamp == stamp && !$0.key.isNightMarker }
+            .map { RowTemplate(id: $0.id,
+                               name: $0.name(language: settings.language),
+                               time: formatted($0.date),
+                               key: $0.key,
+                               date: $0.date) }
+        rowsByDay[stamp] = built
+        return built
+    }
+
     /// How much of the current prayer period has elapsed. Before the day's first prayer
     /// this measures from yesterday's Isha, which the rolling event window provides.
     private func progress(at moment: Date, from current: PrayerEvent?, to next: PrayerEvent?) -> Double {
@@ -132,33 +184,29 @@ private struct SnapshotBuilder {
         return min(max(moment.timeIntervalSince(current.date) / span, 0), 1)
     }
 
-    /// The city as the rest of the app names it — the stored value is the `City` enum's
-    /// English raw value, which is not what an Arabic reader sees anywhere else. A
-    /// detected location's name is already localized by the geocoder, so it falls through.
-    private var cityName: String {
-        City.allCases.first { $0.rawValue == settings.cityRaw }?.getName(language: settings.language)
-            ?? settings.cityRaw
-    }
-
     private func hijri(for stamp: String) -> String? {
-        guard let hijri = timetable.days[stamp]?.hijri else { return nil }
-        let day = Translations.localizedNumber(hijri.day, numberFormat: settings.numberFormat)
-        return "\(day) \(Translations.hijriMonthName(hijri.month.number, language: settings.language))"
+        if let cached = hijriByDay[stamp] { return cached }
+        let value: String?
+        if let hijri = timetable.days[stamp]?.hijri {
+            let day = Translations.localizedNumber(hijri.day, numberFormat: settings.numberFormat)
+            value = "\(day) \(Translations.hijriMonthName(hijri.month.number, language: settings.language))"
+        } else {
+            value = nil
+        }
+        hijriByDay[stamp] = value
+        return value
     }
 
     private func formatted(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.timeZone = timetable.timeZone
-        formatter.locale = Locale(identifier: Translations.locale(settings.language))
-        formatter.dateFormat = settings.use24Hour ? "HH:mm" : "h:mm a"
-        return Translations.localizedNumber(formatter.string(from: date),
-                                            numberFormat: settings.numberFormat)
+        Translations.localizedNumber(formatter.string(from: date), numberFormat: settings.numberFormat)
     }
 }
 
 // MARK: - The widgets
 
-private func widgetLanguage() -> String { PrayerSettings.load().language }
+private func widgetLanguage() -> String {
+    PrayerSettings.load(from: SharedStore.currentDefaults()).language
+}
 
 /// The next prayer as a ring: which one, when, how long, and how much of the period is
 /// gone — the last of which is the part a line of text cannot say.

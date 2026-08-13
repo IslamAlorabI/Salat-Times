@@ -40,6 +40,21 @@ nonisolated enum SharedStore {
         return suite
     }()
 
+    /// A freshly opened view of the same suite.
+    ///
+    /// `defaults` is a `static let`, which is right for the app — one long-running process
+    /// that makes the writes itself. It is wrong for the widget: that extension's process
+    /// is kept alive between timeline builds, and a long-lived `UserDefaults` instance in a
+    /// *different* process can still be serving values the app has since changed. That is
+    /// why a widget kept showing the old city or the old language for a while after it was
+    /// changed. Opening the suite again costs almost nothing and is done once per timeline.
+    static func currentDefaults() -> UserDefaults {
+        guard containerURL != nil, let suite = UserDefaults(suiteName: appGroupIdentifier) else {
+            return .standard
+        }
+        return suite
+    }
+
     /// Set once the copy below has run, in the *destination*, so it happens exactly once.
     static let migrationKey = "didMigrateToAppGroup"
 
