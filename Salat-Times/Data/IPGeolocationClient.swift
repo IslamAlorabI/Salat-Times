@@ -84,7 +84,11 @@ nonisolated struct IPGeolocationClient: Sendable {
 
 // MARK: - Provider payloads
 
-private struct IPWhoIsResponse: Decodable {
+/// `nonisolated`, like every other model type here: the project sets
+/// `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`, so without it the `Decodable` conformance
+/// is main-actor-isolated and cannot be used from the decoding closures above — a warning
+/// today and an error in the Swift 6 language mode.
+private nonisolated struct IPWhoIsResponse: Decodable {
     let success: Bool?
     let latitude: Double?
     let longitude: Double?
@@ -107,7 +111,7 @@ private struct IPWhoIsResponse: Decodable {
     }
 }
 
-private struct GeoJSResponse: Decodable {
+private nonisolated struct GeoJSResponse: Decodable {
     /// Strings, not numbers — this provider returns `"30.4581"`.
     let latitude: String?
     let longitude: String?
