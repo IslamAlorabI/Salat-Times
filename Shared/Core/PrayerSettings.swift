@@ -103,7 +103,7 @@ nonisolated struct PrayerSettings: Sendable, Equatable {
         return StableHash.digest(parts.joined(separator: "|"))
     }
 
-    static func load(from defaults: UserDefaults = .standard) -> PrayerSettings {
+    static func load(from defaults: UserDefaults = SharedStore.defaults) -> PrayerSettings {
         let cityRaw = defaults.string(forKey: "selectedCityRaw") ?? City.cairo.rawValue
         let city = City.allCases.first { $0.rawValue == cityRaw } ?? .cairo
 

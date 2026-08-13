@@ -5,6 +5,7 @@ import CoreLocation
 import SwiftUI
 import Combine
 import UserNotifications
+import WidgetKit
 import AppKit
 
 // MARK: - Manager
@@ -67,7 +68,7 @@ class PrayerManager: NSObject, ObservableObject, UNUserNotificationCenterDelegat
 
         startLifecycle()
 
-        if UserDefaults.standard.bool(forKey: "hasShownWelcome") {
+        if SharedStore.defaults.bool(forKey: "hasShownWelcome") {
             loadSavedCity()
             startCountdownTimer()
             detectLocationIfFollowing()
@@ -190,6 +191,11 @@ class PrayerManager: NSObject, ObservableObject, UNUserNotificationCenterDelegat
             rebuildEvents()
             schedulePrayerNotifications()
         }
+
+        // The widget reads the same App Group container, but nothing tells it the
+        // contents moved — it would otherwise show the old city until its own timeline
+        // happened to expire.
+        WidgetCenter.shared.reloadAllTimelines()
     }
 
     /// Re-reads the settings snapshot and rebuilds the schedule from the cached
@@ -277,7 +283,7 @@ class PrayerManager: NSObject, ObservableObject, UNUserNotificationCenterDelegat
     private static let automaticDetectionInterval: TimeInterval = 30 * 60
 
     var isFollowingDeviceLocation: Bool {
-        let defaults = UserDefaults.standard
+        let defaults = SharedStore.defaults
         return LocationMode.from(defaults.string(forKey: DeviceLocation.Keys.mode)) == .device
             && defaults.bool(forKey: DeviceLocation.Keys.followDevice)
     }
@@ -316,7 +322,7 @@ class PrayerManager: NSObject, ObservableObject, UNUserNotificationCenterDelegat
     }
 
     private func store(_ fix: DeviceLocation) {
-        let defaults = UserDefaults.standard
+        let defaults = SharedStore.defaults
         let previous = DeviceLocation.load(from: defaults)
         fix.save(to: defaults)
 
@@ -343,13 +349,13 @@ class PrayerManager: NSObject, ObservableObject, UNUserNotificationCenterDelegat
     /// Puts the app back on a picked city. Clearing the mode is enough — the diff sees
     /// different coordinates and refetches.
     func useCityLocation() {
-        UserDefaults.standard.set(LocationMode.city.rawValue, forKey: DeviceLocation.Keys.mode)
+        SharedStore.defaults.set(LocationMode.city.rawValue, forKey: DeviceLocation.Keys.mode)
         locationState = .idle
     }
 
     /// Switches to device coordinates, detecting immediately if there is no fix yet.
     func useDeviceLocation() {
-        UserDefaults.standard.set(LocationMode.device.rawValue, forKey: DeviceLocation.Keys.mode)
+        SharedStore.defaults.set(LocationMode.device.rawValue, forKey: DeviceLocation.Keys.mode)
         if DeviceLocation.load() == nil {
             detectLocation()
         }
@@ -397,6 +403,8 @@ class PrayerManager: NSObject, ObservableObject, UNUserNotificationCenterDelegat
         hijriDate = PrayerScheduleCalculator.day(containing: Date(), timetable: timetable)?.hijri ?? hijriDate
         rebuildEvents()
         schedulePrayerNotifications()
+        // A freshly fetched month is exactly what the widget is rendering from.
+        WidgetCenter.shared.reloadAllTimelines()
     }
 
     // MARK: - Countdown

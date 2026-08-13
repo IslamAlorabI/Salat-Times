@@ -98,12 +98,47 @@ nonisolated struct MonthCacheStore: Sendable {
 }
 
 nonisolated enum AppPaths {
-    /// Inside the sandbox container today. When the widget lands this moves to the
-    /// App Group container — hence the single accessor.
+    /// The App Group container when it exists, the app's own sandbox when it does not.
+    ///
+    /// The widget is a separate process and cannot read the app's private container, so
+    /// the cache has to live somewhere both can reach. The fallback keeps a build without
+    /// the entitlement working exactly as it did before.
     static var supportDirectory: URL {
+        if let container = SharedStore.containerURL {
+            return container
+                .appendingPathComponent("Library/Application Support/SalatTimes", isDirectory: true)
+        }
+        return legacySupportDirectory
+    }
+
+    /// Where months were cached before the App Group. Still read once, to move them.
+    static var legacySupportDirectory: URL {
         let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
             ?? URL(fileURLWithPath: NSTemporaryDirectory())
         return base.appendingPathComponent("SalatTimes", isDirectory: true)
+    }
+
+    /// Moves the old cache into the group container, once.
+    ///
+    /// Cached months are disposable — a miss just refetches — but only if there is a
+    /// network. Carrying them over means an app updated while offline still has times to
+    /// show, which is the whole point of the cache.
+    static func migrateCacheIfNeeded() {
+        guard SharedStore.containerURL != nil else { return }
+        let source = legacySupportDirectory
+        let destination = supportDirectory
+        let fm = FileManager.default
+        guard fm.fileExists(atPath: source.path), !fm.fileExists(atPath: destination.path) else { return }
+
+        do {
+            try fm.createDirectory(at: destination.deletingLastPathComponent(),
+                                   withIntermediateDirectories: true)
+            try fm.moveItem(at: source, to: destination)
+            Log.data.notice("Moved the cache into the App Group container")
+        } catch {
+            // Not fatal: the repository recreates what it needs and refetches.
+            Log.data.error("Could not move the cache: \(error.localizedDescription, privacy: .public)")
+        }
     }
 
     static var cacheDirectory: URL {

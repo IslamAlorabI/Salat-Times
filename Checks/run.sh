@@ -11,15 +11,15 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 SRC="Salat-Times"
+SHARED="Shared"
 OUT="$(mktemp -d)"
 trap 'rm -rf "$OUT"' EXIT
 
 # Everything in Core/ by design compiles without SwiftUI, so glob it rather than
 # listing files — a new Core type is then covered automatically.
-CORE=("$SRC/Core/"*.swift
+CORE=("$SHARED/Core/"*.swift
       "$SRC/Services/PrayerNotificationScheduler.swift"
-      "$SRC/Translations.swift"
-      "$SRC"/Translations+*.swift)
+      "$SHARED/Translations/"*.swift)
 
 swiftc -O -o "$OUT/offline" "${CORE[@]}" Checks/offline/main.swift
 "$OUT/offline"
@@ -28,8 +28,8 @@ if [[ "${1:-}" == "--network" ]]; then
   echo
   echo "=== network checks (hits api.aladhan.com) ==="
   swiftc -O -o "$OUT/network" \
-    "$SRC/Core/"*.swift "$SRC/Data/"*.swift \
-    "$SRC/Translations.swift" "$SRC"/Translations+*.swift \
+    "$SHARED/Core/"*.swift "$SRC/Data/"*.swift \
+    "$SHARED/Translations/"*.swift \
     Checks/network/main.swift
   "$OUT/network"
 fi

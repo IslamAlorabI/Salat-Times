@@ -276,6 +276,16 @@ nonisolated let uiStrings: [String: [String: String]] = [
         "fa": "تغییر",
         "de": "Ändern"
     ],
+    "widget_needs_app": [
+        "ar": "افتح التطبيق لتحميل المواقيت",
+        "en": "Open the app to load times",
+        "ru": "Откройте приложение, чтобы загрузить время",
+        "id": "Buka aplikasi untuk memuat waktu",
+        "tr": "Vakitleri yüklemek için uygulamayı açın",
+        "ur": "اوقات لوڈ کرنے کے لیے ایپ کھولیں",
+        "fa": "برای بارگذاری اوقات، برنامه را باز کنید",
+        "de": "Öffne die App, um die Zeiten zu laden"
+    ],
     "loading": [
         "ar": "جاري التحميل...",
         "en": "Loading...",

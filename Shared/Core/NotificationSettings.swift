@@ -38,19 +38,19 @@ nonisolated struct PrayerNotificationSettings {
     static let prayers = PrayerKey.notifiable.map(\.rawValue)
 
     static func isEnabled(for prayer: String) -> Bool {
-        UserDefaults.standard.object(forKey: "notification_\(prayer)_enabled") as? Bool ?? true
+        SharedStore.defaults.object(forKey: "notification_\(prayer)_enabled") as? Bool ?? true
     }
 
     static func setEnabled(_ enabled: Bool, for prayer: String) {
-        UserDefaults.standard.set(enabled, forKey: "notification_\(prayer)_enabled")
+        SharedStore.defaults.set(enabled, forKey: "notification_\(prayer)_enabled")
     }
 
     static func sound(for prayer: String) -> NotificationSound {
-        let rawValue = UserDefaults.standard.string(forKey: "notification_\(prayer)_sound") ?? "default"
+        let rawValue = SharedStore.defaults.string(forKey: "notification_\(prayer)_sound") ?? "default"
         return NotificationSound(rawValue: rawValue) ?? .defaultSound
     }
 
     static func setSound(_ sound: NotificationSound, for prayer: String) {
-        UserDefaults.standard.set(sound.rawValue, forKey: "notification_\(prayer)_sound")
+        SharedStore.defaults.set(sound.rawValue, forKey: "notification_\(prayer)_sound")
     }
 }

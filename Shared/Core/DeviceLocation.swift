@@ -110,7 +110,7 @@ nonisolated struct DeviceLocation: Equatable, Sendable {
         static let followDevice = "locationFollowsDevice"
     }
 
-    static func load(from defaults: UserDefaults = .standard) -> DeviceLocation? {
+    static func load(from defaults: UserDefaults = SharedStore.defaults) -> DeviceLocation? {
         guard defaults.object(forKey: Keys.latitude) != nil,
               defaults.object(forKey: Keys.longitude) != nil else { return nil }
 
@@ -129,7 +129,7 @@ nonisolated struct DeviceLocation: Equatable, Sendable {
             isApproximate: defaults.bool(forKey: Keys.isApproximate))
     }
 
-    func save(to defaults: UserDefaults = .standard) {
+    func save(to defaults: UserDefaults = SharedStore.defaults) {
         defaults.set(latitude, forKey: Keys.latitude)
         defaults.set(longitude, forKey: Keys.longitude)
         defaults.set(placeName, forKey: Keys.placeName)

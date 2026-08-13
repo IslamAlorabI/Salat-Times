@@ -6,11 +6,67 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		05A05B73302E17FC00C97587 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 05A05B72302E17FB00C97587 /* WidgetKit.framework */; };
+		05A05B75302E17FC00C97587 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 05A05B74302E17FC00C97587 /* SwiftUI.framework */; };
+		05A05B80302E180000C97587 /* SalatTimesWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 05A05B70302E17FB00C97587 /* SalatTimesWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		05A05B7E302E180000C97587 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 05D235742F23AA63007299AA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 05A05B6F302E17FB00C97587;
+			remoteInfo = SalatTimesWidgetExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		05A05B81302E180000C97587 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				05A05B80302E180000C97587 /* SalatTimesWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		05A05B70302E17FB00C97587 /* SalatTimesWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = SalatTimesWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		05A05B72302E17FB00C97587 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		05A05B74302E17FC00C97587 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		05D2357C2F23AA63007299AA /* Salat Times.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Salat Times.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		05A05B84302E180000C97587 /* Exceptions for "SalatTimesWidget" folder in "SalatTimesWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 05A05B6F302E17FB00C97587 /* SalatTimesWidgetExtension */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		05A05B76302E17FC00C97587 /* SalatTimesWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				05A05B84302E180000C97587 /* Exceptions for "SalatTimesWidget" folder in "SalatTimesWidgetExtension" target */,
+			);
+			path = SalatTimesWidget;
+			sourceTree = "<group>";
+		};
+		05A05B99302E180000C97587 /* Shared */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Shared;
+			sourceTree = "<group>";
+		};
 		05D235A32F23C28B007299AA /* Salat-Times */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = "Salat-Times";
@@ -19,6 +75,15 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		05A05B6D302E17FB00C97587 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				05A05B75302E17FC00C97587 /* SwiftUI.framework in Frameworks */,
+				05A05B73302E17FC00C97587 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		05D235792F23AA63007299AA /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -29,10 +94,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		05A05B71302E17FB00C97587 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				05A05B72302E17FB00C97587 /* WidgetKit.framework */,
+				05A05B74302E17FC00C97587 /* SwiftUI.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		05D235732F23AA63007299AA = {
 			isa = PBXGroup;
 			children = (
 				05D235A32F23C28B007299AA /* Salat-Times */,
+				05A05B99302E180000C97587 /* Shared */,
+				05A05B76302E17FC00C97587 /* SalatTimesWidget */,
+				05A05B71302E17FB00C97587 /* Frameworks */,
 				05D2357D2F23AA63007299AA /* Products */,
 			);
 			sourceTree = "<group>";
@@ -41,6 +118,7 @@
 			isa = PBXGroup;
 			children = (
 				05D2357C2F23AA63007299AA /* Salat Times.app */,
+				05A05B70302E17FB00C97587 /* SalatTimesWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -48,6 +126,29 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		05A05B6F302E17FB00C97587 /* SalatTimesWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 05A05B85302E180000C97587 /* Build configuration list for PBXNativeTarget "SalatTimesWidgetExtension" */;
+			buildPhases = (
+				05A05B6C302E17FB00C97587 /* Sources */,
+				05A05B6D302E17FB00C97587 /* Frameworks */,
+				05A05B6E302E17FB00C97587 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				05A05B76302E17FC00C97587 /* SalatTimesWidget */,
+				05A05B99302E180000C97587 /* Shared */,
+			);
+			name = SalatTimesWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = SalatTimesWidgetExtension;
+			productReference = 05A05B70302E17FB00C97587 /* SalatTimesWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		05D2357B2F23AA63007299AA /* Salat Times */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 05D235872F23AA65007299AA /* Build configuration list for PBXNativeTarget "Salat Times" */;
@@ -55,12 +156,15 @@
 				05D235782F23AA63007299AA /* Sources */,
 				05D235792F23AA63007299AA /* Frameworks */,
 				05D2357A2F23AA63007299AA /* Resources */,
+				05A05B81302E180000C97587 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				05A05B7F302E180000C97587 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
+				05A05B99302E180000C97587 /* Shared */,
 				05D235A32F23C28B007299AA /* Salat-Times */,
 			);
 			name = "Salat Times";
@@ -80,13 +184,16 @@
 				LastSwiftUpdateCheck = 2620;
 				LastUpgradeCheck = 2620;
 				TargetAttributes = {
+					05A05B6F302E17FB00C97587 = {
+						CreatedOnToolsVersion = 26.2;
+					};
 					05D2357B2F23AA63007299AA = {
 						CreatedOnToolsVersion = 26.2;
 						LastSwiftMigration = 2620;
 					};
 				};
 			};
-			buildConfigurationList = 05D235772F23AA63007299AA /* Build configuration list for PBXProject "Salat Times" */;
+			buildConfigurationList = 05D235772F23AA63007299AA /* Build configuration list for PBXProject "Salat-Times" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -101,11 +208,19 @@
 			projectRoot = "";
 			targets = (
 				05D2357B2F23AA63007299AA /* Salat Times */,
+				05A05B6F302E17FB00C97587 /* SalatTimesWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		05A05B6E302E17FB00C97587 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		05D2357A2F23AA63007299AA /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -116,6 +231,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		05A05B6C302E17FB00C97587 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		05D235782F23AA63007299AA /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -125,7 +247,85 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		05A05B7F302E180000C97587 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 05A05B6F302E17FB00C97587 /* SalatTimesWidgetExtension */;
+			targetProxy = 05A05B7E302E180000C97587 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		05A05B82302E180000C97587 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = SalatTimesWidget/SalatTimesWidget.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = HNTYPSZB5M;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SalatTimesWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = SalatTimesWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.0.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "Islam-AlorabI.Salat-Times.SalatTimesWidget";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		05A05B83302E180000C97587 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = SalatTimesWidget/SalatTimesWidget.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = HNTYPSZB5M;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SalatTimesWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = SalatTimesWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.0.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "Islam-AlorabI.Salat-Times.SalatTimesWidget";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 		05D235852F23AA65007299AA /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -253,6 +453,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = "Salat-Times.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
@@ -306,6 +507,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = "Salat-Times.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
@@ -354,7 +556,16 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		05D235772F23AA63007299AA /* Build configuration list for PBXProject "Salat Times" */ = {
+		05A05B85302E180000C97587 /* Build configuration list for PBXNativeTarget "SalatTimesWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				05A05B82302E180000C97587 /* Debug */,
+				05A05B83302E180000C97587 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		05D235772F23AA63007299AA /* Build configuration list for PBXProject "Salat-Times" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				05D235852F23AA65007299AA /* Debug */,

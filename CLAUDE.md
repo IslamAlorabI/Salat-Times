@@ -1,7 +1,13 @@
 # Salat Times — macOS menu bar prayer times app
 
-SwiftUI menu-bar-only app (`LSUIElement`) showing Islamic prayer times with a live countdown.
-Single target, no dependencies, no tests.
+SwiftUI menu-bar-only app (`LSUIElement`) showing Islamic prayer times with a live countdown,
+plus a WidgetKit extension. No dependencies, no tests.
+
+Two targets — `Salat Times` (the app) and `SalatTimesWidgetExtension` (the widget) — and **three**
+synchronized root groups: `Salat-Times/` belongs to the app, `SalatTimesWidget/` to the widget, and
+`Shared/` is listed by *both*. That is how the widget compiles `Core/`, the translation tables and
+`PrayerPalette` without a copy or a per-file membership list to keep in step. Anything a second
+process needs goes in `Shared/`; anything that is the app's own UI does not.
 
 ## Build & run
 
@@ -21,7 +27,7 @@ xcodebuild -project "Salat-Times.xcodeproj" -scheme "Salat Times" -configuration
 ./Checks/run.sh
 ```
 
-  Run these after touching anything in `Salat-Times/Core/`, and add a case when you fix a bug there. `./Checks/run.sh --network` additionally exercises `Data/` against the live Aladhan API and the disk cache. Everything else — notification delivery, menu bar rendering, RTL layout — still has to be checked by hand.
+  Run these after touching anything in `Shared/Core/`, and add a case when you fix a bug there. `./Checks/run.sh --network` additionally exercises `Data/` against the live Aladhan API and the disk cache. Everything else — notification delivery, menu bar rendering, RTL layout — still has to be checked by hand.
 - Product lands in `~/Library/Developer/Xcode/DerivedData/Salat-Times-*/Build/Products/Debug/Salat Times.app`. (Renaming the project moved this: anything still under `Salat_Times-*`, with the underscore, is from before 2026-08-13 and is stale.)
 - `build_output.txt` at the repo root is a stale local log (git-ignored, never committed) — don't rely on it.
 
@@ -42,14 +48,39 @@ instead.
 | File | Role |
 | --- | --- |
 | `Salat-Times/SalatTimesApp.swift` | `@main`. `MenuBarExtra` (window style) + `settings`, `schedule` and `welcome` `Window` scenes. |
-| `Salat-Times/Core/` | Pure, `nonisolated`, I/O-free model + calculation types. No SwiftUI, no network. Shared by everything and covered by `Checks/`. The one `UserDefaults` touch is `PrayerSettings.load(from:)`, which takes the store as a parameter so the checks can pass a scratch suite. Also holds `City`/`Continent` and `NotificationSound`/`PrayerNotificationSettings`. |
+| `Shared/Core/` | Pure, `nonisolated`, I/O-free model + calculation types. No SwiftUI, no network. Shared by everything and covered by `Checks/`. The one `UserDefaults` touch is `PrayerSettings.load(from:)`, which takes the store as a parameter so the checks can pass a scratch suite. Also holds `City`/`Continent` and `NotificationSound`/`PrayerNotificationSettings`. |
 | `Salat-Times/PrayerManager.swift` | The one `ObservableObject`: fetch, countdown timer, notifications, the settings diff, location. |
 | `Salat-Times/ContentView.swift` | Menu bar popover: hijri header, countdown, six prayer rows, the two night markers, footer. |
 | `Salat-Times/SettingsView.swift` | Settings window: a `TabView` over `GeneralSettingsTab` / `PrayerTimesSettingsTab` / `NotificationSettingsTab`, plus the shared picker components. |
 | `Salat-Times/CalculationSettingsView.swift` | The madhab, high-latitude and midnight-mode sections, per-prayer tuning, and the Fajr/Isha fixed offsets. Lives in the Prayer Times tab. |
 | `Salat-Times/MonthlyScheduleView.swift` | The `schedule` window: a month of times, CSV export, `⌘P` print. |
 | `Salat-Times/WelcomeView.swift` | First-launch onboarding, gated on `hasShownWelcome`. |
-| `Salat-Times/Translations.swift` | Lookup + numeral/RTL helpers. The strings themselves live in `Translations+UI/Methods/Prayer/Hijri/Settings.swift`. |
+| `Shared/Translations/` | Lookup + numeral/RTL helpers. The strings themselves live in `Translations+UI/Methods/Prayer/Hijri/Settings.swift`. |
+
+## The widget
+
+`SalatTimesWidget/` is a **reader**. It renders from the App Group container the app already
+maintains — the settings suite and the cached months — and never fetches: it has no network
+entitlement, and two processes asking an API with no SLA for the same month is exactly the traffic
+the month-granularity cache exists to avoid. If the cache is empty it says so ("open the app")
+rather than drawing an empty grid.
+
+- **A widget cannot tick.** WidgetKit renders a timeline and shows each entry until the next, so a
+  per-second countdown cannot be pushed. `Text(date, style: .timer)` is the way out — the system
+  animates it without waking anything. The timeline is one entry per upcoming prayer for 24 hours
+  with `.atEnd`, so it re-renders exactly when the answer changes.
+- **`PrayerEvent` carries no time zone** — it is an absolute instant. The zone travels on the
+  entry, or the widget renders the city's times in the Mac's zone.
+- `WidgetCenter.shared.reloadAllTimelines()` is called from `applySettingsChange` and after a fetch
+  lands. Without it the widget shows the old city until its own timeline happens to expire.
+- `containerBackground` is required from macOS 14 and does not exist in 13, hence the
+  `widgetBackground()` shim — the app's floor is 13.0.
+- Xcode's template gave the new target `MACOSX_DEPLOYMENT_TARGET = 26.2` and no App Group. Both were
+  corrected by hand; a widget without the group entitlement sees neither settings nor cache and
+  renders the placeholder for ever, which looks exactly like a broken widget.
+- If the widget stops appearing in the gallery, check which copy is registered:
+  `pluginkit -m -v -p com.apple.widgetkit-extension | grep -i salat`. It follows the most recently
+  seen build, so a DerivedData copy can shadow the one in `/Applications`.
 
 ## Conventions that matter
 
@@ -296,7 +327,22 @@ in the app target rather than `Core/`, because `Core/` must not import SwiftUI.
 ## Notes
 
 - Deployment target macOS 13.0, Swift 5, bundle id `Islam-AlorabI.Salat-Times`, version 3.0 (also hardcoded as `"v3.0"` in `ContentView`'s footer — update both). The *project-level* deployment target is 15.7; only the app target overrides it to 13.0.0, so any new target inherits 15.7 unless told otherwise.
-- **There is no `.entitlements` file.** Entitlements are synthesized from build settings (`ENABLE_APP_SANDBOX`, `ENABLE_HARDENED_RUNTIME`, `ENABLE_OUTGOING_NETWORK_CONNECTIONS`, …). Inspect what actually shipped with `codesign -d --entitlements - "<path>/Salat Times.app"`. `ENABLE_USER_SELECTED_FILES` was `readonly` until the schedule window needed to *write* a CSV through `NSSavePanel`; it is `readwrite` in both configurations now, and the shipped entitlement is `com.apple.security.files.user-selected.read-write`.
+- **State lives in an App Group container, not the app's own sandbox.** `Core/SharedStore` is the
+  only thing that knows the group's name, and a widget — a separate process in its own sandbox —
+  is why: it can see neither `UserDefaults.standard` nor the app's Application Support folder.
+  - `SharedStore.defaults` is the group suite, falling back to `.standard` when the container is
+    absent (unsigned or ad-hoc builds have none). That fallback is load-bearing: without it every
+    setting would read as its default and the app would behave like a fresh install.
+  - The 71 `@AppStorage` properties are *not* annotated individually — `.defaultAppStorage(...)` on
+    each scene root in `SalatTimesApp` redirects them all at once.
+  - `SharedStore.migrateIfNeeded` copies this app's keys across once, on the `App`'s `init` so it
+    runs before `PrayerManager` loads its first snapshot. It **copies, never moves** (a build
+    without the group still finds the originals), never overwrites a value already in the
+    destination, and works from an owned-key list — `UserDefaults` is full of things AppKit put
+    there. On macOS the group id must carry the team prefix; a bare `group.…` yields a nil container.
+  - `AppPaths.supportDirectory` follows the same rule, and `migrateCacheIfNeeded` moves the cached
+    months over so an app updated while offline still has times to show.
+- **There is no `.entitlements` file** — except one line of it. Entitlements are synthesized from build settings (`ENABLE_APP_SANDBOX`, `ENABLE_HARDENED_RUNTIME`, `ENABLE_OUTGOING_NETWORK_CONNECTIONS`, …). The exception is `Salat-Times.entitlements`, which exists solely because App Groups have no build setting to synthesize them from; the synthesized ones are **merged into** it rather than replaced — verified, sandbox/location/network/files all survive. Inspect what actually shipped with `codesign -d --entitlements - "<path>/Salat Times.app"`. `ENABLE_USER_SELECTED_FILES` was `readonly` until the schedule window needed to *write* a CSV through `NSSavePanel`; it is `readwrite` in both configurations now, and the shipped entitlement is `com.apple.security.files.user-selected.read-write`.
 - **Location can come from the Mac instead of the `City` list.** `locationMode` (`city` /
   `device`) picks the source; `Services/LocationService` is the whole CoreLocation surface — one
   `async` call that asks for permission, takes a single fix and reverse-geocodes a name.

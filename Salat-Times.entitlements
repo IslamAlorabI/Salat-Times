@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!--
+	  The app's only hand-written entitlement. Everything else — sandbox, hardened
+	  runtime, network, location, user-selected files — is still synthesized from build
+	  settings and merged into this at build time; verify with
+	  `codesign -d --entitlements - "<path>/Salat Times.app"` after touching it.
+
+	  App Groups have no build setting to synthesize them from, and the widget needs one:
+	  it runs in its own sandbox and can otherwise see neither the app's settings nor its
+	  cached months.
+
+	  On macOS the identifier must carry the team prefix. The bare `group.…` form that
+	  works on iOS is rejected, and the container comes back nil.
+	-->
+	<key>com.apple.security.application-groups</key>
+	<array>
+		<string>HNTYPSZB5M.group.Islam-AlorabI.Salat-Times</string>
+	</array>
+</dict>
+</plist>

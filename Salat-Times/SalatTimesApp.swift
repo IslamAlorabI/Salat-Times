@@ -1,5 +1,6 @@
 
 import SwiftUI
+import os
 import AppKit
 
 @main
@@ -7,11 +8,23 @@ struct SalatTimesApp: App {
     @StateObject private var manager = PrayerManager()
     @AppStorage("hasShownWelcome") private var hasShownWelcome = false
     @Environment(\.openWindow) var openWindow
-    
+
+    /// Runs before anything reads a setting — including `PrayerManager`, which loads a
+    /// `PrayerSettings` snapshot the moment it is constructed. Copying afterwards would
+    /// mean one launch spent behaving like a fresh install.
+    init() {
+        let copied = SharedStore.migrateIfNeeded()
+        if copied > 0 {
+            Log.data.notice("Copied \(copied) settings into the App Group container")
+        }
+        AppPaths.migrateCacheIfNeeded()
+    }
+
     var body: some Scene {
         MenuBarExtra {
             ContentView()
                 .environmentObject(manager)
+                .defaultAppStorage(SharedStore.defaults)
                 .onAppear {
                     if !hasShownWelcome {
                         openWindow(id: "welcome")
@@ -36,9 +49,10 @@ struct SalatTimesApp: App {
         }
         .menuBarExtraStyle(.window)
         
-        Window(Translations.string("settings", language: UserDefaults.standard.string(forKey: "appLanguage") ?? "ar"), id: "settings") {
+        Window(Translations.string("settings", language: SharedStore.defaults.string(forKey: "appLanguage") ?? "ar"), id: "settings") {
             SettingsView()
                 .environmentObject(manager)
+                .defaultAppStorage(SharedStore.defaults)
                 // Opacity is *not* forced here any more. `SettingsView` drives it from the
                 // translucency setting through `WindowOpacityConfigurator`; hardcoding a
                 // clear background here meant every pixel the view did not paint — the
@@ -53,9 +67,10 @@ struct SalatTimesApp: App {
         
         // Resizable, unlike the other two: a month of times is content the user may well
         // want wider, and `.contentSize` would pin it shut.
-        Window(Translations.string("monthly_schedule", language: UserDefaults.standard.string(forKey: "appLanguage") ?? "ar"), id: "schedule") {
+        Window(Translations.string("monthly_schedule", language: SharedStore.defaults.string(forKey: "appLanguage") ?? "ar"), id: "schedule") {
             MonthlyScheduleView()
                 .environmentObject(manager)
+                .defaultAppStorage(SharedStore.defaults)
                 .onAppear { NSApplication.shared.activate(ignoringOtherApps: true) }
         }
         .defaultSize(width: 820, height: 620)
@@ -65,7 +80,7 @@ struct SalatTimesApp: App {
         // schedule window's Print button appeared to do.
         .commands {
             CommandGroup(replacing: .printItem) {
-                Button(Translations.string("print", language: UserDefaults.standard.string(forKey: "appLanguage") ?? "ar")) {
+                Button(Translations.string("print", language: SharedStore.defaults.string(forKey: "appLanguage") ?? "ar")) {
                     NotificationCenter.default.post(name: .printSchedule, object: nil)
                 }
                 .keyboardShortcut("p", modifiers: .command)
@@ -75,6 +90,7 @@ struct SalatTimesApp: App {
         Window("Welcome", id: "welcome") {
             WelcomeView()
                 .environmentObject(manager)
+                .defaultAppStorage(SharedStore.defaults)
                 .onAppear {
                     NSApplication.shared.activate(ignoringOtherApps: true)
                     if let window = NSApplication.shared.windows.first(where: { $0.contentView?.subviews.contains(where: { $0 is NSHostingView<WelcomeView> }) ?? false }) {

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!--
+	  The widget runs in its own sandbox. Without this it can see neither the app's
+	  settings nor its cached months, and every timeline would render the "open the app"
+	  placeholder — which looks exactly like the widget being broken.
+
+	  Must be the identical group to the app's, team prefix and all. The sandbox and
+	  hardened-runtime entitlements are still synthesized from build settings and merged
+	  into this at build time.
+	-->
+	<key>com.apple.security.application-groups</key>
+	<array>
+		<string>HNTYPSZB5M.group.Islam-AlorabI.Salat-Times</string>
+	</array>
+</dict>
+</plist>

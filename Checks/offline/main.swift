@@ -599,5 +599,56 @@ check("with no schedule, recent deliveries are kept",
         [("prayer_Isha_2026-08-13_abc", asr.addingTimeInterval(-60))], now: asr, currentPrayer: nil).isEmpty)
 
 
+// ---------------------------------------------------------------------------
+print("\n17. Settings survive the move into the App Group container")
+// The widget runs in its own sandbox and cannot see the app's `UserDefaults.standard`, so
+// everything moves to a shared suite. Getting this wrong looks like a fresh install to
+// someone who has spent time setting the app up, so it is worth pinning down.
+let legacy = UserDefaults(suiteName: "salat-times-checks-legacy")!
+let shared = UserDefaults(suiteName: "salat-times-checks-shared")!
+for store in [legacy, shared] {
+    for key in store.dictionaryRepresentation().keys { store.removeObject(forKey: key) }
+}
+
+check("app keys are recognised", SharedStore.isOwned("appLanguage"))
+check("per-prayer keys are recognised by prefix",
+      SharedStore.isOwned("tune_Fajr") && SharedStore.isOwned("notification_Isha_sound"))
+check("location keys are recognised", SharedStore.isOwned(DeviceLocation.Keys.mode))
+// UserDefaults is full of things AppKit and the system put there; copying those into a
+// shared suite would be both rude and unpredictable.
+check("system keys are left alone",
+      !SharedStore.isOwned("NSNavLastRootDirectory") && !SharedStore.isOwned("com.apple.trackpad.scaling"))
+
+legacy.set("ar", forKey: "appLanguage")
+legacy.set("Oslo", forKey: "selectedCityRaw")
+legacy.set(7, forKey: "tune_Fajr")
+legacy.set(false, forKey: "notification_Sunrise_enabled")
+legacy.set("/Users/someone/Downloads", forKey: "NSNavLastRootDirectory")
+
+let copied = SharedStore.migrateIfNeeded(from: legacy, to: shared)
+check("the settings came across", copied == 4, "\(copied)")
+check("the language came across", shared.string(forKey: "appLanguage") == "ar")
+check("a per-prayer tune came across", shared.integer(forKey: "tune_Fajr") == 7)
+check("an opt-out came across", shared.object(forKey: "notification_Sunrise_enabled") as? Bool == false)
+check("a system key did not", shared.object(forKey: "NSNavLastRootDirectory") == nil)
+// The old values stay put, so a build without the entitlement still finds them.
+check("the source is left intact", legacy.string(forKey: "appLanguage") == "ar")
+
+// Running on every launch must be a no-op after the first, or a later change would be
+// silently reverted to whatever the old store still held.
+shared.set("en", forKey: "appLanguage")
+check("a second run copies nothing", SharedStore.migrateIfNeeded(from: legacy, to: shared) == 0)
+check("a change made after migrating survives it",
+      shared.string(forKey: "appLanguage") == "en", shared.string(forKey: "appLanguage") ?? "nil")
+
+// Same store both sides — the no-group fallback — must not loop back on itself.
+check("migrating a store into itself does nothing",
+      SharedStore.migrateIfNeeded(from: legacy, to: legacy) == 0)
+
+for store in [legacy, shared] {
+    for key in store.dictionaryRepresentation().keys { store.removeObject(forKey: key) }
+}
+
+
 print("\n\(checks - failures)/\(checks) checks passed")
 exit(failures == 0 ? 0 : 1)
