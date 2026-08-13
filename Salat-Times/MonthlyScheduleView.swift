@@ -27,6 +27,7 @@ struct MonthlyScheduleView: View {
     @State private var isLoading = false
     @State private var errorMessage: String?
     @State private var loadToken = 0
+    @State private var rowCache = RowCache()
 
     private static let columns: [PrayerKey] = [.fajr, .sunrise, .dhuhr, .asr, .maghrib, .isha]
 
@@ -263,7 +264,61 @@ struct MonthlyScheduleView: View {
         calendar.isDate(anchor, equalTo: Date(), toGranularity: .month)
     }
 
+    /// Identifies a built month. Everything `computeRows` reads is in here, so a hit is
+    /// only ever possible when recomputing would produce exactly the same rows.
+    ///
+    /// `todayStamp` is a field rather than an afterthought: it is what moves the "today"
+    /// highlight at midnight, and without it a window left open overnight would keep
+    /// marking yesterday.
+    struct RowKey: Equatable {
+        let timetable: PrayerTimetable?
+        let month: String
+        let settings: PrayerSettings
+        let language: String
+        let numberFormat: String
+        let todayStamp: String
+        /// The cells are formatted by `manager.formattedTime`, which reads the *manager's*
+        /// timetable for its zone — not this window's. Those are normally the same, but
+        /// they are not the same *object*: with the window restored at launch, this view
+        /// can have loaded its month before the manager has loaded its own, and the zone
+        /// would change underneath without any other key field moving.
+        let formattingZone: String
+    }
+
+    /// Deliberately a reference type held by `@State`, not a `@State` value: this is
+    /// written *during* body evaluation, and assigning to `@State` there is "Modifying
+    /// state during view update". Mutating an object SwiftUI isn't observing is not.
+    final class RowCache {
+        var key: RowKey?
+        var rows: [ScheduleRow] = []
+    }
+
+    /// The month, built at most once per set of inputs.
+    ///
+    /// It is read four times in a single render — twice by `.disabled(rows.isEmpty)`, once
+    /// by the grid, once by the Hijri header — and the window re-renders every second,
+    /// because it observes `PrayerManager` and the countdown publishes on a one-second
+    /// timer. Building a month measured ~76 ms, so scrolling was competing with roughly
+    /// 300 ms of main-thread work every second. Now the first read builds it and the rest
+    /// of that second are cache hits.
     private var rows: [ScheduleRow] {
+        let key = RowKey(timetable: timetable,
+                         month: monthKey,
+                         settings: manager.settings,
+                         language: appLanguage,
+                         numberFormat: numberFormat,
+                         todayStamp: DateStamp.format(Date(), in: calendar),
+                         formattingZone: manager.timetable.timeZone.identifier)
+
+        if let cached = rowCache.key, cached == key { return rowCache.rows }
+
+        let built = computeRows()
+        rowCache.key = key
+        rowCache.rows = built
+        return built
+    }
+
+    private func computeRows() -> [ScheduleRow] {
         guard let timetable else { return [] }
         let calendar = timetable.calendar
         guard let range = calendar.range(of: .day, in: .month, for: anchor),
@@ -312,11 +367,20 @@ struct MonthlyScheduleView: View {
         return Dictionary(uniqueKeysWithValues: symbols.enumerated().map { ($0.offset + 1, $0.element) })
     }
 
+    /// Kept between calls for the same zone, for the same reason `formattedTime` keeps its
+    /// own: this is asked for once per prayer per day, and building the formatter cost far
+    /// more than formatting with it.
+    private static var cachedCSVFormatter: (zone: String, formatter: DateFormatter)?
+
     private static func csvFormatter(calendar: Calendar) -> DateFormatter {
+        let zone = calendar.timeZone.identifier
+        if let cached = cachedCSVFormatter, cached.zone == zone { return cached.formatter }
+
         let formatter = DateFormatter()
         formatter.timeZone = calendar.timeZone
         formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.dateFormat = "HH:mm"
+        cachedCSVFormatter = (zone, formatter)
         return formatter
     }
 

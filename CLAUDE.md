@@ -166,6 +166,21 @@ Three things in that window are easy to get wrong:
   the renderer; AppKit still paginates it.
 - The **export credit is the app's own name only** — `"Salat Times · © <year> …"`. The data
   source is credited in About, not stamped on every exported sheet.
+- **`rows` is memoised, and `DateFormatter`s are never built per cell.** The window observes
+  `PrayerManager`, whose countdown publishes every second, so its body re-renders once a
+  second whether or not anything it shows has changed — and `rows` is read four times per
+  render (twice for `.disabled`, once by the grid, once by the Hijri header). Measured, a
+  month cost ~76 ms to build, ~63 ms of which was constructing a `DateFormatter` per prayer
+  per day, twice (display + CSV). That was ~300 ms of main-thread work per second and it
+  made scrolling stutter. Two fixes, neither of which changes a single rendered string
+  (verified: 2016/2016 identical across all eight languages × 12/24-hour × three numeral
+  systems): `formattedTime` and `csvFormatter` keep their formatter and rebuild it only when
+  zone/language/format moves, and `rows` is cached behind `RowKey`.
+  `RowKey` must keep covering **everything** `computeRows` reads, or the window shows stale
+  times: the timetable, the month, the settings, language, numerals, `todayStamp` (which is
+  what moves the "today" highlight at midnight) and `formattingZone` — that last one because
+  `formattedTime` takes its zone from the *manager's* timetable, not this window's, and the
+  two can differ briefly at launch.
 
 The stepper walks to arbitrary months via `PrayerRepository.month(containing:settings:)`,
 which is separate from `load(around:)` — the latter deliberately only fetches the months
