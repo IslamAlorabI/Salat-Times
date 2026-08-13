@@ -12,6 +12,7 @@ struct WelcomeView: View {
     
     // Settings States
     @AppStorage("selectedCityRaw") private var selectedCityRaw = City.cairo.rawValue
+    @AppStorage(DeviceLocation.Keys.mode) private var locationModeRaw = LocationMode.city.rawValue
     @AppStorage("calculationMethod") private var method = 5
     @AppStorage("timeFormat24") private var is24HourFormat = true
     @State private var launchAtLogin = SMAppService.mainApp.status == .enabled
@@ -137,9 +138,19 @@ struct WelcomeView: View {
                         Text(Translations.string("location", language: appLanguage))
                             .font(.headline)
                             .foregroundColor(.secondary)
-                        
-                        CitySearchPicker(selectedCityRaw: $selectedCityRaw, appLanguage: appLanguage)
-                        
+
+                        // Offered here as well as in Settings: the one moment the app is
+                        // guaranteed to have the user's attention is the moment it is
+                        // asking where they are.
+                        LocationModePicker(appLanguage: appLanguage)
+
+                        if LocationMode.from(locationModeRaw) == .device {
+                            DeviceLocationStatus(appLanguage: appLanguage, showsTimestamp: false)
+                            LocationProblemBanner(appLanguage: appLanguage)
+                        } else {
+                            CitySearchPicker(selectedCityRaw: $selectedCityRaw, appLanguage: appLanguage)
+                        }
+
                         Divider().padding(.vertical, 5)
                         
                         CalculationMethodPicker(selectedMethod: $method, appLanguage: appLanguage)

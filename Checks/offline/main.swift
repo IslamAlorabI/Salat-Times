@@ -442,9 +442,92 @@ let requiredKeys = [
     "about_data_note", "about_developer",
     "monthly_schedule", "schedule_date", "export", "export_csv", "export_pdf", "export_png", "print", "schedule_footnote",
     "asr_madhab", "high_latitude", "midnight_mode", "prayer_tuning", "fixed_times",
+    "location_source", "location_choose_city", "location_use_device", "location_detect_now",
+    "location_detecting", "location_not_detected", "location_failed", "location_denied",
+    "location_open_settings", "location_follow", "location_follow_hint", "location_updated",
 ]
 let unresolved = requiredKeys.filter { Translations.string($0, language: "de") == $0 }
 check("every key the UI asks for resolves", unresolved.isEmpty, unresolved.joined(separator: ", "))
+
+
+// ---------------------------------------------------------------------------
+print("\n13. A detected location survives the round trip through the store")
+let locationStore = UserDefaults(suiteName: "salat-times-checks-location")!
+for key in locationStore.dictionaryRepresentation().keys { locationStore.removeObject(forKey: key) }
+
+// Rounding is not cosmetic: the fingerprint keys the month cache, so an unrounded fix
+// would mint a new cache file and a new request every time GPS wobbled a few metres.
+let jittery = DeviceLocation(latitude: 31.111842, longitude: 30.939278)
+check("coordinates round to ~1 km",
+      jittery.latitude == 31.11 && jittery.longitude == 30.94,
+      "\(jittery.latitude), \(jittery.longitude)")
+let jitteredAgain = DeviceLocation(latitude: 31.112901, longitude: 30.938104)
+check("a few metres of drift is the same place", jittery.isSamePlace(as: jitteredAgain))
+check("a kilometre away is not",
+      !jittery.isSamePlace(as: DeviceLocation(latitude: 31.13, longitude: 30.94)))
+
+check("an out-of-range coordinate is rejected",
+      !DeviceLocation.isValid(latitude: 91, longitude: 0))
+check("(0, 0) is a real place, not 'unset'",
+      DeviceLocation.isValid(latitude: 0, longitude: 0))
+
+// A fix with no name still has to label a popover, a printed sheet and a file name.
+check("an unnamed fix falls back to its coordinates",
+      DeviceLocation(latitude: -33.92, longitude: 18.42).displayName == "33.92S, 18.42E",
+      DeviceLocation(latitude: -33.92, longitude: 18.42).displayName)
+
+DeviceLocation(latitude: 51.5074, longitude: -0.1278,
+               placeName: "London", countryCode: "GB").save(to: locationStore)
+let restored = DeviceLocation.load(from: locationStore)
+check("a saved fix loads back", restored?.placeName == "London" && restored?.countryCode == "GB")
+check("an empty store has no fix",
+      DeviceLocation.load(from: UserDefaults(suiteName: "salat-times-checks-empty")!) == nil)
+
+// ---------------------------------------------------------------------------
+print("\n14. Device location reaches PrayerSettings, and falls back when it cannot")
+locationStore.set("Cairo", forKey: "selectedCityRaw")
+check("the mode is off by default, so the picked city wins",
+      PrayerSettings.load(from: locationStore).latitude == City.cairo.coordinates.latitude)
+
+locationStore.set(LocationMode.device.rawValue, forKey: DeviceLocation.Keys.mode)
+let following = PrayerSettings.load(from: locationStore)
+check("switching to device mode uses the fix", following.latitude == 51.51, "\(following.latitude)")
+check("the place name labels the settings", following.cityRaw == "London", following.cityRaw)
+check("the snapshot knows it is following the device", following.usesDeviceLocation)
+check("moving changes the request fingerprint, so the month is refetched",
+      following.requestFingerprint != PrayerSettings.load(from: UserDefaults(suiteName: "salat-times-checks-empty")!).requestFingerprint)
+
+// Turning the mode on before the first fix must not leave the app with no location at all.
+locationStore.removeObject(forKey: DeviceLocation.Keys.latitude)
+locationStore.removeObject(forKey: DeviceLocation.Keys.longitude)
+let noFixYet = PrayerSettings.load(from: locationStore)
+check("device mode with no fix falls back to the picked city",
+      noFixYet.latitude == City.cairo.coordinates.latitude && !noFixYet.usesDeviceLocation,
+      "\(noFixYet.latitude)")
+
+// A hand-edited or corrupted coordinate must never reach a request URL.
+locationStore.set(999.0, forKey: DeviceLocation.Keys.latitude)
+locationStore.set(0.0, forKey: DeviceLocation.Keys.longitude)
+check("a corrupt stored coordinate falls back too",
+      PrayerSettings.load(from: locationStore).latitude == City.cairo.coordinates.latitude)
+
+for key in locationStore.dictionaryRepresentation().keys { locationStore.removeObject(forKey: key) }
+
+// ---------------------------------------------------------------------------
+print("\n15. The nearest listed city is what suggests a method")
+check("Kafr El-Sheikh finds itself",
+      City.nearest(toLatitude: 31.11, longitude: 30.94) == .kafrElSheikh,
+      City.nearest(toLatitude: 31.11, longitude: 30.94).rawValue)
+check("a coordinate in Saudi Arabia lands on a Saudi city",
+      City.recommendedMethod(forLatitude: 21.42, longitude: 39.83) == 4,
+      "\(City.recommendedMethod(forLatitude: 21.42, longitude: 39.83))")
+check("a coordinate in Turkey gets Diyanet",
+      City.recommendedMethod(forLatitude: 41.01, longitude: 28.98) == 13,
+      "\(City.recommendedMethod(forLatitude: 41.01, longitude: 28.98))")
+// Longitude wrapping is where a naive distance goes wrong.
+check("the Pacific does not fold the world in half",
+      City.nearest(toLatitude: 35.68, longitude: 139.69) == .tokyo,
+      City.nearest(toLatitude: 35.68, longitude: 139.69).rawValue)
 
 
 print("\n\(checks - failures)/\(checks) checks passed")

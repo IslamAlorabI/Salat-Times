@@ -167,9 +167,7 @@ struct PrayerTimesSettingsPane: View {
 
     var body: some View {
         SettingsCard(title: Translations.string("location", language: appLanguage)) {
-            SettingsStackedRow(title: Translations.string("location", language: appLanguage)) {
-                CitySearchPicker(selectedCityRaw: $selectedCityRaw, appLanguage: appLanguage)
-            }
+            LocationSourceSection(appLanguage: appLanguage, selectedCityRaw: $selectedCityRaw)
             SettingsDivider()
             SettingsStackedRow(title: Translations.string("calculation_method", language: appLanguage)) {
                 CalculationMethodPicker(selectedMethod: $method, appLanguage: appLanguage)

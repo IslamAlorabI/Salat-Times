@@ -9,7 +9,19 @@ import AppKit
 
 // MARK: - Manager
 
-class PrayerManager: NSObject, ObservableObject, CLLocationManagerDelegate, UNUserNotificationCenterDelegate {
+/// What the location controls in Settings are showing right now. The manager owns it
+/// because detection can also start without the window being open — at launch, or on
+/// wake when "follow the device" is on.
+enum LocationDetectionState: Equatable {
+    case idle
+    case detecting
+    /// Refused in System Settings; nothing the app can retry its way out of.
+    case denied
+    /// Services off, no fix, or the request timed out. Retrying is worth offering.
+    case failed
+}
+
+class PrayerManager: NSObject, ObservableObject, UNUserNotificationCenterDelegate {
     @Published var timetable: PrayerTimetable = .empty
     /// Sorted instants spanning yesterday through two days ahead. The single source
     /// of truth for the menu bar, the popover and the notification scheduler.
@@ -32,11 +44,18 @@ class PrayerManager: NSObject, ObservableObject, CLLocationManagerDelegate, UNUs
     /// voids every scheduled notification.
     @Published var notificationAuthorization: UNAuthorizationStatus = .notDetermined
 
+    /// Drives the location row in Settings: spinner, denial banner, retry.
+    @Published private(set) var locationState: LocationDetectionState = .idle
+
     private let repository = PrayerRepository()
     private let scheduler = PrayerNotificationScheduler()
     private let lifecycle = PrayerLifecycle()
     private var refreshTask: Task<Void, Never>?
-    private let locationManager = CLLocationManager()
+    private let locationService = LocationService()
+    /// When the last automatic detection was attempted, successful or not. Manual
+    /// "detect now" ignores it; the automatic triggers do not, or waking a laptop six
+    /// times in an afternoon would read location six times.
+    private var lastAutomaticDetection: Date?
     private let notificationCenter = UNUserNotificationCenter.current()
     private var countdownTimer: Timer?
     private var settingsObserver: NSObjectProtocol?
@@ -44,7 +63,6 @@ class PrayerManager: NSObject, ObservableObject, CLLocationManagerDelegate, UNUs
 
     override init() {
         super.init()
-        locationManager.delegate = self
         notificationCenter.delegate = self
 
         startLifecycle()
@@ -52,6 +70,7 @@ class PrayerManager: NSObject, ObservableObject, CLLocationManagerDelegate, UNUs
         if UserDefaults.standard.bool(forKey: "hasShownWelcome") {
             loadSavedCity()
             startCountdownTimer()
+            detectLocationIfFollowing()
         }
 
         requestNotificationPermission()
@@ -77,9 +96,14 @@ class PrayerManager: NSObject, ObservableObject, CLLocationManagerDelegate, UNUs
             self.reloadSettings()
             self.schedulePrayerNotifications()
             self.refresh()
+            // A zone change on wake is exactly what travelling looks like.
+            self.detectLocationIfFollowing()
         }
         lifecycle.onShouldRefresh = { [weak self] in
             self?.refresh()
+        }
+        lifecycle.onDayChanged = { [weak self] in
+            self?.detectLocationIfFollowing()
         }
         lifecycle.start()
     }
@@ -143,12 +167,14 @@ class PrayerManager: NSObject, ObservableObject, CLLocationManagerDelegate, UNUs
         let previous = settings
         guard updated != previous else { return }
         settings = updated
+        // Unconditional: a detected place can be renamed by a later geocode without its
+        // coordinates moving, and the label should follow that too.
+        city = updated.cityRaw
 
         if updated.requestFingerprint != previous.requestFingerprint {
             // City, method, madhab, high-latitude rule or midnight mode: the server
             // returns different numbers, so the cache for these months no longer applies.
             Log.data.notice("Request settings changed; refetching")
-            city = City.allCases.first { $0.rawValue == updated.cityRaw }?.rawValue ?? updated.cityRaw
             refresh(force: true)
         } else {
             // Tuning, offsets, language, sounds, reminders: all applied on read, so the
@@ -219,19 +245,89 @@ class PrayerManager: NSObject, ObservableObject, CLLocationManagerDelegate, UNUs
 
     func loadSavedCity() {
         settings = .load()
-        let city = City.allCases.first { $0.rawValue == settings.cityRaw } ?? .cairo
-        self.city = city.rawValue
+        // `cityRaw` is already resolved by `PrayerSettings.load` — a listed city's raw
+        // value, or a detected place's name — so it does not need looking up again.
+        self.city = settings.cityRaw
         refresh(force: true)
     }
 
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        guard locations.first != nil else { return }
-        locationManager.stopUpdatingLocation()
+    // MARK: - Device location
+
+    /// How long an automatic detection stays good enough. Applies only to the automatic
+    /// triggers; pressing the button in Settings always takes a fresh fix.
+    private static let automaticDetectionInterval: TimeInterval = 30 * 60
+
+    var isFollowingDeviceLocation: Bool {
+        let defaults = UserDefaults.standard
+        return LocationMode.from(defaults.string(forKey: DeviceLocation.Keys.mode)) == .device
+            && defaults.bool(forKey: DeviceLocation.Keys.followDevice)
     }
 
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        Log.data.error("GPS error: \(error.localizedDescription, privacy: .public)")
-        loadSavedCity()
+    /// Takes a fix and stores it. Everything downstream — the refetch, the notification
+    /// rotation, the menu bar — happens because the new coordinates land in
+    /// `UserDefaults` and the debounced settings diff notices, not because this method
+    /// tells anyone. That is the same contract every other setting follows.
+    func detectLocation() {
+        guard locationState != .detecting else { return }
+        locationState = .detecting
+
+        Task { @MainActor in
+            defer { lastAutomaticDetection = Date() }
+            do {
+                let fix = try await locationService.currentLocation(language: settings.language)
+                store(fix)
+                locationState = .idle
+            } catch LocationService.Failure.denied {
+                Log.data.error("Location denied")
+                locationState = .denied
+            } catch {
+                Log.data.error("Could not detect location: \(error.localizedDescription, privacy: .public)")
+                locationState = .failed
+            }
+        }
+    }
+
+    private func detectLocationIfFollowing() {
+        guard isFollowingDeviceLocation else { return }
+        if let last = lastAutomaticDetection,
+           Date().timeIntervalSince(last) < Self.automaticDetectionInterval {
+            return
+        }
+        detectLocation()
+    }
+
+    private func store(_ fix: DeviceLocation) {
+        let defaults = UserDefaults.standard
+        let previous = DeviceLocation.load(from: defaults)
+        fix.save(to: defaults)
+
+        Log.data.notice("Location: \(fix.displayName, privacy: .public) (\(fix.countryCode, privacy: .public))")
+
+        // Crossing a border moves the calculation method to the local authority's — the
+        // same thing that already happens when a city is picked by hand. Deliberately
+        // *only* on a country change, so it never overwrites a deliberate choice made
+        // while staying put.
+        guard !fix.countryCode.isEmpty, previous?.countryCode != fix.countryCode else { return }
+        let method = City.recommendedMethod(forLatitude: fix.latitude, longitude: fix.longitude)
+        if defaults.integer(forKey: "calculationMethod") != method {
+            Log.data.notice("Country changed; calculation method now \(method)")
+            defaults.set(method, forKey: "calculationMethod")
+        }
+    }
+
+    /// Puts the app back on a picked city. Clearing the mode is enough — the diff sees
+    /// different coordinates and refetches.
+    func useCityLocation() {
+        UserDefaults.standard.set(LocationMode.city.rawValue, forKey: DeviceLocation.Keys.mode)
+        locationState = .idle
+    }
+
+    /// Switches to device coordinates, detecting immediately if there is no fix yet.
+    func useDeviceLocation() {
+        UserDefaults.standard.set(LocationMode.device.rawValue, forKey: DeviceLocation.Keys.mode)
+        if DeviceLocation.load() == nil {
+            detectLocation()
+        }
     }
 
     /// Loads the months around today, cache-first. Only reaches the network when a

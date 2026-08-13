@@ -17,6 +17,9 @@ final class PrayerLifecycle {
     var onNeedsReschedule: (() -> Void)?
     /// A good moment to check whether cached data is still current.
     var onShouldRefresh: (() -> Void)?
+    /// The *device's* day rolled over. Separate from `onBoundary`, which also fires at
+    /// every prayer — anything that should happen once a day and not six times hangs here.
+    var onDayChanged: (() -> Void)?
 
     private var boundaryTimer: Timer?
     private var observers: [NSObjectProtocol] = []
@@ -31,7 +34,10 @@ final class PrayerLifecycle {
         // The device's day rolling over is not the same as the *city's*, so this is a
         // safety net rather than the primary trigger. It arrives on a background thread.
         observers.append(center.addObserver(forName: .NSCalendarDayChanged, object: nil, queue: .main) { [weak self] _ in
-            MainActor.assumeIsolated { self?.onBoundary?() }
+            MainActor.assumeIsolated {
+                self?.onBoundary?()
+                self?.onDayChanged?()
+            }
         })
 
         // The clock or the zone moving invalidates every instant already computed.

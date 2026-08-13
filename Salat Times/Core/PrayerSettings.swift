@@ -14,6 +14,9 @@ import CoreLocation
 ///    day is read, so changing them must *not* invalidate the cache.
 nonisolated struct PrayerSettings: Sendable, Equatable {
     // Request fields
+    /// The place the times are for: a `City` raw value, or a detected location's name.
+    /// It labels the popover, the schedule window and the export file name — it is never
+    /// what the request is built from, which is always the coordinates below.
     var cityRaw: String
     var latitude: Double
     var longitude: Double
@@ -26,6 +29,11 @@ nonisolated struct PrayerSettings: Sendable, Equatable {
     var tuneMinutes: [String: Int]
     var fajrBeforeSunriseMinutes: Int   // 0 = off
     var ishaAfterMaghribMinutes: Int    // 0 = off
+
+    /// True when the coordinates above came from CoreLocation rather than the city list.
+    /// Not part of any fingerprint — the coordinates already are — it only tells the UI
+    /// which control to show as active.
+    var usesDeviceLocation: Bool = false
 
     // Display
     var language: String
@@ -83,7 +91,16 @@ nonisolated struct PrayerSettings: Sendable, Equatable {
     static func load(from defaults: UserDefaults = .standard) -> PrayerSettings {
         let cityRaw = defaults.string(forKey: "selectedCityRaw") ?? City.cairo.rawValue
         let city = City.allCases.first { $0.rawValue == cityRaw } ?? .cairo
-        let coords = city.coordinates
+
+        // Device location wins only when it is switched on *and* there is a fix to use.
+        // Turning the mode on before the first fix arrives — or after a stored fix was
+        // corrupted — falls back to the picked city rather than to nowhere, which is why
+        // the picked city is always read first.
+        let deviceFix = LocationMode.from(defaults.string(forKey: DeviceLocation.Keys.mode)) == .device
+            ? DeviceLocation.load(from: defaults)
+            : nil
+        let coords = deviceFix.map { CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude) }
+            ?? city.coordinates
 
         let storedMethod = defaults.integer(forKey: "calculationMethod")
 
@@ -113,7 +130,7 @@ nonisolated struct PrayerSettings: Sendable, Equatable {
         }
 
         return PrayerSettings(
-            cityRaw: city.rawValue,
+            cityRaw: deviceFix?.displayName ?? city.rawValue,
             latitude: coords.latitude,
             longitude: coords.longitude,
             // 0 means "never set"; the app has always fallen back to the Egyptian method.
@@ -124,6 +141,7 @@ nonisolated struct PrayerSettings: Sendable, Equatable {
             tuneMinutes: tune,
             fajrBeforeSunriseMinutes: fixedOffset("fajrBeforeSunriseMinutes"),
             ishaAfterMaghribMinutes: fixedOffset("ishaAfterMaghribMinutes"),
+            usesDeviceLocation: deviceFix != nil,
             language: defaults.string(forKey: "appLanguage") ?? "ar",
             numberFormat: defaults.string(forKey: "numberFormat") ?? "western",
             use24Hour: defaults.object(forKey: "timeFormat24") as? Bool ?? true,

@@ -259,7 +259,27 @@ in the app target rather than `Core/`, because `Core/` must not import SwiftUI.
 
 - Deployment target macOS 13.0, Swift 5, bundle id `Islam-AlorabI.Salat-Times`, version 3.0 (also hardcoded as `"v3.0"` in `ContentView`'s footer — update both). The *project-level* deployment target is 15.7; only the app target overrides it to 13.0.0, so any new target inherits 15.7 unless told otherwise.
 - **There is no `.entitlements` file.** Entitlements are synthesized from build settings (`ENABLE_APP_SANDBOX`, `ENABLE_HARDENED_RUNTIME`, `ENABLE_OUTGOING_NETWORK_CONNECTIONS`, …). Inspect what actually shipped with `codesign -d --entitlements - "<path>/Salat Times.app"`. `ENABLE_USER_SELECTED_FILES` was `readonly` until the schedule window needed to *write* a CSV through `NSSavePanel`; it is `readwrite` in both configurations now, and the shipped entitlement is `com.apple.security.files.user-selected.read-write`.
-- `CoreLocation` is wired up but dead: `ENABLE_RESOURCE_ACCESS_LOCATION = NO` means it cannot work at all, `didUpdateLocations` just stops updates, and the city always comes from the `City` enum.
+- **Location can come from the Mac instead of the `City` list.** `locationMode` (`city` /
+  `device`) picks the source; `Services/LocationService` is the whole CoreLocation surface — one
+  `async` call that asks for permission, takes a single fix and reverse-geocodes a name.
+  `ENABLE_RESOURCE_ACCESS_LOCATION` must stay `YES` (it was `NO` until 2026-08-13, which made
+  every location call fail silently) and the `NSLocationWhenInUseUsageDescription` Info.plist key
+  is what the system prompt shows.
+  Three rules hold this together:
+  - **Stored coordinates are rounded to 2 decimals** (`DeviceLocation.precisionDecimals`, ~1.1 km).
+    `requestFingerprint` prints coordinates to 4 decimals and *is* the cache file name, so an
+    unrounded fix would mint a new month request every time GPS wobbled a few metres.
+  - **Detection writes to `UserDefaults` and stops there.** The refetch, the notification rotation
+    and the menu bar all follow from the debounced diff noticing new coordinates — same contract
+    as every other setting. Nothing calls back into the manager to "apply" a location.
+  - **Device mode with no fix falls back to the picked city**, as does a corrupt stored
+    coordinate. `PrayerSettings.load` reads the city first for exactly that reason.
+
+  Detection is on demand by default. `locationFollowsDevice` opts into re-detecting at launch, on
+  wake and on the device's day change (`PrayerLifecycle.onDayChanged`, which exists so this does
+  not also fire at all six prayers), throttled to once every 30 minutes. Crossing a border moves
+  `calculationMethod` to the nearest listed city's `recommendedMethod` — the same thing picking a
+  city by hand already does, and only on a country change so it never overwrites a deliberate choice.
 - `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor` is set, so every new type is `@MainActor` by default. Pure model/calculation types must be marked `nonisolated` explicitly.
 - Launch-at-login uses `SMAppService.mainApp` in both `SettingsView` and `WelcomeView`.
 - **Log with `Log.schedule` / `Log.notifications` / `Log.data`, not `print`.** A menu bar app has no console, so `print` is invisible once it ships. Read it back with:

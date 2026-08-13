@@ -863,5 +863,128 @@ nonisolated let settingsStrings: [String: [String: String]] = [
         "ur": "حساب شدہ زاویے کی جگہ مقررہ وقفہ استعمال کرتا ہے — بلند عرض بلد میں عام ہے۔",
         "fa": "زاویه محاسبه‌شده را با فاصله زمانی ثابت جایگزین می‌کند — در عرض‌های بالا رایج است.",
         "de": "Ersetzt den berechneten Winkel durch ein festes Intervall — bei hohen Breitengraden üblich."
+    ],
+
+    // MARK: - Device location
+
+    "location_source": [
+        "ar": "مصدر الموقع",
+        "en": "Location Source",
+        "ru": "Источник местоположения",
+        "id": "Sumber Lokasi",
+        "tr": "Konum Kaynağı",
+        "ur": "مقام کا ذریعہ",
+        "fa": "منبع موقعیت",
+        "de": "Standortquelle"
+    ],
+    "location_choose_city": [
+        "ar": "اختيار مدينة",
+        "en": "Choose a city",
+        "ru": "Выбрать город",
+        "id": "Pilih kota",
+        "tr": "Şehir seç",
+        "ur": "شہر منتخب کریں",
+        "fa": "انتخاب شهر",
+        "de": "Stadt wählen"
+    ],
+    "location_use_device": [
+        "ar": "استخدام موقعي",
+        "en": "Use my location",
+        "ru": "Использовать моё местоположение",
+        "id": "Gunakan lokasi saya",
+        "tr": "Konumumu kullan",
+        "ur": "میرا مقام استعمال کریں",
+        "fa": "استفاده از موقعیت من",
+        "de": "Meinen Standort verwenden"
+    ],
+    "location_detect_now": [
+        "ar": "تحديد الموقع الآن",
+        "en": "Detect now",
+        "ru": "Определить сейчас",
+        "id": "Deteksi sekarang",
+        "tr": "Şimdi belirle",
+        "ur": "ابھی معلوم کریں",
+        "fa": "اکنون تشخیص بده",
+        "de": "Jetzt ermitteln"
+    ],
+    "location_detecting": [
+        "ar": "جارٍ تحديد الموقع…",
+        "en": "Detecting location…",
+        "ru": "Определение местоположения…",
+        "id": "Mendeteksi lokasi…",
+        "tr": "Konum belirleniyor…",
+        "ur": "مقام معلوم کیا جا رہا ہے…",
+        "fa": "در حال تشخیص موقعیت…",
+        "de": "Standort wird ermittelt…"
+    ],
+    "location_not_detected": [
+        "ar": "لم يُحدَّد الموقع بعد",
+        "en": "No location detected yet",
+        "ru": "Местоположение ещё не определено",
+        "id": "Lokasi belum terdeteksi",
+        "tr": "Henüz konum belirlenmedi",
+        "ur": "ابھی تک کوئی مقام معلوم نہیں",
+        "fa": "هنوز موقعیتی تشخیص داده نشده",
+        "de": "Noch kein Standort ermittelt"
+    ],
+    "location_failed": [
+        "ar": "تعذّر تحديد الموقع. تحقّق من تشغيل خدمات الموقع.",
+        "en": "Could not determine your location. Check that Location Services are on.",
+        "ru": "Не удалось определить местоположение. Проверьте, включены ли службы геолокации.",
+        "id": "Tidak dapat menentukan lokasi Anda. Pastikan Layanan Lokasi aktif.",
+        "tr": "Konumunuz belirlenemedi. Konum Servisleri'nin açık olduğundan emin olun.",
+        "ur": "آپ کا مقام معلوم نہیں ہو سکا۔ لوکیشن سروسز آن ہیں یا نہیں، دیکھیں۔",
+        "fa": "موقعیت شما تعیین نشد. بررسی کنید سرویس‌های موقعیت روشن باشد.",
+        "de": "Standort konnte nicht ermittelt werden. Prüfe, ob die Ortungsdienste aktiv sind."
+    ],
+    "location_denied": [
+        "ar": "الوصول إلى الموقع مرفوض. فعّله من إعدادات النظام › الخصوصية والأمان › خدمات الموقع.",
+        "en": "Location access is denied. Allow it in System Settings › Privacy & Security › Location Services.",
+        "ru": "Доступ к геопозиции запрещён. Разрешите его в Системных настройках › Конфиденциальность › Службы геолокации.",
+        "id": "Akses lokasi ditolak. Izinkan di Pengaturan Sistem › Privasi & Keamanan › Layanan Lokasi.",
+        "tr": "Konum erişimi reddedildi. Sistem Ayarları › Gizlilik ve Güvenlik › Konum Servisleri'nden izin verin.",
+        "ur": "مقام تک رسائی مسترد ہے۔ سسٹم سیٹنگز › پرائیویسی و سیکیورٹی › لوکیشن سروسز سے اجازت دیں۔",
+        "fa": "دسترسی به موقعیت رد شده است. از تنظیمات سیستم › حریم خصوصی و امنیت › سرویس‌های موقعیت اجازه دهید.",
+        "de": "Standortzugriff verweigert. Erlaube ihn in Systemeinstellungen › Datenschutz & Sicherheit › Ortungsdienste."
+    ],
+    "location_open_settings": [
+        "ar": "فتح إعدادات النظام",
+        "en": "Open System Settings",
+        "ru": "Открыть Системные настройки",
+        "id": "Buka Pengaturan Sistem",
+        "tr": "Sistem Ayarları'nı aç",
+        "ur": "سسٹم سیٹنگز کھولیں",
+        "fa": "باز کردن تنظیمات سیستم",
+        "de": "Systemeinstellungen öffnen"
+    ],
+    "location_follow": [
+        "ar": "تحديث الموقع تلقائيًا",
+        "en": "Update location automatically",
+        "ru": "Обновлять местоположение автоматически",
+        "id": "Perbarui lokasi otomatis",
+        "tr": "Konumu otomatik güncelle",
+        "ur": "مقام خودکار طور پر اپ ڈیٹ کریں",
+        "fa": "به‌روزرسانی خودکار موقعیت",
+        "de": "Standort automatisch aktualisieren"
+    ],
+    "location_follow_hint": [
+        "ar": "يعيد التحديد عند التشغيل، وبعد الاستيقاظ من السكون، وعند تغيّر اليوم. أوقفه ليُقرأ الموقع عند الطلب فقط.",
+        "en": "Re-detects at launch, after waking from sleep, and when the day changes. Leave it off to read your location only when you ask.",
+        "ru": "Определяет заново при запуске, после выхода из сна и при смене суток. Оставьте выключенным, чтобы местоположение читалось только по запросу.",
+        "id": "Mendeteksi ulang saat dijalankan, setelah bangun dari tidur, dan saat hari berganti. Biarkan mati agar lokasi hanya dibaca saat Anda meminta.",
+        "tr": "Açılışta, uykudan uyandıktan sonra ve gün değiştiğinde yeniden belirler. Konumun yalnızca istediğinizde okunması için kapalı bırakın.",
+        "ur": "آغاز پر، نیند سے بیدار ہونے کے بعد، اور دن بدلنے پر دوبارہ معلوم کرتا ہے۔ بند رکھیں تاکہ مقام صرف آپ کے کہنے پر پڑھا جائے۔",
+        "fa": "هنگام اجرا، پس از بیدار شدن از خواب و با تغییر روز دوباره تشخیص می‌دهد. خاموش بگذارید تا موقعیت فقط با درخواست شما خوانده شود.",
+        "de": "Ermittelt beim Start, nach dem Aufwachen und beim Tageswechsel neu. Ausgeschaltet lassen, damit der Standort nur auf Anfrage gelesen wird."
+    ],
+    "location_updated": [
+        "ar": "آخر تحديث",
+        "en": "Updated",
+        "ru": "Обновлено",
+        "id": "Diperbarui",
+        "tr": "Güncellendi",
+        "ur": "اپ ڈیٹ ہوا",
+        "fa": "به‌روزشده",
+        "de": "Aktualisiert"
     ]
 ]
