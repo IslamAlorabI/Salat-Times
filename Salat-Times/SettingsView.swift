@@ -8,7 +8,8 @@ import UserNotifications
 //
 // A fixed sidebar, not a `TabView`. The tab strip compressed and then clipped its own
 // items as the window narrowed, so a pane could become unreachable at a width the user
-// was allowed to drag to. A sidebar has a floor: it is 190pt and stays 190pt.
+// was allowed to drag to. A sidebar has a floor: it is 136pt and stays 136pt — the items
+// stack their icon over their label, which is what let the rail come down from 190.
 //
 // Panes never call back into `PrayerManager` to make a setting take effect — the
 // manager's debounced `UserDefaults` diff does that (`observeSettingsChanges`). The only
@@ -39,10 +40,15 @@ struct SettingsView: View {
     }
 
     private var sidebar: some View {
-        VStack(alignment: .leading, spacing: 2) {
+        VStack(spacing: 4) {
             // Clears the traffic lights, which float over the content because the window
             // uses `.hiddenTitleBar`.
             Color.clear.frame(height: 26)
+
+            // A `Spacer` on each side rather than only below: five stacked items leave a
+            // lot of rail, and a block of them pinned to the top read as a list that had
+            // been cut off. Centred, the rail reads as a fixed set of places to go.
+            Spacer(minLength: 0)
 
             ForEach(SettingsSection.allCases) { section in
                 SettingsSidebarItem(section: section,
@@ -52,11 +58,11 @@ struct SettingsView: View {
                 }
             }
 
-            Spacer()
+            Spacer(minLength: 0)
         }
-        .padding(.horizontal, 8)
+        .padding(.horizontal, 10)
         .padding(.bottom, 10)
-        .frame(width: 190, alignment: .top)
+        .frame(width: 136)
         .frame(maxHeight: .infinity)
         // A tint over the shared background rather than a material of its own, so the
         // sidebar reads as a sidebar at every translucency level without ever becoming a

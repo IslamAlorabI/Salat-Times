@@ -114,29 +114,34 @@ struct SettingsSidebarItem: View {
 
     @State private var isHovering = false
 
+    /// Icon above label, not beside it. Stacked, the item is legible at a glance and the
+    /// rail can be much narrower than the 190pt a side-by-side row needed — which is width
+    /// the panes get back. The label is centred and allowed two lines, because the longest
+    /// of the eight languages ("Mitteilungen", "Уведомления") will not fit on one.
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 9) {
+            VStack(spacing: 7) {
                 Image(systemName: section.icon)
-                    .font(.system(size: 11, weight: .semibold))
+                    .font(.system(size: 15, weight: .semibold))
                     .foregroundStyle(.white)
-                    .frame(width: 20, height: 20)
+                    .frame(width: 30, height: 30)
                     .background(
-                        RoundedRectangle(cornerRadius: 5, style: .continuous)
+                        RoundedRectangle(cornerRadius: 8, style: .continuous)
                             .fill(section.tint.gradient)
                     )
 
                 Text(Translations.string(section.titleKey, language: appLanguage))
-                    .font(.system(size: 13))
+                    .font(.system(size: 12, weight: isSelected ? .semibold : .regular))
                     .foregroundStyle(isSelected ? Color.white : Color.primary)
-                    .lineLimit(1)
-
-                Spacer(minLength: 0)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
             }
-            .padding(.horizontal, 8)
-            .padding(.vertical, 6)
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal, 6)
+            .padding(.vertical, 10)
             .background(
-                RoundedRectangle(cornerRadius: 6, style: .continuous)
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
                     .fill(isSelected ? Color.accentColor
                                      : (isHovering ? Color.primary.opacity(0.07) : .clear))
             )

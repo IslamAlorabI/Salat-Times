@@ -160,7 +160,12 @@ struct ContentView: View {
 
         return VStack(spacing: 0) {
             ForEach(prayers) { event in
-                row(event, isUpcoming: upcoming?.id == event.id)
+                // Matched by `key`, not by `id`. The list is always *today's* rows, while
+                // `upcoming` is the next instant in a rolling window — so between Isha and
+                // midnight the next prayer is tomorrow's Fajr and no id here could ever
+                // equal it. The header named Fajr and the list marked nothing. Keys are
+                // unique within a day, and the night markers never reach this branch.
+                row(event, isUpcoming: upcoming?.key == event.key)
             }
 
             if !night.isEmpty {
@@ -379,18 +384,61 @@ struct PrayerRow: View {
                 .font(.system(size: isSecondary ? 12 : 14,
                               weight: isUpcoming ? .semibold : .regular))
                 .foregroundStyle(isSecondary ? Color.secondary : Color.primary)
+                // Both labels outrank the leader line, which is the one thing here that
+                // should give up its width rather than truncate.
+                .layoutPriority(1)
 
-            Spacer(minLength: 8)
+            PrayerLeaderLine(isUpcoming: isUpcoming, isSecondary: isSecondary)
+                .padding(.horizontal, 8)
 
             Text(time)
                 .font(.system(size: isSecondary ? 12 : 14,
                               weight: isUpcoming ? .semibold : .regular))
                 .monospacedDigit()
                 .foregroundStyle(isUpcoming ? Color.accentColor : Color.secondary)
+                .layoutPriority(1)
         }
         .padding(.trailing, 16)
         .padding(.leading, 8)
         .padding(.vertical, isSecondary ? 4 : 6)
+    }
+}
+
+/// The rule that carries the eye from a prayer's name across to its time.
+///
+/// Dotted and barely there on an ordinary row — it is a guide, not a divider, and eight of
+/// them at full strength would read as a table. The next prayer's goes solid and takes the
+/// accent colour, which is deliberate: that row is already marked by the bar, the icon
+/// tint and the weight, and this makes the difference legible as *shape* rather than as a
+/// fourth thing tinted the same colour.
+private struct PrayerLeaderLine: View {
+    let isUpcoming: Bool
+    let isSecondary: Bool
+
+    var body: some View {
+        HorizontalRule()
+            .stroke(style: StrokeStyle(lineWidth: isUpcoming ? 1.2 : 1,
+                                       lineCap: .round,
+                                       dash: isUpcoming ? [] : [1, 3]))
+            .foregroundStyle(tint)
+            .frame(height: 1)
+            .frame(minWidth: 12, maxWidth: .infinity)
+    }
+
+    private var tint: Color {
+        if isUpcoming { return Color.accentColor.opacity(0.55) }
+        return Color.primary.opacity(isSecondary ? 0.07 : 0.13)
+    }
+}
+
+/// A single line down the middle of whatever it is given. `Divider` cannot be dashed and
+/// carries its own inset; a shape is the only way to control both.
+private struct HorizontalRule: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.move(to: CGPoint(x: rect.minX, y: rect.midY))
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.midY))
+        return path
     }
 }
 

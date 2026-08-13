@@ -165,11 +165,15 @@ that fires on a night marker's `date` without resolving that first.
 
 ## The two windows
 
-**Settings is three tabs, not one column.** Twelve `GroupBox`es in a single `ScrollView`
-ran to about twice the window height. Each tab is a `SettingsTabScroll` and owns its own
-`@AppStorage`; none of them wire a control back to `PrayerManager` — the debounced diff
+**Settings is a sidebar of five panes, not one column and not a `TabView`.** Twelve
+`GroupBox`es in a single `ScrollView` ran to about twice the window height, and a tab strip
+compressed and then clipped its own items as the window narrowed, so a pane could become
+unreachable at a width the user was allowed to drag to. The rail is a fixed 136pt: each
+`SettingsSidebarItem` stacks its icon over its label and the set is centred vertically,
+which is what let it come down from the 190pt a side-by-side row needed. Each pane owns its
+own `@AppStorage`; none of them wire a control back to `PrayerManager` — the debounced diff
 does that. Only two `manager` calls remain in the whole window, and both are real actions:
-"refresh now" and `refreshAuthorizationStatus()` on the notifications tab (the denial
+"refresh now" and `refreshAuthorizationStatus()` on the notifications pane (the denial
 banner used to be captured once at launch, so granting permission left it stuck on screen).
 
 **`MonthlyScheduleView` uses `Grid`, not `Table`.** `Table` is the native-looking choice
@@ -329,6 +333,16 @@ prayer row, each with its own stroke — stacked translucency turns to mud, and 
 read as eight buttons instead of a list. Depth comes from solid low-opacity fills over the one
 material; only the next prayer's row is drawn at all. `PrayerPalette` holds the per-prayer colours,
 in the app target rather than `Core/`, because `Core/` must not import SwiftUI.
+
+**The next prayer's row is matched by `key`, not by `id`.** The list is always *today's* rows,
+while `upcoming` is the next instant in `PrayerScheduleCalculator`'s rolling window — so between
+Isha and midnight the next prayer is *tomorrow's* Fajr and no id in the list can equal it. The
+header named Fajr while the list marked nothing, for three hours every night. Keys are unique
+within a day and the night markers never reach that branch, so the key is the right handle.
+Each row also carries a `PrayerLeaderLine` from its name across to its time: dotted and barely
+there normally, solid and accent-tinted for the next prayer. That row is already marked by the
+bar, the icon tint and the weight — the line makes the difference legible as *shape*, so it does
+not depend on the accent colour alone.
 
 ## Notes
 
