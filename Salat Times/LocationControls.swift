@@ -39,13 +39,26 @@ struct DeviceLocationStatus: View {
     @EnvironmentObject var manager: PrayerManager
     @AppStorage(DeviceLocation.Keys.placeName) private var detectedPlace = ""
     @AppStorage(DeviceLocation.Keys.updatedAt) private var detectedAt = 0.0
+    @AppStorage(DeviceLocation.Keys.isApproximate) private var isApproximate = false
     @AppStorage("numberFormat") private var numberFormat = "western"
 
     var body: some View {
         HStack(spacing: 10) {
             VStack(alignment: .leading, spacing: 2) {
-                Text(title)
-                    .font(.system(size: 13, weight: .medium))
+                HStack(spacing: 5) {
+                    Text(title)
+                        .font(.system(size: 13, weight: .medium))
+                    // An IP-derived location is worth minutes of prayer time, so it says
+                    // so on the row itself rather than only in a footnote.
+                    if isApproximate && detectedAt > 0 && manager.locationState != .detecting {
+                        Text(Translations.string("location_approximate_short", language: appLanguage))
+                            .font(.system(size: 10, weight: .medium))
+                            .padding(.horizontal, 5)
+                            .padding(.vertical, 1)
+                            .background(Capsule().fill(Color.orange.opacity(0.18)))
+                            .foregroundStyle(.orange)
+                    }
+                }
                 if showsTimestamp, let subtitle {
                     Text(subtitle)
                         .font(.system(size: 11))
@@ -140,8 +153,11 @@ struct LocationSourceSection: View {
     @EnvironmentObject var manager: PrayerManager
     @AppStorage(DeviceLocation.Keys.mode) private var storedMode = LocationMode.city.rawValue
     @AppStorage(DeviceLocation.Keys.followDevice) private var followDevice = false
+    @AppStorage(DeviceLocation.Keys.isApproximate) private var isApproximate = false
+    @AppStorage(DeviceLocation.Keys.updatedAt) private var detectedAt = 0.0
 
     private var mode: LocationMode { LocationMode.from(storedMode) }
+    private var isDetecting: Bool { manager.locationState == .detecting }
 
     var body: some View {
         SettingsStackedRow(title: Translations.string("location_source", language: appLanguage)) {
@@ -159,6 +175,13 @@ struct LocationSourceSection: View {
                 DeviceLocationStatus(appLanguage: appLanguage)
                 if manager.locationState == .denied || manager.locationState == .failed {
                     LocationProblemBanner(appLanguage: appLanguage)
+                }
+                if isApproximate && !isDetecting {
+                    Text(Translations.string("location_approximate", language: appLanguage))
+                        .font(.system(size: 11))
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
 

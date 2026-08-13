@@ -34,6 +34,10 @@ nonisolated struct DeviceLocation: Equatable, Sendable {
     /// user has crossed a border, which is when the calculation method should follow.
     var countryCode: String
     var updatedAt: Date
+    /// True when this came from the IP fallback rather than CoreLocation — tens of
+    /// kilometres out is normal for an ISP egress, which is worth minutes of prayer time.
+    /// Carried all the way to the settings window so it is never mistaken for a real fix.
+    var isApproximate: Bool
 
     /// Coordinates are stored rounded to this many decimals — roughly 1.1 km.
     ///
@@ -62,12 +66,14 @@ nonisolated struct DeviceLocation: Equatable, Sendable {
          longitude: Double,
          placeName: String = "",
          countryCode: String = "",
-         updatedAt: Date = Date()) {
+         updatedAt: Date = Date(),
+         isApproximate: Bool = false) {
         self.latitude = Self.rounded(latitude)
         self.longitude = Self.rounded(longitude)
         self.placeName = placeName
         self.countryCode = countryCode
         self.updatedAt = updatedAt
+        self.isApproximate = isApproximate
     }
 
     /// What the rest of the app calls this place. Falls back to the coordinates
@@ -98,6 +104,7 @@ nonisolated struct DeviceLocation: Equatable, Sendable {
         static let placeName = "devicePlaceName"
         static let countryCode = "deviceCountryCode"
         static let updatedAt = "deviceLocationUpdatedAt"
+        static let isApproximate = "deviceLocationIsApproximate"
         /// Opt-in: re-detect at launch, on wake and when the day rolls over. Off by
         /// default, so location is read only when the user asks for it.
         static let followDevice = "locationFollowsDevice"
@@ -118,7 +125,8 @@ nonisolated struct DeviceLocation: Equatable, Sendable {
             longitude: longitude,
             placeName: defaults.string(forKey: Keys.placeName) ?? "",
             countryCode: defaults.string(forKey: Keys.countryCode) ?? "",
-            updatedAt: stamp > 0 ? Date(timeIntervalSince1970: stamp) : .distantPast)
+            updatedAt: stamp > 0 ? Date(timeIntervalSince1970: stamp) : .distantPast,
+            isApproximate: defaults.bool(forKey: Keys.isApproximate))
     }
 
     func save(to defaults: UserDefaults = .standard) {
@@ -127,6 +135,7 @@ nonisolated struct DeviceLocation: Equatable, Sendable {
         defaults.set(placeName, forKey: Keys.placeName)
         defaults.set(countryCode, forKey: Keys.countryCode)
         defaults.set(updatedAt.timeIntervalSince1970, forKey: Keys.updatedAt)
+        defaults.set(isApproximate, forKey: Keys.isApproximate)
     }
 
     /// True when the two fixes would produce different prayer times — i.e. when they

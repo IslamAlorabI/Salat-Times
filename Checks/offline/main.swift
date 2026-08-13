@@ -445,6 +445,7 @@ let requiredKeys = [
     "location_source", "location_choose_city", "location_use_device", "location_detect_now",
     "location_detecting", "location_not_detected", "location_failed", "location_denied",
     "location_open_settings", "location_follow", "location_follow_hint", "location_updated",
+    "location_approximate", "location_approximate_short",
 ]
 let unresolved = requiredKeys.filter { Translations.string($0, language: "de") == $0 }
 check("every key the UI asks for resolves", unresolved.isEmpty, unresolved.joined(separator: ", "))
@@ -457,14 +458,14 @@ for key in locationStore.dictionaryRepresentation().keys { locationStore.removeO
 
 // Rounding is not cosmetic: the fingerprint keys the month cache, so an unrounded fix
 // would mint a new cache file and a new request every time GPS wobbled a few metres.
-let jittery = DeviceLocation(latitude: 31.111842, longitude: 30.939278)
+let jittery = DeviceLocation(latitude: 64.146612, longitude: -21.942503)
 check("coordinates round to ~1 km",
-      jittery.latitude == 31.11 && jittery.longitude == 30.94,
+      jittery.latitude == 64.15 && jittery.longitude == -21.94,
       "\(jittery.latitude), \(jittery.longitude)")
-let jitteredAgain = DeviceLocation(latitude: 31.112901, longitude: 30.938104)
+let jitteredAgain = DeviceLocation(latitude: 64.145901, longitude: -21.943104)
 check("a few metres of drift is the same place", jittery.isSamePlace(as: jitteredAgain))
 check("a kilometre away is not",
-      !jittery.isSamePlace(as: DeviceLocation(latitude: 31.13, longitude: 30.94)))
+      !jittery.isSamePlace(as: DeviceLocation(latitude: 64.17, longitude: -21.94)))
 
 check("an out-of-range coordinate is rejected",
       !DeviceLocation.isValid(latitude: 91, longitude: 0))
@@ -480,11 +481,27 @@ DeviceLocation(latitude: 51.5074, longitude: -0.1278,
                placeName: "London", countryCode: "GB").save(to: locationStore)
 let restored = DeviceLocation.load(from: locationStore)
 check("a saved fix loads back", restored?.placeName == "London" && restored?.countryCode == "GB")
+check("a real fix is not flagged approximate", restored?.isApproximate == false)
+
+// An IP-derived location can be tens of kilometres from the machine, which is worth
+// minutes of prayer time. The flag is what stops that being invisible.
+DeviceLocation(latitude: 35.6895, longitude: 139.6917,
+               placeName: "Tokyo", countryCode: "JP", isApproximate: true).save(to: locationStore)
+check("an approximate fix stays flagged through the store",
+      DeviceLocation.load(from: locationStore)?.isApproximate == true)
+DeviceLocation(latitude: 59.9139, longitude: 10.7522,
+               placeName: "Oslo", countryCode: "NO").save(to: locationStore)
+check("a later real fix clears the flag",
+      DeviceLocation.load(from: locationStore)?.isApproximate == false)
 check("an empty store has no fix",
       DeviceLocation.load(from: UserDefaults(suiteName: "salat-times-checks-empty")!) == nil)
 
 // ---------------------------------------------------------------------------
 print("\n14. Device location reaches PrayerSettings, and falls back when it cannot")
+// Saved here rather than relied on from the section above, so this section can be read —
+// and moved — on its own.
+DeviceLocation(latitude: 51.5074, longitude: -0.1278,
+               placeName: "London", countryCode: "GB").save(to: locationStore)
 locationStore.set("Cairo", forKey: "selectedCityRaw")
 check("the mode is off by default, so the picked city wins",
       PrayerSettings.load(from: locationStore).latitude == City.cairo.coordinates.latitude)
@@ -515,9 +532,9 @@ for key in locationStore.dictionaryRepresentation().keys { locationStore.removeO
 
 // ---------------------------------------------------------------------------
 print("\n15. The nearest listed city is what suggests a method")
-check("Kafr El-Sheikh finds itself",
-      City.nearest(toLatitude: 31.11, longitude: 30.94) == .kafrElSheikh,
-      City.nearest(toLatitude: 31.11, longitude: 30.94).rawValue)
+check("a listed city finds itself",
+      City.nearest(toLatitude: 59.9139, longitude: 10.7522) == .oslo,
+      City.nearest(toLatitude: 59.9139, longitude: 10.7522).rawValue)
 check("a coordinate in Saudi Arabia lands on a Saudi city",
       City.recommendedMethod(forLatitude: 21.42, longitude: 39.83) == 4,
       "\(City.recommendedMethod(forLatitude: 21.42, longitude: 39.83))")

@@ -34,12 +34,13 @@ final class LocationService: NSObject, CLLocationManagerDelegate {
         }
     }
 
-    /// Long enough for a cold Wi-Fi-based fix, short enough that a stuck request gives
-    /// the user their button back.
-    private static let fixTimeout: Duration = .seconds(20)
+    /// Long enough for a cold Wi-Fi-based fix, short enough that a machine which can
+    /// never produce one gets to the IP fallback while the user is still watching.
+    private static let fixTimeout: Duration = .seconds(10)
 
     private let manager = CLLocationManager()
     private let geocoder = CLGeocoder()
+    private let ipClient = IPGeolocationClient()
 
     private var fixContinuation: CheckedContinuation<CLLocation, Error>?
     private var authorizationContinuation: CheckedContinuation<CLAuthorizationStatus, Never>?
@@ -75,6 +76,12 @@ final class LocationService: NSObject, CLLocationManagerDelegate {
     /// Asks for permission if it has not been asked yet, takes one fix, and reverse-
     /// geocodes it. Throws `Failure` rather than CoreLocation's errors so callers can
     /// tell "say no" apart from "could not".
+    ///
+    /// Falls back to the IP client when CoreLocation cannot answer — which on some Macs
+    /// is *always*, not occasionally: without a Wi-Fi interface for CoreWLAN to scan,
+    /// `locationd` has no positioning source and reports `kCLErrorLocationUnknown` before
+    /// going quiet. A denial is deliberately **not** a reason to fall back: someone who
+    /// refused location access has not asked to be located by another route.
     func currentLocation(language: String) async throws -> DeviceLocation {
         var status = authorizationStatus
         if status == .notDetermined {
@@ -83,14 +90,36 @@ final class LocationService: NSObject, CLLocationManagerDelegate {
         guard !isDenied else { throw Failure.denied }
         guard isAuthorized else { throw Failure.unavailable }
 
-        let location = try await requestFix()
-        let place = await reverseGeocode(location, language: language)
+        do {
+            let location = try await requestFix()
+            let place = await reverseGeocode(location, language: language)
+            return DeviceLocation(latitude: location.coordinate.latitude,
+                                  longitude: location.coordinate.longitude,
+                                  placeName: place.name,
+                                  countryCode: place.countryCode,
+                                  updatedAt: Date())
+        } catch {
+            Log.data.notice("CoreLocation could not produce a fix; trying the IP fallback")
+            return try await approximateLocation(language: language)
+        }
+    }
 
-        return DeviceLocation(latitude: location.coordinate.latitude,
-                              longitude: location.coordinate.longitude,
-                              placeName: place.name,
-                              countryCode: place.countryCode,
-                              updatedAt: Date())
+    /// The IP fallback, named the same way a real fix is: the provider's own city string
+    /// is a last resort, because reverse-geocoding the coordinates gives a name in the
+    /// app's language rather than in the provider's English.
+    private func approximateLocation(language: String) async throws -> DeviceLocation {
+        var fix: DeviceLocation
+        do {
+            fix = try await ipClient.locate()
+        } catch {
+            throw Failure.unavailable
+        }
+
+        let place = await reverseGeocode(CLLocation(latitude: fix.latitude, longitude: fix.longitude),
+                                         language: language)
+        if !place.name.isEmpty { fix.placeName = place.name }
+        if !place.countryCode.isEmpty { fix.countryCode = place.countryCode }
+        return fix
     }
 
     // MARK: - Authorization
@@ -120,6 +149,13 @@ final class LocationService: NSObject, CLLocationManagerDelegate {
 
     // MARK: - The fix
 
+    /// Keeps listening until a fix arrives or the timeout expires.
+    ///
+    /// Deliberately `startUpdatingLocation` rather than `requestLocation`. The one-shot
+    /// call ends the whole attempt at the first `kCLErrorLocationUnknown`, and Apple
+    /// documents that error as transient — a Mac warming up its positioning can emit it
+    /// and then produce a perfectly good fix a second later. Here it is logged and
+    /// ignored, and only the timeout ends the attempt.
     private func requestFix() async throws -> CLLocation {
         try await withCheckedThrowingContinuation { continuation in
             guard fixContinuation == nil else {
@@ -134,12 +170,14 @@ final class LocationService: NSObject, CLLocationManagerDelegate {
                 self?.finishFix(with: .failure(Failure.timedOut))
             }
 
-            manager.requestLocation()
+            manager.startUpdatingLocation()
         }
     }
 
-    /// The one place a fix continuation is resumed, so it cannot happen twice.
+    /// The one place a fix continuation is resumed, so it cannot happen twice — and the
+    /// one place updates are stopped, so the app never leaves location running.
     private func finishFix(with result: Result<CLLocation, Error>) {
+        manager.stopUpdatingLocation()
         timeoutTask?.cancel()
         timeoutTask = nil
         guard let continuation = fixContinuation else { return }
@@ -159,9 +197,19 @@ final class LocationService: NSObject, CLLocationManagerDelegate {
 
     nonisolated func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         MainActor.assumeIsolated {
+            let code = (error as? CLError)?.code
+            if code == .denied {
+                finishFix(with: .failure(Failure.denied))
+                return
+            }
+            // Transient by Apple's own definition: a fix may still arrive. Let the
+            // timeout be what gives up, not this.
+            if code == .locationUnknown {
+                Log.data.notice("No fix yet (locationUnknown); still listening")
+                return
+            }
             Log.data.error("Location failed: \(error.localizedDescription, privacy: .public)")
-            let failure: Failure = (error as? CLError)?.code == .denied ? .denied : .unavailable
-            finishFix(with: .failure(failure))
+            finishFix(with: .failure(Failure.unavailable))
         }
     }
 

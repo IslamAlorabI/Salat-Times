@@ -321,8 +321,8 @@ struct MonthlyScheduleView: View {
     }
 
     /// The city as the rest of the app names it. `manager.city` is the `City` enum's raw
-    /// value — "Kafr El-Sheikh" — which is not what the popover, the header or an Arabic
-    /// reader sees anywhere else.
+    /// value — always English, e.g. "Kuala Lumpur" — which is not what the popover, the
+    /// header or an Arabic reader sees anywhere else.
     private var cityName: String {
         City.allCases.first { $0.rawValue == manager.city }?.getName(language: appLanguage)
             ?? manager.city

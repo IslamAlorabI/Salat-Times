@@ -301,7 +301,13 @@ class PrayerManager: NSObject, ObservableObject, UNUserNotificationCenterDelegat
         let previous = DeviceLocation.load(from: defaults)
         fix.save(to: defaults)
 
-        Log.data.notice("Location: \(fix.displayName, privacy: .public) (\(fix.countryCode, privacy: .public))")
+        // Where the user is stays out of the system log — `log show` is readable by anyone
+        // on the machine. Enough is logged to debug the flow, and the place itself is
+        // redacted unless someone deliberately enables private data.
+        Log.data.notice("""
+            Location updated (approximate: \(fix.isApproximate, privacy: .public)): \
+            \(fix.displayName, privacy: .private)
+            """)
 
         // Crossing a border moves the calculation method to the local authority's — the
         // same thing that already happens when a city is picked by hand. Deliberately

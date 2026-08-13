@@ -977,6 +977,26 @@ nonisolated let settingsStrings: [String: [String: String]] = [
         "fa": "هنگام اجرا، پس از بیدار شدن از خواب و با تغییر روز دوباره تشخیص می‌دهد. خاموش بگذارید تا موقعیت فقط با درخواست شما خوانده شود.",
         "de": "Ermittelt beim Start, nach dem Aufwachen und beim Tageswechsel neu. Ausgeschaltet lassen, damit der Standort nur auf Anfrage gelesen wird."
     ],
+    "location_approximate": [
+        "ar": "تقريبي — من اتصال الإنترنت، وقد يبعد عشرات الكيلومترات",
+        "en": "Approximate — from your internet connection, and can be tens of kilometres out",
+        "ru": "Приблизительно — по интернет-соединению, погрешность до десятков километров",
+        "id": "Perkiraan — dari koneksi internet Anda, bisa meleset puluhan kilometer",
+        "tr": "Yaklaşık — internet bağlantınızdan, onlarca kilometre sapabilir",
+        "ur": "تخمینی — آپ کے انٹرنیٹ کنکشن سے، دسیوں کلومیٹر کا فرق ممکن ہے",
+        "fa": "تقریبی — از اتصال اینترنت شما، ممکن است ده‌ها کیلومتر خطا داشته باشد",
+        "de": "Ungefähr — aus deiner Internetverbindung, kann zig Kilometer abweichen"
+    ],
+    "location_approximate_short": [
+        "ar": "موقع تقريبي",
+        "en": "Approximate location",
+        "ru": "Приблизительное местоположение",
+        "id": "Lokasi perkiraan",
+        "tr": "Yaklaşık konum",
+        "ur": "تخمینی مقام",
+        "fa": "موقعیت تقریبی",
+        "de": "Ungefährer Standort"
+    ],
     "location_updated": [
         "ar": "آخر تحديث",
         "en": "Updated",

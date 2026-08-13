@@ -96,6 +96,27 @@ Task {
         tuned.tuneMinutes = ["Fajr": 5]
         check("a read-time tune does NOT change the fingerprint",
               tuned.requestFingerprint == settings.requestFingerprint)
+
+        // The IP fallback, for Macs where CoreLocation has no positioning source at all
+        // (no Wi-Fi interface for CoreWLAN to scan). Worth a live check because the two
+        // providers disagree on their own payloads — geojs returns the coordinates as
+        // strings, ipwho.is as numbers — and a free provider can start refusing at any
+        // time, which is exactly why there are two.
+        print("\n6. The IP fallback resolves to somewhere real")
+        do {
+            let approximate = try await IPGeolocationClient().locate()
+            check("a provider answered with usable coordinates",
+                  DeviceLocation.isValid(latitude: approximate.latitude,
+                                         longitude: approximate.longitude),
+                  "\(approximate.latitude), \(approximate.longitude)")
+            check("the result is flagged approximate, never mistaken for a real fix",
+                  approximate.isApproximate)
+            check("it rounds like every other stored coordinate",
+                  approximate.latitude == DeviceLocation.rounded(approximate.latitude))
+            // Deliberately not printed: this is where the machine running the checks is.
+        } catch {
+            check("an IP provider was reachable", false, "\(error)")
+        }
     } catch {
         check("cold load succeeded", false, "\(error)")
     }

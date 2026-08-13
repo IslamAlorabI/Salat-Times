@@ -280,6 +280,30 @@ in the app target rather than `Core/`, because `Core/` must not import SwiftUI.
   not also fire at all six prayers), throttled to once every 30 minutes. Crossing a border moves
   `calculationMethod` to the nearest listed city's `recommendedMethod` — the same thing picking a
   city by hand already does, and only on a country change so it never overwrites a deliberate choice.
+
+- **CoreLocation cannot answer on every Mac, hence `Data/IPGeolocationClient`.** A Mac without GPS
+  positions itself by scanning nearby Wi-Fi networks through CoreWLAN. If CoreWLAN enumerates no
+  interface — a desktop on Ethernet with Wi-Fi off, or a Hackintosh whose Wi-Fi driver presents the
+  card as an Ethernet device — `locationd` has *no* positioning source: it answers
+  `kCLErrorLocationUnknown` (`kCLErrorDomain error 0`) and then never calls back at all. Check it
+  with `CWWiFiClient.interfaceNames()`; empty means no fix will ever arrive.
+  So `LocationService` falls back to resolving the public IP, through two providers because free
+  ones fail (ipapi.co answered `429 RateLimited` on the first request ever made to it).
+  Three things to keep:
+  - **A denial is never a reason to fall back.** Someone who refused location access has not asked
+    to be located by another route.
+  - **The result is flagged `isApproximate`** through `DeviceLocation`, `UserDefaults` and into the
+    settings window, which shows a badge and a warning line. An ISP egress measured ~75 km from the
+    real position, which moved Maghrib three minutes early — invisible without the flag, and worse
+    than the city the user would have picked by hand.
+  - **`requestFix` uses `startUpdatingLocation`, not `requestLocation`.** The one-shot call ends the
+    attempt at the first `kCLErrorLocationUnknown`, which Apple documents as *transient*; the
+    timeout is what gives up now. `finishFix` is the only place updates stop, so location never
+    stays running.
+
+- **Don't put the developer's own location into code, comments, checks or logs.** Fixtures use
+  unrelated cities; the location log line is `privacy: .private`, because `log show` is readable by
+  anyone on the machine.
 - `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor` is set, so every new type is `@MainActor` by default. Pure model/calculation types must be marked `nonisolated` explicitly.
 - Launch-at-login uses `SMAppService.mainApp` in both `SettingsView` and `WelcomeView`.
 - **Log with `Log.schedule` / `Log.notifications` / `Log.data`, not `print`.** A menu bar app has no console, so `print` is invisible once it ships. Read it back with:
