@@ -100,7 +100,7 @@ struct MonthlyScheduleView: View {
                 ProgressView().controlSize(.small)
             }
 
-            Text(manager.city)
+            Text(cityName)
                 .font(.system(size: 12))
                 .foregroundColor(.secondary)
 
@@ -121,12 +121,17 @@ struct MonthlyScheduleView: View {
 
             Spacer()
 
-            Button {
-                exportCSV()
+            Menu {
+                Button(Translations.string("export_pdf", language: appLanguage)) { exportPDF() }
+                Button(Translations.string("export_png", language: appLanguage)) { exportPNG() }
+                Divider()
+                Button(Translations.string("export_csv", language: appLanguage)) { exportCSV() }
             } label: {
-                Label(Translations.string("export_csv", language: appLanguage),
+                Label(Translations.string("export", language: appLanguage),
                       systemImage: "square.and.arrow.down")
             }
+            .menuStyle(.borderlessButton)
+            .fixedSize()
             .disabled(rows.isEmpty)
 
             Button {
@@ -134,11 +139,18 @@ struct MonthlyScheduleView: View {
             } label: {
                 Label(Translations.string("print", language: appLanguage), systemImage: "printer")
             }
-            .keyboardShortcut("p", modifiers: .command)
             .disabled(rows.isEmpty)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 10)
+        // ⌘P is claimed by AppKit's own responder chain before a SwiftUI button's
+        // `.keyboardShortcut` sees it, and the default handler answers with "This
+        // application does not support printing". The shortcut is now declared once as a
+        // real menu command (`CommandGroup(replacing: .printItem)`) which posts this.
+        .onReceive(NotificationCenter.default.publisher(for: .printSchedule)) { _ in
+            guard !rows.isEmpty else { return }
+            printSchedule()
+        }
     }
 
     private func message(_ text: String, systemImage: String, tint: Color) -> some View {
@@ -216,9 +228,11 @@ struct MonthlyScheduleView: View {
         }
     }
 
-    private var leadingEdge: Alignment {
-        Translations.isRTL(appLanguage) ? .trailing : .leading
-    }
+    /// Plain `.leading`, never `isRTL ? .trailing : .leading`. SwiftUI already resolves
+    /// `.leading` against `layoutDirection`, so that ternary flipped it a *second* time
+    /// and parked the date header on the opposite side of its own column from the dates
+    /// beneath it.
+    private var leadingEdge: Alignment { .leading }
 
     // MARK: - Data
 
@@ -306,6 +320,14 @@ struct MonthlyScheduleView: View {
         return formatter
     }
 
+    /// The city as the rest of the app names it. `manager.city` is the `City` enum's raw
+    /// value — "Kafr El-Sheikh" — which is not what the popover, the header or an Arabic
+    /// reader sees anywhere else.
+    private var cityName: String {
+        City.allCases.first { $0.rawValue == manager.city }?.getName(language: appLanguage)
+            ?? manager.city
+    }
+
     private var monthTitle: String {
         let formatter = DateFormatter()
         formatter.calendar = calendar
@@ -370,7 +392,15 @@ struct MonthlyScheduleView: View {
     /// the API's English prayer keys as headers. A CSV is going into a spreadsheet, not
     /// being read as prose — Arabic-Indic numerals and RTL headers make it unparseable.
     private var csv: String {
-        var lines = ["Date,Weekday," + Self.columns.map(\.rawValue).joined(separator: ",")]
+        // Attribution goes in a `#` preamble rather than in the table. Every spreadsheet
+        // and CSV parser worth using skips comment lines, so the data still starts at a
+        // real header row — putting the credit in row 1 would shift every column.
+        var lines = [
+            "# \(Self.exportCredit)",
+            "# \(cityName) — \(monthTitle)",
+            "# generated \(generatedStamp)",
+            "Date,Weekday," + Self.columns.map(\.rawValue).joined(separator: ","),
+        ]
         let calendar = self.calendar
         let weekdayFormatter = DateFormatter()
         weekdayFormatter.locale = Locale(identifier: "en_US_POSIX")
@@ -387,20 +417,7 @@ struct MonthlyScheduleView: View {
     }
 
     private func exportCSV() {
-        let panel = NSSavePanel()
-        panel.allowedContentTypes = [.commaSeparatedText]
-        panel.nameFieldStringValue = "\(manager.city.replacingOccurrences(of: " ", with: "-"))-\(csvMonthStamp).csv"
-        panel.canCreateDirectories = true
-
-        guard panel.runModal() == .OK, let url = panel.url else { return }
-        do {
-            try csv.write(to: url, atomically: true, encoding: .utf8)
-            Log.data.notice("Exported schedule CSV")
-        } catch {
-            Log.data.error("CSV export failed: \(error.localizedDescription, privacy: .public)")
-            let alert = NSAlert(error: error)
-            alert.runModal()
-        }
+        save(Data(csv.utf8), extension: "csv", type: .commaSeparatedText)
     }
 
     private var csvMonthStamp: String {
@@ -408,47 +425,235 @@ struct MonthlyScheduleView: View {
         return String(format: "%04d-%02d", c.year ?? 0, c.month ?? 0)
     }
 
-    /// Prints the grid by re-rendering it into an off-screen hosting view sized to the
-    /// paper, rather than printing the window: the on-screen view is inside a `ScrollView`
-    /// and would otherwise print only the visible rows.
-    private func printSchedule() {
-        let info = NSPrintInfo.shared
-        info.orientation = .portrait
-        info.topMargin = 36
-        info.bottomMargin = 36
-        info.leftMargin = 36
-        info.rightMargin = 36
-        info.horizontalPagination = .fit
-        info.verticalPagination = .automatic
+    // MARK: - The printable page
 
-        let width = info.paperSize.width - info.leftMargin - info.rightMargin
+    /// A4 in points. Print, PDF and PNG are all sized to it. None of them can reuse the
+    /// on-screen grid: it lives in a `ScrollView`, so it would only ever render the rows
+    /// currently scrolled into view.
+    private static let pageSize = CGSize(width: 595.28, height: 841.89)
+    private static let pageMargin: CGFloat = 36
 
-        let page = VStack(alignment: .leading, spacing: 12) {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(monthTitle).font(.system(size: 16, weight: .bold))
-                Text(manager.city).font(.system(size: 12))
-                if let hijriSpan {
-                    Text(hijriSpan).font(.system(size: 11))
+    /// Deliberately unlocalized and unlocalizable-by-numerals: this is attribution, and it
+    /// should read the same on every exported sheet whatever the app's language.
+    /// Keep the year in step with `AboutView.copyrightYear`.
+    ///
+    /// The data source is credited in About, not here — an exported sheet is the app's own
+    /// output and carries the app's name only.
+    private static let exportCredit = "Salat Times · © 2026 Islam AlorabI"
+
+    /// When the sheet was produced, so a printout found on a desk months later can be
+    /// told apart from a current one. ISO, for the same reason the CSV is.
+    private var generatedStamp: String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = calendar.timeZone
+        formatter.dateFormat = "yyyy-MM-dd HH:mm"
+        return formatter.string(from: Date())
+    }
+
+    /// One definition of the page, shared by all three outputs so they cannot drift.
+    @ViewBuilder
+    private func page(width: CGFloat) -> some View {
+        let isRTL = Translations.isRTL(appLanguage)
+        VStack(alignment: .leading, spacing: 12) {
+            // Masthead: the app's own icon and name, so an exported sheet still says where
+            // it came from once it is out of the app and in someone's inbox.
+            HStack(alignment: .center, spacing: 10) {
+                Image(nsImage: NSApplication.shared.applicationIconImage)
+                    .resizable()
+                    .frame(width: 34, height: 34)
+
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(monthTitle).font(.system(size: 16, weight: .bold))
+                    Text(cityName).font(.system(size: 12))
+                    if let hijriSpan {
+                        Text(hijriSpan)
+                            .font(.system(size: 10))
+                            .foregroundColor(.secondary)
+                    }
                 }
+
+                Spacer(minLength: 8)
+
+                Text(Translations.string("app_name", language: appLanguage))
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundColor(.secondary)
             }
+
+            Divider()
+
             grid
+
+            Divider()
+
+            HStack(spacing: 6) {
+                Text(Self.exportCredit)
+                Spacer(minLength: 8)
+                Text(generatedStamp)
+            }
+            .font(.system(size: 8))
+            .foregroundColor(.secondary)
         }
         .padding(16)
         .frame(width: width)
-        .environment(\.layoutDirection, Translations.isRTL(appLanguage) ? .rightToLeft : .leftToRight)
+        .background(Color.white)
+        .environment(\.layoutDirection, isRTL ? .rightToLeft : .leftToRight)
         .environment(\.locale, Locale(identifier: Translations.locale(appLanguage)))
-        // Printing on white paper: force the light appearance so a dark-mode Mac does not
-        // print white text.
+        // Onto white paper: force the light appearance so a dark-mode Mac does not render
+        // white text on white.
         .environment(\.colorScheme, .light)
+    }
 
-        let hosting = NSHostingView(rootView: page)
-        hosting.frame = NSRect(origin: .zero,
-                               size: NSSize(width: width, height: hosting.fittingSize.height))
+    /// All three outputs go through `ImageRenderer`, and none of them through a hosting
+    /// view's own AppKit drawing.
+    ///
+    /// An `NSHostingView` puts most of what SwiftUI draws into CALayers, and both
+    /// `dataWithPDF(inside:)` and `NSPrintOperation`'s draw pass record only what a view
+    /// draws into the context *itself*. Text arrived, so the sheets looked plausible — but
+    /// the masthead icon and the today/Friday row fills were silently dropped, and the PDF
+    /// and the printout disagreed with the PNG of the same page (that one went through
+    /// `cacheDisplay`, which does composite the layers). Measured on a page carrying an
+    /// icon and a filled row: `dataWithPDF` recorded the text and nothing else.
+    ///
+    /// `ImageRenderer` replays the content into whatever context it is handed, so the three
+    /// outputs cannot disagree, and PDF text stays vector rather than being rasterised.
+    private func pageRenderer() -> ImageRenderer<AnyView> {
+        let width = Self.pageSize.width - Self.pageMargin * 2
+        let renderer = ImageRenderer(content: AnyView(page(width: width)))
+        renderer.proposedSize = ProposedViewSize(width: width, height: nil)
+        return renderer
+    }
 
-        let operation = NSPrintOperation(view: hosting, printInfo: info)
+    /// The laid-out size of the page. `render` is the only thing that reports it.
+    private func renderedSize(of renderer: ImageRenderer<AnyView>) -> CGSize {
+        var size = CGSize.zero
+        renderer.render { measured, _ in size = measured }
+        return size
+    }
+
+    private func printSchedule() {
+        let renderer = pageRenderer()
+        let size = renderedSize(of: renderer)
+        guard size.height > 0 else {
+            Log.data.error("Could not lay out the schedule for printing")
+            return
+        }
+
+        // A plain view sized to the whole month, drawing the page through the renderer.
+        // AppKit still paginates it: it slices this view into page-height strips and
+        // translates the context for each, so the draw below lands correctly on every page.
+        let sheet = RenderedPageView(frame: NSRect(origin: .zero, size: size))
+        sheet.drawContent = { context in
+            renderer.render { _, draw in draw(context) }
+        }
+
+        let info = NSPrintInfo.shared
+        info.orientation = .portrait
+        info.topMargin = Self.pageMargin
+        info.bottomMargin = Self.pageMargin
+        info.leftMargin = Self.pageMargin
+        info.rightMargin = Self.pageMargin
+        info.horizontalPagination = .fit
+        info.verticalPagination = .automatic
+
+        let operation = NSPrintOperation(view: sheet, printInfo: info)
         operation.showsPrintPanel = true
         operation.showsProgressPanel = true
-        operation.jobTitle = "\(manager.city) — \(monthTitle)"
-        operation.run()
+        operation.jobTitle = "\(cityName) — \(monthTitle)"
+        if !operation.run() {
+            Log.data.error("Print operation did not complete")
+        }
     }
+
+    /// One page, A4-wide and as tall as the month needs — the same shape the PNG has.
+    private func exportPDF() {
+        guard let data = renderedPDF() else {
+            Log.data.error("Could not render the schedule as PDF")
+            return
+        }
+        save(data, extension: "pdf", type: .pdf)
+    }
+
+    private func renderedPDF() -> Data? {
+        let renderer = pageRenderer()
+        let buffer = NSMutableData()
+        guard let consumer = CGDataConsumer(data: buffer) else { return nil }
+
+        var didRender = false
+        renderer.render { size, draw in
+            var mediaBox = CGRect(origin: .zero, size: size)
+            guard let context = CGContext(consumer: consumer, mediaBox: &mediaBox, nil) else { return }
+            context.beginPDFPage(nil)
+            draw(context)
+            context.endPDFPage()
+            context.closePDF()
+            didRender = true
+        }
+        return didRender ? buffer as Data : nil
+    }
+
+    /// The same page rasterised at 2×, for dropping into a chat or printing elsewhere.
+    /// The scale is the renderer's, so this really is 2× — the old `cacheDisplay` path took
+    /// its resolution from the backing store of an off-screen window, which is 1×.
+    private static let exportScale: CGFloat = 2
+
+    private func exportPNG() {
+        let renderer = pageRenderer()
+        renderer.scale = Self.exportScale
+        guard let image = renderer.cgImage else {
+            Log.data.error("Could not rasterise the schedule")
+            return
+        }
+        let rep = NSBitmapImageRep(cgImage: image)
+        // Without this the PNG reports 2× its point size as its size, and lands in a
+        // document at double scale.
+        rep.size = NSSize(width: CGFloat(image.width) / Self.exportScale,
+                          height: CGFloat(image.height) / Self.exportScale)
+        guard let png = rep.representation(using: .png, properties: [:]) else {
+            Log.data.error("Could not encode the schedule as PNG")
+            return
+        }
+        save(png, extension: "png", type: .png)
+    }
+
+    private func save(_ data: Data, extension ext: String, type: UTType) {
+        let panel = NSSavePanel()
+        panel.allowedContentTypes = [type]
+        panel.nameFieldStringValue = "\(manager.city.replacingOccurrences(of: " ", with: "-"))-\(csvMonthStamp).\(ext)"
+        panel.canCreateDirectories = true
+
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+        do {
+            try data.write(to: url, options: .atomic)
+            Log.data.notice("Exported schedule as \(ext, privacy: .public)")
+        } catch {
+            Log.data.error("Export failed: \(error.localizedDescription, privacy: .public)")
+            NSAlert(error: error).runModal()
+        }
+    }
+}
+
+/// A view that draws nothing of its own and hands its context to a closure — the print
+/// job's page, drawn by `ImageRenderer` rather than by a hosting view's layers.
+///
+/// It is deliberately not flipped: `ImageRenderer` draws for a bottom-left origin (which is
+/// what made the PDF path work), and an unflipped `NSView` gives exactly that. Sized to the
+/// full month, so AppKit's automatic pagination slices it into pages.
+private final class RenderedPageView: NSView {
+    var drawContent: ((CGContext) -> Void)?
+
+    override func draw(_ dirtyRect: NSRect) {
+        guard let context = NSGraphicsContext.current?.cgContext else { return }
+        context.saveGState()
+        drawContent?(context)
+        context.restoreGState()
+    }
+}
+
+extension Notification.Name {
+    /// Posted by the File ▸ Print command. ⌘P has to be declared as a real menu command,
+    /// because AppKit's responder chain claims it before a SwiftUI button's
+    /// `.keyboardShortcut` ever sees it — and answers with "This application does not
+    /// support printing".
+    static let printSchedule = Notification.Name("islam.salattimes.printSchedule")
 }

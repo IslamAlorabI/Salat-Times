@@ -154,7 +154,6 @@ struct SettingsSidebarItem: View {
 struct SettingsCard<Content: View>: View {
     var title: String? = nil
     var footnote: String? = nil
-    let isRTL: Bool
     @ViewBuilder var content: () -> Content
 
     /// A flat `controlBackgroundColor` fill read as a dead grey slab. A shallow top-down
@@ -168,7 +167,7 @@ struct SettingsCard<Content: View>: View {
     }
 
     var body: some View {
-        VStack(alignment: isRTL ? .trailing : .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: 6) {
             if let title {
                 Text(title.uppercased())
                     .font(.system(size: 10, weight: .semibold))
@@ -193,13 +192,13 @@ struct SettingsCard<Content: View>: View {
                 Text(footnote)
                     .font(.system(size: 11))
                     .foregroundStyle(.secondary)
-                    .multilineTextAlignment(isRTL ? .trailing : .leading)
+                    .multilineTextAlignment(.leading)
                     .fixedSize(horizontal: false, vertical: true)
-                    .frame(maxWidth: .infinity, alignment: isRTL ? .trailing : .leading)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, 4)
             }
         }
-        .frame(maxWidth: .infinity, alignment: isRTL ? .trailing : .leading)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
@@ -207,15 +206,14 @@ struct SettingsCard<Content: View>: View {
 struct SettingsRow<Trailing: View>: View {
     let title: String
     var subtitle: String? = nil
-    let isRTL: Bool
     @ViewBuilder var trailing: () -> Trailing
 
     var body: some View {
         HStack(spacing: 12) {
-            VStack(alignment: isRTL ? .trailing : .leading, spacing: 2) {
+            VStack(alignment: .leading, spacing: 2) {
                 Text(title)
                     .font(.system(size: 13))
-                    .frame(maxWidth: .infinity, alignment: isRTL ? .trailing : .leading)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 if let subtitle {
                     // Both the frame *and* `multilineTextAlignment` are needed. Without
                     // the frame the label hugs its own width, so a short title and a long
@@ -224,9 +222,9 @@ struct SettingsRow<Trailing: View>: View {
                     Text(subtitle)
                         .font(.system(size: 11))
                         .foregroundStyle(.secondary)
-                        .multilineTextAlignment(isRTL ? .trailing : .leading)
+                        .multilineTextAlignment(.leading)
                         .fixedSize(horizontal: false, vertical: true)
-                        .frame(maxWidth: .infinity, alignment: isRTL ? .trailing : .leading)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
 
@@ -242,14 +240,13 @@ struct SettingsRow<Trailing: View>: View {
 /// A row whose control needs the full width underneath its label rather than beside it.
 struct SettingsStackedRow<Content: View>: View {
     let title: String
-    let isRTL: Bool
     @ViewBuilder var content: () -> Content
 
     var body: some View {
-        VStack(alignment: isRTL ? .trailing : .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 8) {
             Text(title)
                 .font(.system(size: 13))
-                .frame(maxWidth: .infinity, alignment: isRTL ? .trailing : .leading)
+                .frame(maxWidth: .infinity, alignment: .leading)
             content()
         }
         .padding(.horizontal, 12)

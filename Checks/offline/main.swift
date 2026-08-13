@@ -440,7 +440,7 @@ let requiredKeys = [
     "app_name", "about_tagline", "about_details", "about_version",
     "about_requires", "about_links", "about_data_source",
     "about_data_note", "about_developer",
-    "monthly_schedule", "schedule_date", "export_csv", "print", "schedule_footnote",
+    "monthly_schedule", "schedule_date", "export", "export_csv", "export_pdf", "export_png", "print", "schedule_footnote",
     "asr_madhab", "high_latitude", "midnight_mode", "prayer_tuning", "fixed_times",
 ]
 let unresolved = requiredKeys.filter { Translations.string($0, language: "de") == $0 }

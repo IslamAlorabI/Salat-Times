@@ -460,15 +460,45 @@ nonisolated let uiStrings: [String: [String: String]] = [
         "fa": "تاریخ",
         "de": "Datum"
     ],
+    "export": [
+        "ar": "تصدير",
+        "en": "Export",
+        "ru": "Экспорт",
+        "id": "Ekspor",
+        "tr": "Dışa aktar",
+        "ur": "برآمد",
+        "fa": "خروجی",
+        "de": "Exportieren"
+    ],
     "export_csv": [
-        "ar": "تصدير CSV",
-        "en": "Export CSV",
-        "ru": "Экспорт CSV",
-        "id": "Ekspor CSV",
-        "tr": "CSV'ye aktar",
-        "ur": "CSV برآمد کریں",
-        "fa": "خروجی CSV",
-        "de": "CSV exportieren"
+        "ar": "جدول بيانات (CSV)",
+        "en": "Spreadsheet (CSV)",
+        "ru": "Таблица (CSV)",
+        "id": "Lembar sebar (CSV)",
+        "tr": "Hesap tablosu (CSV)",
+        "ur": "اسپریڈ شیٹ (CSV)",
+        "fa": "صفحه‌گسترده (CSV)",
+        "de": "Tabelle (CSV)"
+    ],
+    "export_pdf": [
+        "ar": "ملف PDF (A4)",
+        "en": "PDF document (A4)",
+        "ru": "Документ PDF (A4)",
+        "id": "Dokumen PDF (A4)",
+        "tr": "PDF belgesi (A4)",
+        "ur": "PDF دستاویز (A4)",
+        "fa": "سند PDF (A4)",
+        "de": "PDF-Dokument (A4)"
+    ],
+    "export_png": [
+        "ar": "صورة PNG (A4)",
+        "en": "PNG image (A4)",
+        "ru": "Изображение PNG (A4)",
+        "id": "Gambar PNG (A4)",
+        "tr": "PNG görüntüsü (A4)",
+        "ur": "PNG تصویر (A4)",
+        "fa": "تصویر PNG (A4)",
+        "de": "PNG-Bild (A4)"
     ],
     "print": [
         "ar": "طباعة",

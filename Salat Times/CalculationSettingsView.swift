@@ -23,8 +23,6 @@ struct CalculationOptionsSection: View {
     @AppStorage("latitudeAdjustment") private var latitudeAdjustment = 0
     @AppStorage("midnightMode") private var midnightMode = 0
 
-    private var isRTL: Bool { Translations.isRTL(appLanguage) }
-
     /// Aladhan's `latitudeAdjustmentMethod`. `0` is a real value (NONE) — verified
     /// against the API, which echoes it back in `meta` — not an "unset" sentinel.
     private let latitudeRules: [(value: Int, key: String)] = [
@@ -36,11 +34,9 @@ struct CalculationOptionsSection: View {
 
     var body: some View {
         SettingsCard(title: Translations.string("calculation_options", language: appLanguage),
-                     footnote: Translations.string("calculation_options_hint", language: appLanguage),
-                     isRTL: isRTL) {
+                     footnote: Translations.string("calculation_options_hint", language: appLanguage)) {
             SettingsRow(title: Translations.string("asr_madhab", language: appLanguage),
-                        subtitle: Translations.string("asr_madhab_hint", language: appLanguage),
-                        isRTL: isRTL) {
+                        subtitle: Translations.string("asr_madhab_hint", language: appLanguage)) {
                 Picker("", selection: $school) {
                     Text(Translations.string("madhab_shafii", language: appLanguage)).tag(0)
                     Text(Translations.string("madhab_hanafi", language: appLanguage)).tag(1)
@@ -52,8 +48,7 @@ struct CalculationOptionsSection: View {
             SettingsDivider()
 
             SettingsRow(title: Translations.string("high_latitude", language: appLanguage),
-                        subtitle: Translations.string("high_latitude_hint", language: appLanguage),
-                        isRTL: isRTL) {
+                        subtitle: Translations.string("high_latitude_hint", language: appLanguage)) {
                 Picker("", selection: $latitudeAdjustment) {
                     ForEach(latitudeRules, id: \.value) { rule in
                         Text(Translations.string(rule.key, language: appLanguage)).tag(rule.value)
@@ -66,8 +61,7 @@ struct CalculationOptionsSection: View {
             SettingsDivider()
 
             SettingsRow(title: Translations.string("midnight_mode", language: appLanguage),
-                        subtitle: Translations.string("midnight_mode_hint", language: appLanguage),
-                        isRTL: isRTL) {
+                        subtitle: Translations.string("midnight_mode_hint", language: appLanguage)) {
                 Picker("", selection: $midnightMode) {
                     Text(Translations.string("midnight_standard", language: appLanguage)).tag(0)
                     Text(Translations.string("midnight_jafari", language: appLanguage)).tag(1)
@@ -107,8 +101,7 @@ struct PrayerTuningSection: View {
 
     var body: some View {
         SettingsCard(title: Translations.string("prayer_tuning", language: appLanguage),
-                     footnote: Translations.string("prayer_tuning_hint", language: appLanguage),
-                     isRTL: Translations.isRTL(appLanguage)) {
+                     footnote: Translations.string("prayer_tuning_hint", language: appLanguage)) {
             ForEach(Array(rows.enumerated()), id: \.element.key) { index, row in
                 if index > 0 { SettingsDivider() }
                 TuneRow(name: Translations.string(row.key.translationKey(isFriday: false), language: appLanguage),
@@ -194,8 +187,7 @@ struct FixedOffsetsSection: View {
 
     var body: some View {
         SettingsCard(title: Translations.string("fixed_times", language: appLanguage),
-                     footnote: Translations.string("fixed_times_hint", language: appLanguage),
-                     isRTL: Translations.isRTL(appLanguage)) {
+                     footnote: Translations.string("fixed_times_hint", language: appLanguage)) {
             OffsetRow(label: Translations.string("fajr_before_sunrise", language: appLanguage),
                       icon: "sunrise",
                       minutes: $fajrBeforeSunrise,

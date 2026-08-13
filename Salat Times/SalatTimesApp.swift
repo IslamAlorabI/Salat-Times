@@ -59,6 +59,18 @@ struct SalatTimesApp: App {
                 .onAppear { NSApplication.shared.activate(ignoringOtherApps: true) }
         }
         .defaultSize(width: 820, height: 620)
+        // ⌘P has to be a real menu command. AppKit's responder chain claims it before a
+        // SwiftUI button's `.keyboardShortcut` is consulted, and its default handler puts
+        // up "This application does not support printing" — which is exactly what the
+        // schedule window's Print button appeared to do.
+        .commands {
+            CommandGroup(replacing: .printItem) {
+                Button(Translations.string("print", language: UserDefaults.standard.string(forKey: "appLanguage") ?? "ar")) {
+                    NotificationCenter.default.post(name: .printSchedule, object: nil)
+                }
+                .keyboardShortcut("p", modifiers: .command)
+            }
+        }
 
         Window("Welcome", id: "welcome") {
             WelcomeView()

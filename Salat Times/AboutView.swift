@@ -55,33 +55,30 @@ struct AboutView: View {
         VStack(spacing: 18) {
             identity
 
-            SettingsCard(title: Translations.string("about_details", language: appLanguage), isRTL: isRTL) {
+            SettingsCard(title: Translations.string("about_details", language: appLanguage)) {
                 // Never run through `Translations.localizedNumber`. A version is an
                 // *identifier*, not a quantity: "٣.٠ (٣٠)" is not a build anyone can
                 // quote in a bug report, and no installer, changelog or release page
                 // writes it that way. Same for the macOS requirement.
-                SettingsRow(title: Translations.string("about_version", language: appLanguage), isRTL: isRTL) {
+                SettingsRow(title: Translations.string("about_version", language: appLanguage)) {
                     value("\(Self.version) (\(Self.build))")
                         .textSelection(.enabled)
                 }
                 SettingsDivider()
-                SettingsRow(title: Translations.string("about_requires", language: appLanguage), isRTL: isRTL) {
+                SettingsRow(title: Translations.string("about_requires", language: appLanguage)) {
                     value("macOS \(Self.minimumSystem)")
                 }
             }
 
             SettingsCard(title: Translations.string("about_links", language: appLanguage),
-                         footnote: Translations.string("about_data_note", language: appLanguage),
-                         isRTL: isRTL) {
+                         footnote: Translations.string("about_data_note", language: appLanguage)) {
                 AboutLinkRow(title: Translations.string("about_data_source", language: appLanguage),
                              subtitle: "aladhan.com",
-                             url: "https://aladhan.com",
-                             isRTL: isRTL)
+                             url: "https://aladhan.com")
                 SettingsDivider()
                 AboutLinkRow(title: Translations.string("about_developer", language: appLanguage),
                              subtitle: "github.com/IslamAlorabI",
-                             url: "https://github.com/IslamAlorabI",
-                             isRTL: isRTL)
+                             url: "https://github.com/IslamAlorabI")
             }
 
             Text("© \(Self.copyrightYear) Islam AlorabI")
@@ -128,7 +125,6 @@ private struct AboutLinkRow: View {
     let title: String
     let subtitle: String
     let url: String
-    let isRTL: Bool
 
     @State private var isHovering = false
 
@@ -137,7 +133,7 @@ private struct AboutLinkRow: View {
             if let link = URL(string: url) { NSWorkspace.shared.open(link) }
         } label: {
             HStack(spacing: 10) {
-                VStack(alignment: isRTL ? .trailing : .leading, spacing: 2) {
+                VStack(alignment: .leading, spacing: 2) {
                     Text(title)
                         .font(.system(size: 13))
                         .foregroundStyle(.primary)
@@ -145,7 +141,7 @@ private struct AboutLinkRow: View {
                         .font(.system(size: 11))
                         .foregroundStyle(isHovering ? Color.accentColor : .secondary)
                 }
-                .frame(maxWidth: .infinity, alignment: isRTL ? .trailing : .leading)
+                .frame(maxWidth: .infinity, alignment: .leading)
 
                 Image(systemName: "arrow.up.forward")
                     .font(.system(size: 10, weight: .semibold))

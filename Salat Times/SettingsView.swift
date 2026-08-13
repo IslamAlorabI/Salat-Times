@@ -71,10 +71,10 @@ struct SettingsView: View {
 
     private var detail: some View {
         ScrollView(showsIndicators: false) {
-            VStack(alignment: isRTL ? .trailing : .leading, spacing: 18) {
+            VStack(alignment: .leading, spacing: 18) {
                 Text(Translations.string(selection.titleKey, language: appLanguage))
                     .font(.system(size: 20, weight: .bold))
-                    .frame(maxWidth: .infinity, alignment: isRTL ? .trailing : .leading)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.bottom, 2)
 
                 switch selection {
@@ -88,7 +88,7 @@ struct SettingsView: View {
             .padding(.horizontal, 22)
             .padding(.top, 26)
             .padding(.bottom, 24)
-            .frame(maxWidth: 560, alignment: isRTL ? .trailing : .leading)
+            .frame(maxWidth: 560, alignment: .leading)
             .frame(maxWidth: .infinity)
         }
     }
@@ -104,8 +104,8 @@ struct GeneralSettingsPane: View {
     private var isRTL: Bool { Translations.isRTL(appLanguage) }
 
     var body: some View {
-        SettingsCard(title: Translations.string("startup", language: appLanguage), isRTL: isRTL) {
-            SettingsRow(title: Translations.string("launch_at_login", language: appLanguage), isRTL: isRTL) {
+        SettingsCard(title: Translations.string("startup", language: appLanguage)) {
+            SettingsRow(title: Translations.string("launch_at_login", language: appLanguage)) {
                 Toggle("", isOn: $launchAtLogin)
                     .toggleStyle(.switch)
                     .controlSize(.small)
@@ -127,8 +127,7 @@ struct GeneralSettingsPane: View {
             SettingsDivider()
 
             SettingsRow(title: Translations.string("refresh_data", language: appLanguage),
-                        subtitle: Translations.string("refresh_data_hint", language: appLanguage),
-                        isRTL: isRTL) {
+                        subtitle: Translations.string("refresh_data_hint", language: appLanguage)) {
                 Button {
                     manager.loadSavedCity()
                 } label: {
@@ -139,8 +138,8 @@ struct GeneralSettingsPane: View {
             }
         }
 
-        SettingsCard(title: Translations.string("languages", language: appLanguage), isRTL: isRTL) {
-            SettingsStackedRow(title: Translations.string("interface_language", language: appLanguage), isRTL: isRTL) {
+        SettingsCard(title: Translations.string("languages", language: appLanguage)) {
+            SettingsStackedRow(title: Translations.string("interface_language", language: appLanguage)) {
                 let columns = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
                 LazyVGrid(columns: columns, spacing: 10) {
                     LanguageRadioButton(title: Translations.string("language_ar", language: "ar"), tag: "ar", selection: $appLanguage)
@@ -167,12 +166,12 @@ struct PrayerTimesSettingsPane: View {
     private var isRTL: Bool { Translations.isRTL(appLanguage) }
 
     var body: some View {
-        SettingsCard(title: Translations.string("location", language: appLanguage), isRTL: isRTL) {
-            SettingsStackedRow(title: Translations.string("location", language: appLanguage), isRTL: isRTL) {
+        SettingsCard(title: Translations.string("location", language: appLanguage)) {
+            SettingsStackedRow(title: Translations.string("location", language: appLanguage)) {
                 CitySearchPicker(selectedCityRaw: $selectedCityRaw, appLanguage: appLanguage)
             }
             SettingsDivider()
-            SettingsStackedRow(title: Translations.string("calculation_method", language: appLanguage), isRTL: isRTL) {
+            SettingsStackedRow(title: Translations.string("calculation_method", language: appLanguage)) {
                 CalculationMethodPicker(selectedMethod: $method, appLanguage: appLanguage)
             }
         }
@@ -203,8 +202,8 @@ struct AppearanceSettingsPane: View {
     private var isRTL: Bool { Translations.isRTL(appLanguage) }
 
     var body: some View {
-        SettingsCard(title: Translations.string("time_format", language: appLanguage), isRTL: isRTL) {
-            SettingsStackedRow(title: Translations.string("time_format", language: appLanguage), isRTL: isRTL) {
+        SettingsCard(title: Translations.string("time_format", language: appLanguage)) {
+            SettingsStackedRow(title: Translations.string("time_format", language: appLanguage)) {
                 HStack(spacing: 0) {
                     TimeFormatRadioButton(title: "24H (18:00)", isSelected: is24HourFormat) {
                         is24HourFormat = true
@@ -222,7 +221,7 @@ struct AppearanceSettingsPane: View {
 
             SettingsDivider()
 
-            SettingsStackedRow(title: Translations.string("number_format", language: appLanguage), isRTL: isRTL) {
+            SettingsStackedRow(title: Translations.string("number_format", language: appLanguage)) {
                 HStack(spacing: 0) {
                     NumberFormatRadioButton(title: Translations.string("numbers_western", language: appLanguage),
                                             example: "123", tag: "western", selection: $numberFormat)
@@ -245,9 +244,8 @@ struct AppearanceSettingsPane: View {
         }
 
         SettingsCard(title: Translations.string("menu_bar_panel", language: appLanguage),
-                     footnote: Translations.string("translucency_hint", language: appLanguage),
-                     isRTL: isRTL) {
-            SettingsRow(title: Translations.string("translucency", language: appLanguage), isRTL: isRTL) {
+                     footnote: Translations.string("translucency_hint", language: appLanguage)) {
+            SettingsRow(title: Translations.string("translucency", language: appLanguage)) {
                 Picker("", selection: $listMaterial) {
                     ForEach(PopoverMaterial.allCases) { level in
                         Text(Translations.string(level.titleKey, language: appLanguage)).tag(level.rawValue)
@@ -260,8 +258,7 @@ struct AppearanceSettingsPane: View {
             SettingsDivider()
 
             SettingsRow(title: Translations.string("show_night_times", language: appLanguage),
-                        subtitle: Translations.string("show_night_times_hint", language: appLanguage),
-                        isRTL: isRTL) {
+                        subtitle: Translations.string("show_night_times_hint", language: appLanguage)) {
                 Toggle("", isOn: $showNightTimes)
                     .toggleStyle(.switch)
                     .controlSize(.small)
@@ -302,7 +299,7 @@ struct NotificationSettingsPane: View {
             HStack(alignment: .top, spacing: 9) {
                 Image(systemName: "exclamationmark.triangle.fill")
                     .foregroundStyle(.orange)
-                VStack(alignment: isRTL ? .trailing : .leading, spacing: 4) {
+                VStack(alignment: .leading, spacing: 4) {
                     Text(Translations.string("notifications_denied", language: appLanguage))
                         .font(.system(size: 12))
                         .fixedSize(horizontal: false, vertical: true)
@@ -323,7 +320,7 @@ struct NotificationSettingsPane: View {
             )
         }
 
-        SettingsCard(title: Translations.string("prayer_notifications", language: appLanguage), isRTL: isRTL) {
+        SettingsCard(title: Translations.string("prayer_notifications", language: appLanguage)) {
             notificationRow("prayer_fajr", "sunrise", $fajrEnabled, $fajrSound)
             SettingsDivider()
             notificationRow("prayer_sunrise", "sunrise.fill", $sunriseEnabled, $sunriseSound)
@@ -337,8 +334,8 @@ struct NotificationSettingsPane: View {
             notificationRow("prayer_isha", "moon.stars.fill", $ishaEnabled, $ishaSound)
         }
 
-        SettingsCard(title: Translations.string("timing", language: appLanguage), isRTL: isRTL) {
-            SettingsRow(title: Translations.string("prayer_reminder", language: appLanguage), isRTL: isRTL) {
+        SettingsCard(title: Translations.string("timing", language: appLanguage)) {
+            SettingsRow(title: Translations.string("prayer_reminder", language: appLanguage)) {
                 Picker("", selection: $reminderInterval) {
                     Text(Translations.string("reminder_disabled", language: appLanguage)).tag(0)
                     Text(Translations.string("reminder_10_minutes", language: appLanguage)).tag(10)
@@ -353,7 +350,7 @@ struct NotificationSettingsPane: View {
 
             SettingsDivider()
 
-            SettingsRow(title: Translations.string("menu_bar_warning", language: appLanguage), isRTL: isRTL) {
+            SettingsRow(title: Translations.string("menu_bar_warning", language: appLanguage)) {
                 Picker("", selection: $warningInterval) {
                     Text(Translations.string("warning_disabled", language: appLanguage)).tag(0)
                     Text(Translations.string("warning_10_minutes", language: appLanguage)).tag(10)
@@ -413,7 +410,7 @@ struct CitySearchPicker: View {
     var body: some View {
         HStack {
             if let city = selectedCity {
-                VStack(alignment: Translations.isRTL(appLanguage) ? .trailing : .leading, spacing: 2) {
+                VStack(alignment: .leading, spacing: 2) {
                     Text(city.getName(language: appLanguage))
                         .font(.system(size: 13, weight: .medium))
                     Text(city.continent.getName(language: appLanguage))
@@ -722,7 +719,7 @@ struct PrayerNotificationRow: View {
             Text(prayerName)
                 .font(.system(size: 14, weight: .medium))
                 .foregroundColor(isEnabled ? .primary : .secondary)
-                .frame(width: 60, alignment: Translations.isRTL(appLanguage) ? .trailing : .leading)
+                .frame(width: 60, alignment: .leading)
             
             Toggle("", isOn: $isEnabled)
                 .toggleStyle(.switch)

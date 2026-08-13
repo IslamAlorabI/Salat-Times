@@ -147,10 +147,20 @@ Three things in that window are easy to get wrong:
 - The **CSV is deliberately unlocalized**: `yyyy-MM-dd`, 24-hour `HH:mm`, western digits,
   English `PrayerKey` headers. It goes into a spreadsheet, and Arabic-Indic numerals plus
   RTL headers make it unparseable.
-- **Print re-renders into an off-screen `NSHostingView`** sized to the paper rather than
-  printing the window, because the on-screen grid is inside a `ScrollView` and would print
-  only the visible rows. It forces `.colorScheme(.light)` so a dark-mode Mac doesn't print
-  white text on white paper.
+- **Print, PDF and PNG all re-render the page off-screen** rather than capturing the
+  window, because the on-screen grid is inside a `ScrollView` and would only ever emit the
+  visible rows. One `page(width:)` defines the sheet for all three, and it forces
+  `.colorScheme(.light)` so a dark-mode Mac doesn't print white text on white paper.
+- **That off-screen render must go through `ImageRenderer`, never an `NSHostingView`.**
+  A hosting view puts most of what SwiftUI draws into CALayers, and both
+  `dataWithPDF(inside:)` and `NSPrintOperation`'s draw pass record only what the view draws
+  into the context itself. Text came through and everything else — the masthead app icon,
+  the today/Friday row fills — was silently dropped, so the PDF and the printout were
+  quietly wrong while the PNG (via `cacheDisplay`, which does composite layers) was right.
+  Printing uses `RenderedPageView`, a bare unflipped `NSView` that hands its `CGContext` to
+  the renderer; AppKit still paginates it.
+- The **export credit is the app's own name only** — `"Salat Times · © <year> …"`. The data
+  source is credited in About, not stamped on every exported sheet.
 
 The stepper walks to arbitrary months via `PrayerRepository.month(containing:settings:)`,
 which is separate from `load(around:)` — the latter deliberately only fetches the months
