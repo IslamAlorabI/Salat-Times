@@ -11,9 +11,9 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		05D235A32F23C28B007299AA /* Salat Times */ = {
+		05D235A32F23C28B007299AA /* Salat-Times */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "Salat Times";
+			path = "Salat-Times";
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -32,7 +32,7 @@
 		05D235732F23AA63007299AA = {
 			isa = PBXGroup;
 			children = (
-				05D235A32F23C28B007299AA /* Salat Times */,
+				05D235A32F23C28B007299AA /* Salat-Times */,
 				05D2357D2F23AA63007299AA /* Products */,
 			);
 			sourceTree = "<group>";
@@ -61,7 +61,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				05D235A32F23C28B007299AA /* Salat Times */,
+				05D235A32F23C28B007299AA /* Salat-Times */,
 			);
 			name = "Salat Times";
 			packageProductDependencies = (

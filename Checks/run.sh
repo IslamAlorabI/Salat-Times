@@ -10,7 +10,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-SRC="Salat Times"
+SRC="Salat-Times"
 OUT="$(mktemp -d)"
 trap 'rm -rf "$OUT"' EXIT
 

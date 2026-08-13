@@ -54,7 +54,7 @@ Salat Times is a native macOS menu bar application designed to display accurate 
 
 2. Open the project in Xcode:
    ```bash
-   open "Salat Times.xcodeproj"
+   open "Salat-Times.xcodeproj"
    ```
 
 3. Build and Run:

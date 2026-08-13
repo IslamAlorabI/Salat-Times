@@ -6,22 +6,27 @@ Single target, no dependencies, no tests.
 ## Build & run
 
 ```bash
-xcodebuild -project "Salat Times.xcodeproj" -scheme "Salat Times" -configuration Debug build
+xcodebuild -project "Salat-Times.xcodeproj" -scheme "Salat Times" -configuration Debug build
 ```
 
-- Scheme and target are both `Salat Times` (note the space — always quote paths).
+- **The project file and the source folder are `Salat-Times`; the scheme, the target and the
+  product are still `Salat Times` with a space.** Both spellings are live at once, so quote
+  everything: `-project "Salat-Times.xcodeproj" -scheme "Salat Times"`. Renaming the folder on
+  2026-08-13 touched exactly one line of `project.pbxproj` — the
+  `PBXFileSystemSynchronizedRootGroup`'s `path` — because everything else bearing the old name is a
+  target/product name rather than a filesystem path.
 - The app has **no test target** (adding one needs a one-time Xcode GUI step). Instead, the pure `Core/` types have behaviour checks that compile with `swiftc`:
 
 ```bash
 ./Checks/run.sh
 ```
 
-  Run these after touching anything in `Salat Times/Core/`, and add a case when you fix a bug there. `./Checks/run.sh --network` additionally exercises `Data/` against the live Aladhan API and the disk cache. Everything else — notification delivery, menu bar rendering, RTL layout — still has to be checked by hand.
-- Product lands in `~/Library/Developer/Xcode/DerivedData/Salat_Times-*/Build/Products/Debug/Salat Times.app`.
+  Run these after touching anything in `Salat-Times/Core/`, and add a case when you fix a bug there. `./Checks/run.sh --network` additionally exercises `Data/` against the live Aladhan API and the disk cache. Everything else — notification delivery, menu bar rendering, RTL layout — still has to be checked by hand.
+- Product lands in `~/Library/Developer/Xcode/DerivedData/Salat-Times-*/Build/Products/Debug/Salat Times.app`. (Renaming the project moved this: anything still under `Salat_Times-*`, with the underscore, is from before 2026-08-13 and is stale.)
 - `build_output.txt` at the repo root is a stale local log (git-ignored, never committed) — don't rely on it.
 
 The project uses `objectVersion = 77` with `PBXFileSystemSynchronizedRootGroup`, and the target lists
-that group in `fileSystemSynchronizedGroups`, so **new `.swift` files dropped into `Salat Times/` are
+that group in `fileSystemSynchronizedGroups`, so **new `.swift` files dropped into `Salat-Times/` are
 picked up automatically** — no `project.pbxproj` edits needed. Anything placed in that folder is a
 build input, which is why the simulator `.gpx` files live in a top-level `Simulator GPX/` folder
 instead.
@@ -36,15 +41,15 @@ instead.
 
 | File | Role |
 | --- | --- |
-| `Salat Times/SalatTimesApp.swift` | `@main`. `MenuBarExtra` (window style) + `settings`, `schedule` and `welcome` `Window` scenes. |
-| `Salat Times/Core/` | Pure, `nonisolated`, I/O-free model + calculation types. No SwiftUI, no network. Shared by everything and covered by `Checks/`. The one `UserDefaults` touch is `PrayerSettings.load(from:)`, which takes the store as a parameter so the checks can pass a scratch suite. Also holds `City`/`Continent` and `NotificationSound`/`PrayerNotificationSettings`. |
-| `Salat Times/PrayerManager.swift` | The one `ObservableObject`: fetch, countdown timer, notifications, the settings diff, location. |
-| `Salat Times/ContentView.swift` | Menu bar popover: hijri header, countdown, six prayer rows, the two night markers, footer. |
-| `Salat Times/SettingsView.swift` | Settings window: a `TabView` over `GeneralSettingsTab` / `PrayerTimesSettingsTab` / `NotificationSettingsTab`, plus the shared picker components. |
-| `Salat Times/CalculationSettingsView.swift` | The madhab, high-latitude and midnight-mode sections, per-prayer tuning, and the Fajr/Isha fixed offsets. Lives in the Prayer Times tab. |
-| `Salat Times/MonthlyScheduleView.swift` | The `schedule` window: a month of times, CSV export, `⌘P` print. |
-| `Salat Times/WelcomeView.swift` | First-launch onboarding, gated on `hasShownWelcome`. |
-| `Salat Times/Translations.swift` | Lookup + numeral/RTL helpers. The strings themselves live in `Translations+UI/Methods/Prayer/Hijri/Settings.swift`. |
+| `Salat-Times/SalatTimesApp.swift` | `@main`. `MenuBarExtra` (window style) + `settings`, `schedule` and `welcome` `Window` scenes. |
+| `Salat-Times/Core/` | Pure, `nonisolated`, I/O-free model + calculation types. No SwiftUI, no network. Shared by everything and covered by `Checks/`. The one `UserDefaults` touch is `PrayerSettings.load(from:)`, which takes the store as a parameter so the checks can pass a scratch suite. Also holds `City`/`Continent` and `NotificationSound`/`PrayerNotificationSettings`. |
+| `Salat-Times/PrayerManager.swift` | The one `ObservableObject`: fetch, countdown timer, notifications, the settings diff, location. |
+| `Salat-Times/ContentView.swift` | Menu bar popover: hijri header, countdown, six prayer rows, the two night markers, footer. |
+| `Salat-Times/SettingsView.swift` | Settings window: a `TabView` over `GeneralSettingsTab` / `PrayerTimesSettingsTab` / `NotificationSettingsTab`, plus the shared picker components. |
+| `Salat-Times/CalculationSettingsView.swift` | The madhab, high-latitude and midnight-mode sections, per-prayer tuning, and the Fajr/Isha fixed offsets. Lives in the Prayer Times tab. |
+| `Salat-Times/MonthlyScheduleView.swift` | The `schedule` window: a month of times, CSV export, `⌘P` print. |
+| `Salat-Times/WelcomeView.swift` | First-launch onboarding, gated on `hasShownWelcome`. |
+| `Salat-Times/Translations.swift` | Lookup + numeral/RTL helpers. The strings themselves live in `Translations+UI/Methods/Prayer/Hijri/Settings.swift`. |
 
 ## Conventions that matter
 

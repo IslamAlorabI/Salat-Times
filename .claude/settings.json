@@ -2,7 +2,7 @@
   "permissions": {
     "allow": [
       "Bash(xcodebuild -list:*)",
-      "Bash(xcodebuild -project \"Salat Times.xcodeproj\" -scheme \"Salat Times\":*)",
+      "Bash(xcodebuild -project \"Salat-Times.xcodeproj\" -scheme \"Salat Times\":*)",
       "Bash(xcrun simctl list:*)",
       "Bash(swift --version)",
       "Bash(git status:*)",

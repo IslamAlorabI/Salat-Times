@@ -31,7 +31,7 @@ from PIL import Image, ImageChops
 REPO = Path(__file__).resolve().parent.parent
 SVG = Path(sys.argv[1]) if len(sys.argv) > 1 else REPO / "Tools" / "SalatTimesLogo.svg"
 MASK_SOURCE = Path(sys.argv[2]) if len(sys.argv) > 2 else REPO / "Tools" / "mask-source.png"
-ASSETS = REPO / "Salat Times" / "Assets.xcassets"
+ASSETS = REPO / "Salat-Times" / "Assets.xcassets"
 
 CANVAS = 1024
 BODY = 824                 # Apple's tile size within a 1024 canvas
